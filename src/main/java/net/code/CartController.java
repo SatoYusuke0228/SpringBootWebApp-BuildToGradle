@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
@@ -22,14 +23,54 @@ public class CartController {
 	@Autowired
 	private HttpSession session;
 
+	@RequestMapping("/cart")
+	public ModelAndView showCartItem(ModelAndView mav) {
+
+		Cart cart = (Cart) session.getAttribute("cart");
+
+		//カートの登録がなければ新規作成
+		if (cart == null) {
+			cart = new Cart();
+		}
+
+		//カートを保存
+		session.setAttribute("cart", cart);
+		mav.setViewName("cart");
+
+		//カートの中身に商品があればtrue、なければfalse
+		mav.addObject("check", cart.getCartItems().size() != 0);
+
+		return mav;
+	}
+
 	/**
 	 * カート画面を表示するメソッド
 	 *
 	 * @author SatoYusuke0228
 	 */
-	@RequestMapping("/cart")
-	public String showCartItem() {
-		return "cart";
+	@RequestMapping("/cart/show")
+	public ModelAndView showCartItem(
+			ModelAndView mav,
+			RedirectAttributes redirectAttributes) {
+
+		Cart cart = (Cart) session.getAttribute("cart");
+
+		//カートの登録がなければ新規作成
+		if (cart == null) {
+			cart = new Cart();
+		}
+
+		//カートを保存
+		session.setAttribute("cart", cart);
+
+		//カートの中身に商品があればtrue、なければfalse
+		mav.addObject("check", cart.getCartItems().size() != 0);
+
+		//redirect準備
+		redirectAttributes.addFlashAttribute("cart", cart);
+		mav.setViewName("redirect:/cart");
+
+		return mav;
 	}
 
 	/**
@@ -38,15 +79,15 @@ public class CartController {
 	 * @author SatoYusuke0228
 	 */
 	@RequestMapping("/cart/add/{id}")
-	public String addCartItem(
+	public ModelAndView addCartItem(
 			@PathVariable String id,
-//			Model model,
+			ModelAndView mav,
 			RedirectAttributes redirectAttributes) {
 
 		Cart cart = (Cart) session.getAttribute("cart");
-//		Cart cart = (Cart) redirectAttributes.getAttribute("cart");
+		//Cart cart = (Cart) redirectAttributes.getAttribute("cart");
 
-		//modelにカートの登録がなければ新規作成
+		//カートの登録がなければ新規作成
 		if (cart == null) {
 			cart = new Cart();
 		}
@@ -62,10 +103,14 @@ public class CartController {
 		//カートを保存
 		session.setAttribute("cart", cart);
 
-	    //redirect
+		//redirect準備
 		redirectAttributes.addFlashAttribute("cart", cart);
-		
-		return "redirect:/cart";
+		mav.setViewName("redirect:/cart");
+
+		//カートの中身に商品があれmav.setViewName("redirect:/cart");ばtrue、なければfalse
+		mav.addObject("check", cart.getCartItems().size() != 0);
+
+		return mav;
 	}
 
 	/**
@@ -73,9 +118,9 @@ public class CartController {
 	 * @author SatoYusuke0228
 	 */
 	@RequestMapping("/cart/remove/{id}")
-	public String removeCartItem(
+	public ModelAndView removeCartItem(
 			@PathVariable String id,
-//			Model model,
+			ModelAndView mav,
 			RedirectAttributes redirectAttributes) {
 
 		//カートから商品を削除
@@ -84,9 +129,14 @@ public class CartController {
 
 		//カートを保存
 		session.setAttribute("cart", cart);
-		
-		 //redirect
+
+		//redirect準備
 		redirectAttributes.addFlashAttribute("cart", cart);
-		return "redirect:/cart";
+		mav.setViewName("redirect:/cart");
+
+		//カートの中身に商品があればtrue、なければfalse
+		mav.addObject("check", cart.getCartItems().size() != 0);
+
+		return mav;
 	}
 }

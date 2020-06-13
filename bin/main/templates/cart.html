@@ -8,7 +8,9 @@
 	<!-- メイン -->
 	<main>
 		<div class="maincol">
-			<table class="table">
+			<!-- ("check" , cart.cartItems().size != 0) -->
+			<h1 th:unless="${check}"> カートに商品はありません。 </h1>
+			<table th:if="${check}" class="table">
 				<thead>
 					<tr>
 						<th class="name-space" scope="col">商品</th>
@@ -18,13 +20,13 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr th:each="item : ${cart.cartItems}">
-						<td>[[${item.value.getName()}]]</td>
-						<td>[[${item.value.getQuantity()}]]</td>
-						<td>[[${item.value.getQuantity()} * ${item.value.getPrice()}]]</td>
+					<tr th:if="${check}" th:each="cart : ${cart.cartItems}" th:object="${cart}">
+						<td>[[*{value.name}]]</td>
+						<td>[[*{value.quantity}]]</td>
+						<td>[[*{value.quantity} * *{value.price}]]</td>
 						<td>
 							<button
-								th:onclick="|location.href='@{'/cart/remove/'+ ${item.value.getId()} }'|">削除</button>
+								th:onclick="|location.href='@{'/cart/remove/'+ *{key} }'|">削除</button>
 						</td>
 					</tr>
 					<tr class="total">
