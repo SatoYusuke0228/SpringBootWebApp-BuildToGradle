@@ -1,5 +1,8 @@
 package net.code;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * カート画面のバックエンド処理に使用するEntity
  *
@@ -21,10 +24,20 @@ package net.code;
  */
 public class CartItem {
 
-
+	@Getter
+	@Setter
 	private String id;
+
+	@Getter
+	@Setter
 	private String name;
+
+	@Getter
+	@Setter
 	private int quantity;
+
+	@Getter
+	@Setter
 	private int price;
 
 	/**
@@ -37,42 +50,5 @@ public class CartItem {
 		this.name = productEntity.getProductName();
 		this.quantity = 1;
 		this.price = productEntity.getProductPrice();
-	}
-	/*********************
-	 * getter and setter *
-	 ********************/
-
-	public String getId() {
-		return id;
-	}
-
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public int getQuantity() {
-		return quantity;
-	}
-
-
-	public void setQuantity(int quantity) {
-		this.quantity = quantity;
-	}
-
-	public int getPrice() {
-		return price;
-	}
-
-	public void setPrice(int price) {
-		this.price = price;
 	}
 }

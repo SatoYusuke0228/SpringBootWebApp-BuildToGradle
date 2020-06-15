@@ -3,6 +3,9 @@ package net.code;
 import java.util.HashMap;
 import java.util.Map;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * カート画面のバックエンド処理をまとめたクラス
  *
@@ -16,7 +19,12 @@ import java.util.Map;
  */
 public class Cart {
 
+	@Getter
+	@Setter
 	private Map<String, CartItem> cartItems;
+
+	@Getter
+	@Setter
 	private int grandTotal;
 
 	/**
@@ -25,25 +33,6 @@ public class Cart {
 	public Cart() {
 		cartItems = new HashMap<String, CartItem>();
 		grandTotal = 0;
-	}
-
-	/**
-	 *getter and setter
-	 */
-	public Map<String, CartItem> getCartItems() {
-		return cartItems;
-	}
-
-	public void setCartItems(Map<String, CartItem> cartItems) {
-		this.cartItems = cartItems;
-	}
-
-	public int getGrandTotal() {
-		return grandTotal;
-	}
-
-	public void setGrandTotal(int grandTotal) {
-		this.grandTotal = grandTotal;
 	}
 
 	/*
