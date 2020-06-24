@@ -30,7 +30,7 @@
 			<li class="logo"><img th:src="@{/image/test-rogo.PNG}" alt="ロゴ">
 			</li>
 			<li class="search">
-				<!-- 検索ワードで検索可能にするボックスを用意する -->
+				<!-- ヘッダー検索機能 -->
 				<form action="/item-list/search" method="GET"
 					class="search_container">
 					<input name="keyword" type="text" size="25"
@@ -38,6 +38,7 @@
 						value="&#xF002">
 				</form>
 			</li>
+			<!-- ｃリンク一覧 -->
 			<li><a th:href="@{/}"> [[#{header.link1}]] </a></li>
 			<li><a> [[#{header.link2}]] <span class="caret"></span>
 			</a>

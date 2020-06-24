@@ -6,12 +6,12 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * 商品購入手続き関係のコントローラー
@@ -41,11 +41,11 @@ public class PurchaseController {
 	 * @author SatoYusuke0228
 	 */
 	@RequestMapping("/showform")
-	public String showForm(Model model) {
+	public ModelAndView showForm(ModelAndView mav) {
 		//購入情報オブジェクトを作成してモデルに登録
-		model.addAttribute("checkout", new Checkout());
-
-		return "checkout";
+		mav.addObject("checkout", new Checkout());
+		mav.setViewName("checkout");
+		return mav;
 	}
 
 	/**
@@ -67,19 +67,21 @@ public class PurchaseController {
 	 * @author SatoYusuke0228
 	 */
 	@RequestMapping("/purchase")
-	public String purchase(
+	public ModelAndView purchase(
 			@Valid @ModelAttribute("checkout") Checkout checkout,
-			BindingResult result) {
+			BindingResult result,
+			ModelAndView mav) {
 
 		if (result.hasErrors()) {
-			// 元の画面にエラーメッセージを表示
-			return "checkout";
+			// 元の画面に戻りエラーメッセージを表示
+			mav.setViewName("checkout");
+		} else {
+			// カートの中身を初期化
+			Cart cart = new Cart();
+			session.setAttribute("cart", cart);
+			// 購入完了画面を表示
+			mav.setViewName("purchase");
 		}
-
-		// カートの中身を初期化
-		Cart cart = new Cart();
-		session.setAttribute("cart", cart);
-
-		return "purchase";
+		return mav;
 	}
 }
