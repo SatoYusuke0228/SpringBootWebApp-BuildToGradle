@@ -63,7 +63,7 @@ public class MsProductCategoryInventoryEntity {
 	@Setter
 	private int productCategoryId;
 
-	@Column(name = "PRODUCT_CATEGORY_NAME", nullable = false, length = 64)
+	@Column(name = "PRODUCT_CATEGORY_NAME", unique = true, nullable = false, length = 64)
 	@Getter
 	@Setter
 	private String productCategoryName;
@@ -100,8 +100,8 @@ public class MsProductCategoryInventoryEntity {
 
 	/**
 	 * @OneToMany(
-	 * 		cascade = 元が消えたら関連テーブルはどうするか,
-	 * 		fetch = 一緒に取り出すか
+	 * 		cascade  = 元が消えたら関連テーブルはどうするか,
+	 * 		fetch    = 一緒に取り出すか
 	 * 		mappedBy = 関連ドメインクラス
 	 * )
 	 */
@@ -110,5 +110,4 @@ public class MsProductCategoryInventoryEntity {
 	@Getter
 	@Setter
 	private List<TrProductEntity> trProductEntity;
-
 }

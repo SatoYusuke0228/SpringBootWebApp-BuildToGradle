@@ -56,7 +56,7 @@ public class TrProductEntity {
 	@Setter
 	private String productId;
 
-	@Column(name = "PRODUCT_NAME", nullable = false, length = 128)
+	@Column(name = "PRODUCT_NAME", unique = true, nullable = false, length = 128)
 	@Getter
 	@Setter
 	private String productName;

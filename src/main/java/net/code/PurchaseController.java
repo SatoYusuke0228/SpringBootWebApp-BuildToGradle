@@ -1,15 +1,16 @@
 package net.code;
 
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -42,12 +43,22 @@ public class PurchaseController {
 	 */
 	@RequestMapping("/showform")
 	public ModelAndView showForm(ModelAndView mav) {
+
+		//カートの中身に商品があればtrue、なければfalse
+		Cart cart = (Cart) session.getAttribute("cart");
+		mav.addObject("check", cart.getCartItems().size() != 0);
+
 		//購入情報オブジェクトを作成してモデルに登録
 		mav.addObject("checkout", new Checkout());
 		mav.setViewName("checkout");
+
 		return mav;
 	}
 
+	@GetMapping("/checkout")
+    public String getCheckoutPage(Checkout checkaout){
+        return "checkout";
+    }
 	/**
 	 * 「購入」ボタンがクリックされた時の処理メソッド
 	 *
@@ -66,13 +77,17 @@ public class PurchaseController {
 	 *
 	 * @author SatoYusuke0228
 	 */
-	@RequestMapping("/purchase")
-	public ModelAndView purchase(
-			@Valid @ModelAttribute("checkout") Checkout checkout,
+	@PostMapping("/purchase")
+	public ModelAndView postPurchasePage(
+//			@Valid @ModelAttribute("checkout")
+			@Validated Checkout checkout,
 			BindingResult result,
 			ModelAndView mav) {
-
+		//なぜか絶対にfalseが返ってくる
 		if (result.hasErrors()) {
+			// カートの中身に商品があればtrue、なければfalse
+			Cart cart = (Cart) session.getAttribute("cart");
+			mav.addObject("check", cart.getCartItems().size() != 0);
 			// 元の画面に戻りエラーメッセージを表示
 			mav.setViewName("checkout");
 		} else {
