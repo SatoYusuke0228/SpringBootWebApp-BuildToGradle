@@ -41,14 +41,14 @@ public class adminController {
 
 		} else { //もし入力FORMに不備がなければ
 
-			//現在時刻を取得してInsert日時とUpdate日時に設定
+			//現在時刻を取得してInsertDateとUpdateDateに設定
 			final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 		 	productEntity.setInsertDate(timestamp);
 		 	productEntity.setUpdateDate(timestamp);
 
-		 	//現在時刻を取得してInsert日時とUpdate日時に設定
+		 	//ログイン中のユーザーネームを取得してInsertUserとUpdateUserに設定
 		 	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		 	final String loginUserName = auth.getName();//get logged in username
+		 	final String loginUserName = auth.getName();
 		 	productEntity.setInsertUser(loginUserName);
 			productEntity.setUpdateUser(loginUserName);
 
