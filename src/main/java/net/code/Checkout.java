@@ -98,7 +98,7 @@ public class Checkout {
 	@NotBlank(
 //			groups = { BuyerCeditCard.class },
 			message = "※入力してください")
-	@Pattern(regexp = "[0-9][0-9]", message = "数字のみ2桁入力してください")
+	@Pattern(regexp = "[0-9][0-9]", message = "※数字のみ2桁入力してください")
 	@Getter
 	@Setter
 	private String creditCardYear;

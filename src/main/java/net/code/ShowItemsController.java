@@ -14,13 +14,14 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class ShowItemsController {
 
-	//商品テーブルに関わる処理のインスタンス
+	//商品テーブルに関わる処理のインスタンス(TrProductServiceインターフェース)
+
 	@Autowired
 	private TrProductService productService;
 
-	//商品カテゴリーテーブルに関わる処理のインスタンス
+	//商品カテゴリーテーブルに関わる処理のインスタンス(MsProductCategoryInventoryServiceインターフェース)
 	@Autowired
-	private MsProductCategoryInventoryService categoryService;
+	private MsProductCategoryInventoryServiceImpl categoryService;
 
 	//セッションスコープのインスタンス
 //	@Autowired
@@ -132,7 +133,7 @@ public class ShowItemsController {
 		mav.setViewName(viewName);
 		return mav;
 	}
-	
+
 	/**
 	 * 商品詳細ページを表示するためのメソッド
 	 * @author SatoYusuke0228
@@ -146,7 +147,7 @@ public class ShowItemsController {
 		//EntityをModelに登録
 		mav.addObject("item", item);
 		mav.setViewName("item");
-		
+
 		return mav;
 	}
 }

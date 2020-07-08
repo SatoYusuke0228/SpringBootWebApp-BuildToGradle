@@ -17,7 +17,7 @@ public class CartController {
 
 	//商品テーブルに関わる処理のインスタンス
 	@Autowired
-	private TrProductService productService;
+	private TrProductServiceImpl productService;
 
 	//セッションスコープのインスタンス
 	@Autowired
