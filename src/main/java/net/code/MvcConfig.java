@@ -9,12 +9,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * 遷移先がどの画面なのかを「spring-boot-starter-security」に認識させる役割のクラス
  *
  * @author SatoYusuke0228
+ * @param ViewControllerRegistry registry
+ *        引数 ステータスコードやビューで事前に設定された簡単な自動コントローラーの登録を支援
  */
 @Configuration
 public class MvcConfig implements WebMvcConfigurer {
 
 	public void addViewControllers(ViewControllerRegistry registry) {
 
-		registry.addViewController("/admin").setViewName("admin");
+		registry.
+		addViewController("/admin"). //URLの指定
+		setViewName("admin"); //ファイル名の指定
 	}
 }

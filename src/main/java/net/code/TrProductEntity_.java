@@ -27,7 +27,7 @@ public class TrProductEntity_ {
 	public static volatile SingularAttribute<TrProductEntity, String> productPhotoFileName1;
 	public static volatile SingularAttribute<TrProductEntity, String> productPhotoFileName2;
 	public static volatile SingularAttribute<TrProductEntity, String> productPhotoFileName3;
-	public static volatile SingularAttribute<TrProductEntity, String> productShowFlag;
+	public static volatile SingularAttribute<TrProductEntity, Integer> productShowFlag;
 	public static volatile SingularAttribute<TrProductEntity, Timestamp> insertDate;
 	public static volatile SingularAttribute<TrProductEntity, String> insertUser;
 	public static volatile SingularAttribute<TrProductEntity, Timestamp> updateDate;

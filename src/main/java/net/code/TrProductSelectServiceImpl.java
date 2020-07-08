@@ -12,12 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+
 /**
- *Repositoryインターフェースに実行させたいメソッドを記述していく
+ * TrProductServiceのselect文に関する実装クラス
  * @author SatoYusuke0228
  */
 @Service
-class TrProductServiceImpl implements TrProductService{
+class TrProductSelectServiceImpl implements TrProductSelectService {
 
 	@Autowired
 	private TrProductRipository productRepository;
@@ -25,6 +26,7 @@ class TrProductServiceImpl implements TrProductService{
 	/**
 	 * 商品テーブルの中身を全て取得するメソッド
 	 */
+	@Override
 	public List<TrProductEntity> findAll() {
 		return productRepository.findAll();
 	}
@@ -32,6 +34,7 @@ class TrProductServiceImpl implements TrProductService{
 	/**
 	 * 商品テーブルの中身をProductId別で取得するメソッド
 	 */
+	@Override
 	public TrProductEntity getItemInfo(String id) {
 		return productRepository.getOne(id);
 	}
@@ -76,6 +79,7 @@ class TrProductServiceImpl implements TrProductService{
 	 * 検索ボックスの検索ワード
 	 * @return 検索条件
 	 */
+	@Override
 	public List<TrProductEntity> findByKeyword(String keyword) {
 		// 複数キーワードに分割する
 		final List<String> splittedKeyword = splitQuery(keyword);

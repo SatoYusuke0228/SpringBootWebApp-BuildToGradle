@@ -14,18 +14,17 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class ShowItemsController {
 
-	//商品テーブルに関わる処理のインスタンス(TrProductServiceインターフェース)
-
+	//商品テーブルのセレクト文に関わる処理のインスタンス(TrProductServiceインターフェース)
 	@Autowired
-	private TrProductService productService;
+	private TrProductSelectService productSelect;
 
 	//商品カテゴリーテーブルに関わる処理のインスタンス(MsProductCategoryInventoryServiceインターフェース)
 	@Autowired
-	private MsProductCategoryInventoryServiceImpl categoryService;
+	private MsProductCategoryInventoryService categoryService;
 
 	//セッションスコープのインスタンス
-//	@Autowired
-//	private HttpSession session;
+	//	@Autowired
+	//	private HttpSession session;
 
 	/**
 	 * TOPページで商品情報を取得するためのメソッド。
@@ -101,7 +100,7 @@ public class ShowItemsController {
 			viewName = "item-list";
 			mav.addObject("items", items);
 		} else {
-//			viewName = notFoundItemPage();
+			//			viewName = notFoundItemPage();
 		}
 
 		mav.setViewName(viewName);
@@ -119,7 +118,7 @@ public class ShowItemsController {
 			@RequestParam String keyword,
 			ModelAndView mav) {
 
-		List<TrProductEntity> items = productService.findByKeyword(keyword);
+		List<TrProductEntity> items = productSelect.findByKeyword(keyword);
 
 		//もしListの中に商品があれば、商品一覧ページに遷移
 		//しかし、Listの中に商品がなければ、商品が見つからないという結果を表示するページに遷移
@@ -127,7 +126,7 @@ public class ShowItemsController {
 			viewName = "item-list";
 			mav.addObject("items", items);
 		} else {
-//			viewName = notFoundItemPage();
+			//viewName = notFoundItemPage();
 		}
 
 		mav.setViewName(viewName);
@@ -142,7 +141,7 @@ public class ShowItemsController {
 	public ModelAndView showItemPage(@PathVariable String id, ModelAndView mav) {
 
 		//指定されたIDの商品を取得
-		TrProductEntity item = productService.getItemInfo(id);
+		TrProductEntity item = productSelect.getItemInfo(id);
 
 		//EntityをModelに登録
 		mav.addObject("item", item);

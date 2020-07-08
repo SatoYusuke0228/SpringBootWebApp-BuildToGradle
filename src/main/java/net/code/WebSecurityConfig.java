@@ -33,21 +33,25 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	 * トップページや商品詳細ページはログインしなくても見せたいページなので、
 	 *  これらのページは引き続き誰でも自由にアクセスすることを可能にする
 	 *
-	 * @param  .antMatchers("/admin/**").authenticated()
-	 *  「/adminのパスのページは全て認証が必要」と設定
+	 * @param  .antMatchers("/admin/**")
+	 *         .authenticated()
+	 *         「/adminのパスのページは全て認証が必要」と設定
 	 *
-	 * @param  .formLogin().permitAll();
-	 *  ログインページをだれでも閲覧できるように設定
+	 * @param  .formLogin()
+	 *         .permitAll();
+	 *          ログインページをだれでも閲覧できるように設定
 	 *
 	 */
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-				.antMatchers("/admin/**").authenticated()
+				.antMatchers("/admin/**")
+				.authenticated()
 				.and()
-			.formLogin()
+				.formLogin()
 				.permitAll();
 	}
+
 	/**
 	 * ログインユーザとパスワードを静的に登録しているmethod
 	 *
