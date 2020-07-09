@@ -83,18 +83,18 @@ public class adminController {
 		return mav;
 	}
 
-//
-//	@RequestMapping("/admin/management")
-//	public ModelAndView showItemManagementPage(ModelAndView mav) {
-//
-//		mav.setViewName("management");
-//		return mav;
-//	}
-//
-//	@RequestMapping("/admin/history")
-//	public ModelAndView SalesHistory(ModelAndView mav) {
-//
-//		mav.setViewName("history");
-//		return mav;
-//	}
+
+	@RequestMapping("/admin/management")
+	public ModelAndView showItemManagementPage(ModelAndView mav) {
+
+		mav.setViewName("management");
+		return mav;
+	}
+
+	@RequestMapping("/admin/history")
+	public ModelAndView SalesHistory(ModelAndView mav) {
+
+		mav.setViewName("history");
+		return mav;
+	}
 }
