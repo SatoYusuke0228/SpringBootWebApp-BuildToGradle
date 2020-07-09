@@ -38,6 +38,7 @@
 					</tr>
 				</tbody>
 			</table>
+
 			<form th:if="${check}" method="post" th:action="@{/purchase}"
 				th:object="${checkout}">
 				<!--/* Address */-->
@@ -141,6 +142,7 @@
 				</div>
 				<!--/* 購入ボタン */-->
 				<input class="btn btn-primary" type="submit" value="購入" />
+
 			</form>
 		</div>
 	</main>

@@ -2,6 +2,8 @@ package net.code;
 
 import java.sql.Timestamp;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,59 +21,80 @@ public class adminController {
 	@Autowired
 	private TrProductInsertService productInsertService;
 
+	@Autowired
+	private HttpSession session;
+
 	@GetMapping("/admin/addition")
-	public ModelAndView showItemAdditionPage(
+	public ModelAndView getItemAdditionPage(
 			TrProductEntity productEntity,
-			ModelAndView mav
-			) {
+			ModelAndView mav) {
+
+		mav.addObject("productEntity", new TrProductEntity());
 		mav.setViewName("addition");
+
 		return mav;
 	}
 
-	@PostMapping("/admin/addition/check")
-	public ModelAndView itemAdditionPage(
+	@PostMapping("/admin/add_confirmation")
+	public ModelAndView postItemAdditionPage(
 			@Validated TrProductEntity productEntity,
 			BindingResult result,
 			ModelAndView mav) {
 
-		if (result.hasErrors()) { //もし入力FORMに不備があれば
+//		if (result.hasErrors()) { //入力FORMに不備があれば
+//
+//			//元のページに戻る
+//			mav.setViewName("addition");
+//
+//		} else { //入力FORMに不備がなければ
 
-			//元のページに戻る
-			mav.setViewName("addition");
-
-		} else { //もし入力FORMに不備がなければ
+			//ログイン中のユーザー名を取得してInsertUserとUpdateUserに設定
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			final String loginUserName = auth.getName();
+			//System.out.println(loginUserName);
+			productEntity.setInsertUser(loginUserName);
+			productEntity.setUpdateUser(loginUserName);
 
 			//現在時刻を取得してInsertDateとUpdateDateに設定
 			final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-		 	productEntity.setInsertDate(timestamp);
-		 	productEntity.setUpdateDate(timestamp);
+			productEntity.setInsertDate(timestamp);
+			productEntity.setUpdateDate(timestamp);
 
-		 	//ログイン中のユーザーネームを取得してInsertUserとUpdateUserに設定
-		 	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		 	final String loginUserName = auth.getName();
-		 	productEntity.setInsertUser(loginUserName);
-			productEntity.setUpdateUser(loginUserName);
-
-			//商品登録情報を保存
+			//商品登録情報を保存して確認画面に進む
+			session.setAttribute("productEntity", productEntity);
 			mav.addObject("productEntity", productEntity);
-
-			//確認画面に進む
-			mav.setViewName("additionCheck");
-		}
+			mav.setViewName("add_confirmation");
+//		}
 		return mav;
 	}
 
-	@RequestMapping("/admin/management")
-	public ModelAndView showItemManagementPage(ModelAndView mav) {
+	@RequestMapping("/admin/add/admin_result")
+	public ModelAndView showItemAdditionResultPage(
+			ModelAndView mav) {
 
-		mav.setViewName("management");
+		TrProductEntity productEntity =
+				(TrProductEntity)session.getAttribute("productEntity");
+
+		//商品を追加してスコープの中身を初期化
+		productInsertService.insert(productEntity);
+		session.setAttribute("productEntity", new TrProductEntity());
+
+		mav.setViewName("admin_result");
 		return mav;
 	}
 
-	@RequestMapping("/admin/history")
-	public ModelAndView SalesHistory(ModelAndView mav) {
-
-		mav.setViewName("history");
-		return mav;
-	}
+//
+//	@RequestMapping("/admin/management")
+//	public ModelAndView showItemManagementPage(ModelAndView mav) {
+//
+//		mav.setViewName("management");
+//		return mav;
+//	}
+//
+//	@RequestMapping("/admin/history")
+//	public ModelAndView SalesHistory(ModelAndView mav) {
+//
+//		mav.setViewName("history");
+//		return mav;
+//	}
 }

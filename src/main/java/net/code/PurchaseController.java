@@ -79,24 +79,30 @@ public class PurchaseController {
 	 */
 	@PostMapping("/purchase")
 	public ModelAndView postPurchasePage(
-//			@Valid @ModelAttribute("checkout")
+//			@Valid @ModelAttribute("checkout"),
 			@Validated Checkout checkout,
 			BindingResult result,
 			ModelAndView mav) {
-		//なぜか絶対にfalseが返ってくる
+
 		if (result.hasErrors()) {
+
 			// カートの中身に商品があればtrue、なければfalse
 			Cart cart = (Cart) session.getAttribute("cart");
 			mav.addObject("check", cart.getCartItems().size() != 0);
+
 			// 元の画面に戻りエラーメッセージを表示
 			mav.setViewName("checkout");
+
 		} else {
+
 			// カートの中身を初期化
 			Cart cart = new Cart();
 			session.setAttribute("cart", cart);
+
 			// 購入完了画面を表示
 			mav.setViewName("purchase");
 		}
+
 		return mav;
 	}
 }

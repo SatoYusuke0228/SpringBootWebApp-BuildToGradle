@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body th:object="${productEntity}">
+
+	<h3 th:text="*{productId}"></h3>
+	<h3 th:text="*{productName}"></h3>
+	<h3 th:text="*{productPrice}"></h3>
+	<h3 th:text="*{productCategoryId}"></h3>
+	<h3 th:text="*{productStock}"></h3>
+	<h3 th:text="*{productComment}"></h3>
+	<h3 th:text="*{productPhotoFileName1}"></h3>
+	<h3 th:text="*{productPhotoFileName2}"></h3>
+	<h3 th:text="*{productPhotoFileName3}"></h3>
+	<h3 th:text="*{productShowFlag}"></h3>
+	<h3 th:text="*{insertDate}"></h3>
+	<h3 th:text="*{insertUser}"></h3>
+	<h3 th:text="*{updateDate}"></h3>
+	<h3 th:text="*{updateUser}"></h3>
+	<h3 th:text="*{deleteDate}"></h3>
+	<h3 th:text="*{deleteUser}"></h3>
+
+	<a th:href="@{/admin/add/admin_result}">追加</a>
+</body>
+</html>
