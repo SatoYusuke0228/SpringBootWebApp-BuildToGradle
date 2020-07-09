@@ -34,7 +34,7 @@ public class adminController {
 
 		return mav;
 	}
-
+	
 	@PostMapping("/admin/add_confirmation")
 	public ModelAndView postItemAdditionPage(
 			@Validated TrProductEntity productEntity,
