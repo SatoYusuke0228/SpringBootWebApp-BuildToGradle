@@ -90,7 +90,7 @@ public class adminController {
 		mav.setViewName("management");
 		return mav;
 	}
-
+	
 	@RequestMapping("/admin/history")
 	public ModelAndView SalesHistory(ModelAndView mav) {
 
