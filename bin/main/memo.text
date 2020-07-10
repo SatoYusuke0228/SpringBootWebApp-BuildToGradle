@@ -1,0 +1,13 @@
+#自分用ローカルリポジトリのpath
+C:\eclipse\pleiades\workspace\SpringBootWebApp-BuildToGradle
+
+◆2020/07/10
+
+・発生した問題
+gitでpushを実行しようすると[non-fast-forward]が発生してrejectできなくなった。
+
+・解決方法
+強制(force)的にプッシュする
+
+・実行コマンド
+$ git push -f origin master  
