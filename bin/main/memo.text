@@ -9,5 +9,14 @@ gitでpushを実行しようすると[non-fast-forward]が発生してrejectできなくなった。
 ・解決方法
 強制(force)的にプッシュする
 
-・実行コマンド
-$ git push -f origin master  
+・実行gitコマンド
+$ git push -f origin master
+
+
+◆2020/07/14
+
+・発生した問題
+管理者の新規商品登録機能にて、Entityに設定したValidationのエラーメッセージが表示されない不具合を解決できず
+
+・解決方法
+不明

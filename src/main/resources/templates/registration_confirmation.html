@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>登録内容画面</title>
+</head>
+<body>
+
+<h2>登録内容</h2>
+
+	<table class="table" th:object="${productEntity}">
+
+		<tr>
+			<th scope="row">商品ID</th>
+			<td th:text="*{productId}">商品ID</td>
+		</tr>
+
+		<tr>
+			<th scope="row">商品名</th>
+			<td th:text="*{productName}">商品名</td>
+		</tr>
+
+		<tr>
+			<th scope="row">商品単価</th>
+			<td th:text="*{productPrice}">商品単価</td>
+		</tr>
+
+		<tr>
+			<th scope="row">商品カテゴリーID</th>
+			<td th:text="*{productCategoryId}">商品カテゴリーID</td>
+		</tr>
+
+		<tr>
+			<th scope="row">商品在庫</th>
+			<td th:text="*{productStock}">商品在庫</td>
+		</tr>
+
+		<tr>
+			<th scope="row">商品説明文</th>
+			<td th:text="*{productComment}">商品説明文</td>
+		</tr>
+
+		<tr>
+			<th scope="row">商品写真ファイル名1</th>
+			<td th:text="*{productPhotoFileName1}">商品写真ファイル名1</td>
+		</tr>
+
+		<tr>
+			<th scope="row">商品写真ファイル名2</th>
+			<td th:text="*{productPhotoFileName2}">商品写真ファイル名2</td>
+		</tr>
+
+		<tr>
+			<th scope="row">商品写真ファイル名3</th>
+			<td th:text="*{productPhotoFileName3}">商品写真ファイル名3</td>
+		</tr>
+
+	</table>
+
+	<a th:href="@{/admin/registration/result}">追加</a>
+
+</body>
+</html>

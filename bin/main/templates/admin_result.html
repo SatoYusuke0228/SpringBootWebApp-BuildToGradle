@@ -4,8 +4,15 @@
 <meta charset="UTF-8">
 <title>RESULT</title>
 </head>
+
+<!--/* ("insertQueryExecution", boolean); */-->
 <body>
-	<h2> 商品追加完了 </h2>
+	<div th:if="${insertQueryExecution}">
+		<h2>商品追加完了</h2>
+	</div>
+	<div th:unless="${insertQueryExecution}">
+		<h2>商品追加失敗</h2>
+	</div>
 	<a th:href="@{/admin}"> 管理画面TOPに </a>
 </body>
 </html>

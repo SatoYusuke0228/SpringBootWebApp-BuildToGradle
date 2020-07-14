@@ -116,16 +116,12 @@ public class TrProductEntity {
 	private Timestamp insertDate;
 
 	@Column(name = "INSERT_USER", nullable = false, length = 64)
-	@NotBlank(message = "入力してください")
-	@Size(max = 64, message = "入力が長すぎます")
 	private String insertUser;
 
 	@Column(name = "UPDATE_DATE", nullable = false)
 	private Timestamp updateDate;
 
 	@Column(name = "UPDATE_USER", nullable = false, length = 64)
-	@NotBlank(message = "入力してください")
-	@Size(max = 64, message = "入力が長すぎます")
 	private String updateUser;
 
 	@Column(name = "DELETE_DATE", nullable = true)
@@ -133,66 +129,4 @@ public class TrProductEntity {
 
 	@Column(name = "DELETE_USER", nullable = true, length = 64)
 	private String deleteUser;
-
-	/**
-	 * コンストラクタ
-	 */
-	public TrProductEntity() {
-	}
-
-	/**
-	 * コンストラクタ
-	 *
-	 * @param productId
-	 * @param productName
-	 * @param productPrice
-	 * @param productCategoryId
-	 * @param productStock
-	 * @param productComment
-	 * @param productPhotoFileName1
-	 * @param productPhotoFileName2
-	 * @param productPhotoFileName3
-	 * @param productShowFlag
-	 * @param insertDate
-	 * @param insertUser
-	 * @param updateDate
-	 * @param updateUser
-	 * @param deleteDate
-	 * @param deleteUser
-	 */
-	public TrProductEntity(
-			String productId,
-			String productName,
-			int productPrice,
-			int productCategoryId,
-			int productStock,
-			String productComment,
-			String productPhotoFileName1,
-			String productPhotoFileName2,
-			String productPhotoFileName3,
-			int productShowFlag,
-			Timestamp insertDate,
-			String insertUser,
-			Timestamp updateDate,
-			String updateUser,
-			Timestamp deleteDate,
-			String deleteUser) {
-
-		this.productId = productId;
-		this.productName = productName;
-		this.productPrice = productPrice;
-		this.productCategoryId = productCategoryId;
-		this.productStock = productStock;
-		this.productComment = productComment;
-		this.productPhotoFileName1 = productPhotoFileName1;
-		this.productPhotoFileName2 = productPhotoFileName2;
-		this.productPhotoFileName3 = productPhotoFileName3;
-		this.productShowFlag = productShowFlag;
-		this.insertDate = insertDate;
-		this.insertUser = insertUser;
-		this.updateDate = updateDate;
-		this.updateUser = updateUser;
-		this.deleteDate = deleteDate;
-		this.deleteUser = deleteUser;
-	}
 }

@@ -26,16 +26,26 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 
+	//Bean Validation 2.0 を導入する
+	implementation 'javax.validation:validation-api:2.0.1.Final'
+	runtimeOnly 'org.hibernate.validator:hibernate-validator:6.0.17.Final'
+	runtimeOnly 'org.glassfish:javax.el:3.0.1-b11'
+
+	//lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
+	//アプリの再起動を行わなくても編集内容が即時反映されるように設定
 	runtimeOnly("org.springframework.boot:spring-boot-devtools")
+
+	//postgresql
 	runtimeOnly("org.postgresql:postgresql")
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
 
+	//Junit5
 	testImplementation "org.junit.jupiter:junit-jupiter:5.5.2"
 }
 

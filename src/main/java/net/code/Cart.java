@@ -3,8 +3,7 @@ package net.code;
 import java.util.HashMap;
 import java.util.Map;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * カート画面のバックエンド処理をまとめたクラス
@@ -17,14 +16,11 @@ import lombok.Setter;
  *
  * @author SatoYusuke0228
  */
+@Data
 public class Cart {
 
-	@Getter
-	@Setter
 	private Map<String, CartItem> cartItems;
 
-	@Getter
-	@Setter
 	private int grandTotal;
 
 	/**
