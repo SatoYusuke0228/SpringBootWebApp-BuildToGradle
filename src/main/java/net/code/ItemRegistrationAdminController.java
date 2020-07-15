@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.ModelAndView;
 
 /*
@@ -37,8 +38,8 @@ public class ItemRegistrationAdminController {
 	@Autowired
 	private HttpSession session;
 
-	//商品objectをViewで使用するための命名を統一させる
-	private final String objectName = "productEntity";
+	//新規登録予定の商品objectをViewで使用するための命名を統一させる
+	private final String objectName = "trProductEntity";
 
 	/**
 	 * 商品登録フォーム画面に遷移するメソッド
@@ -47,8 +48,7 @@ public class ItemRegistrationAdminController {
 	 * @auther SatoYusuke0228
 	 **/
 	@GetMapping("/admin/registration")
-	public ModelAndView getItemRegistrationPage(
-			ModelAndView mav) {
+	public ModelAndView getItemRegistrationPage(ModelAndView mav) {
 
 		mav.addObject(objectName, new TrProductEntity());
 		mav.setViewName("registration");
@@ -70,8 +70,11 @@ public class ItemRegistrationAdminController {
 
 		if (result.hasErrors()) { //入力FORMに不備があれば
 
+			//error詳細をコンソールに表示
+			//System.out.println(result.getFieldError());
+
 			//元のページに戻る
-			mav.setViewName("redirect:/admin/registration");
+			mav.setViewName("registration");
 
 		} else { //入力FORMに不備がなければ
 
@@ -79,10 +82,11 @@ public class ItemRegistrationAdminController {
 			mav.setViewName("registration_confirmation");
 		}
 
-		//商品情報を一度sessionに預けて登録の準備
-		session.setAttribute(objectName + "inSession", productEntity);
-		mav.addObject(objectName, productEntity);
+		//バックエンド側で扱う商品オブジェクトをsessionに預けて処理準備
+		session.setAttribute(objectName, productEntity);
 
+		//View側で扱う商品オブジェクト
+		mav.addObject(objectName, productEntity);
 		return mav;
 	}
 
@@ -103,18 +107,16 @@ public class ItemRegistrationAdminController {
 	 **/
 	@RequestMapping("/admin/registration/result")
 	public ModelAndView showItemRegistrationResultPage(
+			@SessionAttribute(objectName) TrProductEntity productEntity,
 			ModelAndView mav) {
-
-		//sessionから登録予定の商品情報を取得
-		TrProductEntity productEntity = (TrProductEntity) session.getAttribute(objectName + "inSession");
 
 		//DBから登録済みの商品をListとして取得
 		List<TrProductEntity> productListInDB = productSelectService.findAll();
 
-		//取得した商品リストと、新規で登録しようとしている商品を比較
+		//DBから取得した商品リストと、新規で登録しようとしている商品を比較
 		for (int i = productListInDB.size(); 0 < i; i--) {
 
-			//もし商品リストと、新規で登録商品の商品ID or 商品名が重複した場合は登録処理はしない
+			//もしDBの商品リストと、新規で登録商品の商品ID or 商品名が重複した場合は登録処理はしない
 			if (productListInDB.get(i - 1).getProductId().equals(productEntity.getProductId()) ||
 					productListInDB.get(i - 1).getProductName().equals(productEntity.getProductName())) {
 
@@ -123,6 +125,7 @@ public class ItemRegistrationAdminController {
 
 				//商品登録失敗のresult画面に遷移
 				mav.setViewName("admin_result");
+
 				return mav;
 			}
 		}
@@ -140,7 +143,6 @@ public class ItemRegistrationAdminController {
 
 		//商品を新規でDBにInsertして、sessionScopeの中身を初期化
 		productInsertService.insert(productEntity);
-		session.setAttribute(objectName + "inSession", new TrProductEntity());
 
 		//View側で使用する商品登録クエリ実行のflag
 		mav.addObject("insertQueryExecution", true);

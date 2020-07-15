@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>商品追加画面</title>
 </head>
-<body th:object="${productEntity}">
+<body th:object="${trProductEntity}">
 	<main>
 
 		<h2>商品追加画面</h2>
@@ -59,6 +59,8 @@
 					<label for="productComment">商品説明</label> <br> <input
 						type="text" class="form-control" th:field="*{productComment}"
 						id="productComment" placeholder="商品説明" />
+					<span th:if="${#fields.hasErrors('productComment')}"
+						th:errors="*{productComment}">ErrorMessage</span>
 				</div>
 				<br>
 				<!--/* 商品写真ファイル名1 */-->
@@ -66,7 +68,8 @@
 					<label for="productPhotoFileName1"> 商品写真ファイル名1 </label> <br> <input
 						type="text" class="form-control"
 						th:field="*{productPhotoFileName1}" id="productPhotoFileName1"
-						placeholder="商品写真ファイル名1" />
+						placeholder="商品写真ファイル名1" /> <span th:if="${#fields.hasErrors('productPhotoFileName1')}"
+						th:errors="*{productPhotoFileName1}">ErrorMessage</span>
 				</div>
 				<br>
 				<!--/* 商品写真ファイル名2 */-->
@@ -75,7 +78,10 @@
 						type="text" class="form-control"
 						th:field="*{productPhotoFileName2}" id="productPhotoFileName2"
 						placeholder="商品写真ファイル名2" />
+					<span th:if="${#fields.hasErrors('productPhotoFileName2')}"
+						th:errors="*{productPhotoFileName2}">ErrorMessage</span>
 				</div>
+
 				<br>
 				<!--/* 商品写真ファイル名3 */-->
 				<div class="form-group">
@@ -83,6 +89,8 @@
 						type="text" class="form-control"
 						th:field="*{productPhotoFileName3}" id="productPhotoFileName3"
 						placeholder="商品写真ファイル名3" />
+					<span th:if="${#fields.hasErrors('productPhotoFileName3')}"
+						th:errors="*{productPhotoFileName3}">ErrorMessage</span>
 				</div>
 				<br>
 				<!--/* 商品の表示・非表示 */-->

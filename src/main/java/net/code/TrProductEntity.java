@@ -73,13 +73,13 @@ public class TrProductEntity {
 
 	@Id
 	@Column(name = "PRODUCT_ID", unique = true, nullable = false, length = 16)
-	@NotBlank(message = "入力してください")
-	@Size(max = 16, message = "入力が長すぎます")
+	@NotBlank(message = "※入力してください")
+	@Size(max = 16, message = "※入力が長すぎます")
 	private String productId;
 
 	@Column(name = "PRODUCT_NAME", unique = true, nullable = false, length = 128)
-	@NotBlank(message = "入力してください")
-	@Size(max = 128, message = "入力が長すぎます")
+	@NotBlank(message = "※入力してください")
+	@Size(max = 128, message = "※入力が長すぎます")
 	private String productName;
 
 	@Column(name = "PRODUCT_SELLING_PRICE", nullable = false)
@@ -90,23 +90,23 @@ public class TrProductEntity {
 	private int productCategoryId;
 
 	@Column(name = "PRODUCT_STOCK", nullable = false)
-	//	@Pattern(regexp = "d\\", message = "入力内容が間違っています")
+	//	@Pattern(regexp = "d\\", message = "※入力内容が間違っています")
 	private int productStock;
 
 	@Column(name = "PRODUCT_COMMENT", nullable = true, length = 2048)
-	@Size(max = 2048, message = "入力が長すぎます")
+	@Size(max = 2048, message = "※入力が長すぎます")
 	private String productComment;
 
 	@Column(name = "PRODUCT_PHOTO_FILE_NAME1", nullable = true, length = 256)
-	@Size(max = 256, message = "入力が長すぎます")
+	@Size(max = 256, message = "※入力が長すぎます")
 	private String productPhotoFileName1;
 
 	@Column(name = "PRODUCT_PHOTO_FILE_NAME2", nullable = true, length = 256)
-	@Size(max = 256, message = "入力が長すぎます")
+	@Size(max = 256, message = "※入力が長すぎます")
 	private String productPhotoFileName2;
 
 	@Column(name = "PRODUCT_PHOTO_FILE_NAME3", nullable = true, length = 256)
-	@Size(max = 256, message = "入力が長すぎます")
+	@Size(max = 256, message = "※入力が長すぎます")
 	private String productPhotoFileName3;
 
 	@Column(name = "PRODUCT_SHOW_FLAG", nullable = false)

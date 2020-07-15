@@ -2,13 +2,13 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>登録内容画面</title>
+<title>商品詳細</title>
 </head>
 <body>
 
-<h2>登録内容</h2>
+<h2>商品詳細</h2>
 
-	<table class="table" th:object="${trProductEntity}">
+	<table class="table" th:object="${productEntity}">
 
 		<tr>
 			<th scope="row">商品ID</th>
@@ -42,22 +42,20 @@
 
 		<tr>
 			<th scope="row">商品写真ファイル名1</th>
-			<td th:text="*{productPhotoFileName1}">商品写真ファイル名1</td>
+			<td ><img th:src="@{ '/image/' + *{productPhotoFileName1} }"/></td>
 		</tr>
 
 		<tr>
 			<th scope="row">商品写真ファイル名2</th>
-			<td th:text="*{productPhotoFileName2}">商品写真ファイル名2</td>
+			<td><img th:src="@{ '/image/' + *{productPhotoFileName2} }"/></td>
 		</tr>
 
 		<tr>
 			<th scope="row">商品写真ファイル名3</th>
-			<td th:text="*{productPhotoFileName3}">商品写真ファイル名3</td>
+			<td><img th:src="@{ '/image/' + *{productPhotoFileName2} }"/></td>
 		</tr>
 
 	</table>
-
-	<a th:href="@{/admin/registration/result}">追加</a>
 
 </body>
 </html>
