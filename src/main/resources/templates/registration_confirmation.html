@@ -2,11 +2,11 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>登録内容画面</title>
+<title>商品登録画面</title>
 </head>
 <body>
 
-<h2>登録内容</h2>
+<h2>登録商品</h2>
 
 	<table class="table" th:object="${trProductEntity}">
 
@@ -57,7 +57,7 @@
 
 	</table>
 
-	<a th:href="@{/admin/registration/result}">追加</a>
+	<button th:onclick="|location.href='@{/admin/registration/result}'|">登録</button>
 
 </body>
 </html>

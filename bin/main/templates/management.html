@@ -19,7 +19,7 @@
 			</tr>
 		</thead>
 
-		<tbody th:each="item : ${productEntity}"  th:object="${item}">
+		<tbody th:each="item : ${trProductEntity}"  th:object="${item}">
 			<tr>
 				<td th:text="*{productId}">商品ID</td>
 				<td th:text="*{productName}">商品名</td>

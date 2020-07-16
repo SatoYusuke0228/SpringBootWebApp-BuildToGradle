@@ -38,8 +38,14 @@ public class ItemRegistrationAdminController {
 	@Autowired
 	private HttpSession session;
 
-	//新規登録予定の商品objectをViewで使用するための命名を統一させる
-	private final String objectName = "trProductEntity";
+	//Error情報が格納されるobject名とViewで使用するためのObject名を統一させる
+	final private String OBJECT_NAME = "trProductEntity";
+
+	//Error情報が格納されるobject名を確認する
+	//直接ErrorInterfaceのメソッドで設定すると
+	//このアルゴリズムだとObject名に設定される前にnullになる為、直接文字列を設定
+	//BindingResult result;
+	//System.out.println(result.getObjectName());
 
 	/**
 	 * 商品登録フォーム画面に遷移するメソッド
@@ -50,7 +56,7 @@ public class ItemRegistrationAdminController {
 	@GetMapping("/admin/registration")
 	public ModelAndView getItemRegistrationPage(ModelAndView mav) {
 
-		mav.addObject(objectName, new TrProductEntity());
+		mav.addObject(OBJECT_NAME, new TrProductEntity());
 		mav.setViewName("registration");
 
 		return mav;
@@ -68,6 +74,9 @@ public class ItemRegistrationAdminController {
 			BindingResult result,
 			ModelAndView mav) {
 
+		//Error情報が格納されるobject名を確認する
+		//System.out.println(result.getObjectName());
+
 		if (result.hasErrors()) { //入力FORMに不備があれば
 
 			//error詳細をコンソールに表示
@@ -83,10 +92,10 @@ public class ItemRegistrationAdminController {
 		}
 
 		//バックエンド側で扱う商品オブジェクトをsessionに預けて処理準備
-		session.setAttribute(objectName, productEntity);
+		session.setAttribute(OBJECT_NAME, productEntity);
 
 		//View側で扱う商品オブジェクト
-		mav.addObject(objectName, productEntity);
+		mav.addObject(OBJECT_NAME, productEntity);
 		return mav;
 	}
 
@@ -107,7 +116,7 @@ public class ItemRegistrationAdminController {
 	 **/
 	@RequestMapping("/admin/registration/result")
 	public ModelAndView showItemRegistrationResultPage(
-			@SessionAttribute(objectName) TrProductEntity productEntity,
+			@SessionAttribute(OBJECT_NAME) TrProductEntity productEntity,
 			ModelAndView mav) {
 
 		//DBから登録済みの商品をListとして取得
@@ -121,7 +130,8 @@ public class ItemRegistrationAdminController {
 					productListInDB.get(i - 1).getProductName().equals(productEntity.getProductName())) {
 
 				//View側で使用する商品登録クエリ実行のflag
-				mav.addObject("insertQueryExecution", false);
+
+			mav.addObject("Result", "商品登録失敗");
 
 				//商品登録失敗のresult画面に遷移
 				mav.setViewName("admin_result");
@@ -145,7 +155,7 @@ public class ItemRegistrationAdminController {
 		productInsertService.insert(productEntity);
 
 		//View側で使用する商品登録クエリ実行のflag
-		mav.addObject("insertQueryExecution", true);
+		mav.addObject("Result", "商品登録成功");
 
 		//result画面に遷移
 		mav.setViewName("admin_result");

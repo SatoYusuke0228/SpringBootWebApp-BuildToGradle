@@ -5,14 +5,17 @@
 <title>RESULT</title>
 </head>
 
-<!--/* ("insertQueryExecution", boolean); */-->
+
 <body>
-	<div th:if="${insertQueryExecution}">
-		<h2>商品追加完了</h2>
+
+	<!-- 管理者のDBに対する商品操作の結果 -->
+	<!--/* ("Result", "成功" or "失敗"); */-->
+	<div class="admin_Query_Execution_result">
+		<h2 th:text="${Result}"></h2>
 	</div>
-	<div th:unless="${insertQueryExecution}">
-		<h2>商品追加失敗</h2>
-	</div>
+
+	<!-- TOP画面に戻る -->
 	<a th:href="@{/admin}"> 管理画面TOPに </a>
+
 </body>
 </html>

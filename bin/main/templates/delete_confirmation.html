@@ -2,11 +2,11 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>商品登録画面</title>
+<title>商品削除画面</title>
 </head>
 <body>
 
-<h2>登録商品</h2>
+<h2>商品削除</h2>
 
 	<table class="table" th:object="${trProductEntity}">
 
@@ -57,7 +57,7 @@
 
 	</table>
 
-	<button th:onclick="|location.href='@{/admin/registration/result}'|">登録</button>
+	<button th:onclick="|location.href='@{/admin/management/delete/result}'|">削除</button>
 
 </body>
 </html>
