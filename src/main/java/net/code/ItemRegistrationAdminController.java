@@ -1,7 +1,12 @@
 package net.code;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Properties;
 
 import javax.servlet.http.HttpSession;
 
@@ -96,6 +101,15 @@ public class ItemRegistrationAdminController {
 
 		//View側で扱う商品オブジェクト
 		mav.addObject(OBJECT_NAME, productEntity);
+
+		//商品表示設定のオブジェクト
+		boolean twitFlag = false;
+
+		if (productEntity.getProductShowFlag() == 0) {
+			twitFlag = true;
+		}
+		mav.addObject("twitFlag", twitFlag);
+
 		return mav;
 	}
 
@@ -107,16 +121,17 @@ public class ItemRegistrationAdminController {
 	 *
 	 * 既存のDBの商品と重複していない場合は、
 	 * ServiceインターフェースやRepositoryインターフェースを経由して
-	 * JpaRepositoryのsave()メソッドを実行し、
-	 * DBに商品を追加する処理を実行する。
+	 * JpaRepositoryのsave()メソッドを実行し、DBに新規商品を追加する処理を実行する。
 	 *
 	 * 最後にsessionScopeの中の商品情報を初期化。
+	 * @throws FileNotFoundException
 	 *
 	 * @auther SatoYusuke0228
 	 **/
 	@RequestMapping("/admin/registration/result")
 	public ModelAndView showItemRegistrationResultPage(
 			@SessionAttribute(OBJECT_NAME) TrProductEntity productEntity,
+			boolean twitExcecute,
 			ModelAndView mav) {
 
 		//DBから登録済みの商品をListとして取得
@@ -130,8 +145,7 @@ public class ItemRegistrationAdminController {
 					productListInDB.get(i - 1).getProductName().equals(productEntity.getProductName())) {
 
 				//View側で使用する商品登録クエリ実行のflag
-
-			mav.addObject("Result", "商品登録失敗");
+				mav.addObject("Result", "商品登録失敗");
 
 				//商品登録失敗のresult画面に遷移
 				mav.setViewName("admin_result");
@@ -159,6 +173,52 @@ public class ItemRegistrationAdminController {
 
 		//result画面に遷移
 		mav.setViewName("admin_result");
+
+		//ツイート実行Flagがtrueの場合は商品をツイートする
+		if (twitExcecute) {
+			productPropagandaTweet();
+		}
+
 		return mav;
+	}
+
+	/**
+	 * tweetTemplate.propertiesからテンプレート文を読み込み
+	 * Tweetを実行するメソッド
+	 *
+	 * @author SatoYusuke0228
+	 */
+	private void productPropagandaTweet() {
+
+		//ファイルのpathを設定
+		final String FILE_PATH = "src/main/resources/tweetTemplate.properties";
+
+		//インスタンスと初期化
+		Properties properties = new Properties();
+		InputStreamReader inputStream = null;
+		UseTwitter4jTest twitter = new UseTwitter4jTest();
+
+		try {
+			//pathを設定
+			inputStream = new InputStreamReader(new FileInputStream(FILE_PATH), "UTF-8");
+
+			//取得したpathを元にpropaertiesファイルを取得
+			properties.load(inputStream);
+
+			//Tweet
+			String tweet1 = properties.getProperty("tweetTemplateText1");
+			String tweet2 = properties.getProperty("tweetTemplateText2");
+			twitter.twitter4jTest(tweet1 + "\b" + tweet2 );
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			//InputStreamReaderを閉じる
+			try {
+				inputStream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

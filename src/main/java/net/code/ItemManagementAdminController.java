@@ -44,7 +44,9 @@ public class ItemManagementAdminController {
 		List<TrProductEntity> productEntity = productSelectService.findAll();
 		mav.addObject(OBJECT_NAME, productEntity);
 
+		//Viewファイル名セット
 		mav.setViewName("management");
+
 		return mav;
 	}
 
@@ -84,7 +86,9 @@ public class ItemManagementAdminController {
 		TrProductEntity productEntity = productSelectService.getItemInfo(id);
 		mav.addObject(OBJECT_NAME, productEntity);
 
+		//Viewファイル名セット
 		mav.setViewName("admin");
+
 		return mav;
 	}
 
@@ -109,6 +113,8 @@ public class ItemManagementAdminController {
 
 		//model.addAttribute(OBJECT_NAME, productEntity);
 		mav.addObject(OBJECT_NAME, productEntity);
+
+		//Viewファイル名セット
 		mav.setViewName("delete_confirmation");
 
 		return mav;
@@ -141,8 +147,11 @@ public class ItemManagementAdminController {
 		//DeleteDateとDeleteUserを更新
 		productDeleteAndUpdateService.saveAndFlush(productEntity);
 
-		if (productEntity.getDeleteDate() != null &&
-				productEntity.getDeleteDate().equals(productEntity.getUpdateDate())){
+		//もし商品の削除日が入力されている場合、DBの商品を削除する
+		if (productEntity.getProductId() != null
+				&& productEntity.getDeleteDate() != null
+//				productEntity.getDeleteDate().equals(productEntity.getUpdateDate())
+				){
 
 			//DBに対して商品削除を実行
 			productDeleteAndUpdateService.delete(productEntity);
@@ -165,7 +174,9 @@ public class ItemManagementAdminController {
 	@RequestMapping("/admin/history")
 	public ModelAndView SalesHistory(ModelAndView mav) {
 
+		//Viewファイル名セット
 		mav.setViewName("history");
+
 		return mav;
 	}
 }

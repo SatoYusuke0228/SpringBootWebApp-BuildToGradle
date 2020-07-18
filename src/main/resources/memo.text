@@ -1,4 +1,4 @@
-#自分用ローカルリポジトリのpath
+#製作者用ローカルリポジトリのpath
 C:\eclipse\pleiades\workspace\SpringBootWebApp-BuildToGradle
 
 ◆2020/07/10
@@ -21,3 +21,7 @@ $ git push -f origin master
 ・解決方法
 BindingResultで自動生成されていたスコープ名
 VIEW側で使用していた自作のスコープ名を統一させることで解決
+
+◆2020/7/18
+
+・Twotter社にAPI申請
