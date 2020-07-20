@@ -17,8 +17,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -45,6 +45,9 @@ public class ItemRegistrationAdminController {
 
 	//Error情報が格納されるobject名とViewで使用するためのObject名を統一させる
 	final private String OBJECT_NAME = "trProductEntity";
+
+	//ツイートFlag
+	final private String TWEET_FLAG = "flag";
 
 	//Error情報が格納されるobject名を確認する
 	//直接ErrorInterfaceのメソッドで設定すると
@@ -102,13 +105,14 @@ public class ItemRegistrationAdminController {
 		//View側で扱う商品オブジェクト
 		mav.addObject(OBJECT_NAME, productEntity);
 
-		//商品表示設定のオブジェクト
-		boolean twitFlag = false;
+		//商品を表示設定する場合にtweetするかどうかの決定をするFlagを立てる
+		Flag flag = new Flag();
 
 		if (productEntity.getProductShowFlag() == 0) {
-			twitFlag = true;
+			flag.setTweetExcecute(true);
 		}
-		mav.addObject("twitFlag", twitFlag);
+
+		mav.addObject(TWEET_FLAG, flag);
 
 		return mav;
 	}
@@ -128,11 +132,13 @@ public class ItemRegistrationAdminController {
 	 *
 	 * @auther SatoYusuke0228
 	 **/
-	@RequestMapping("/admin/registration/result")
+	@PostMapping("/admin/registration/result")
 	public ModelAndView showItemRegistrationResultPage(
 			@SessionAttribute(OBJECT_NAME) TrProductEntity productEntity,
-			boolean twitExcecute,
+			@ModelAttribute(TWEET_FLAG) Flag flag,
 			ModelAndView mav) {
+
+		System.out.println(flag.tweetExcecute);
 
 		//DBから登録済みの商品をListとして取得
 		List<TrProductEntity> productListInDB = productSelectService.findAll();
@@ -171,12 +177,17 @@ public class ItemRegistrationAdminController {
 		//View側で使用する商品登録クエリ実行のflag
 		mav.addObject("Result", "商品登録成功");
 
-		//result画面に遷移
+		//Viewファイル名をセット
 		mav.setViewName("admin_result");
 
 		//ツイート実行Flagがtrueの場合は商品をツイートする
-		if (twitExcecute) {
-			productPropagandaTweet();
+		if (flag.tweetExcecute) {
+
+			boolean tweetResult = productAdvertisingTweet(productEntity);
+
+			if (tweetResult) {
+				//ツイート実行の結果がtrueだった場合の処理
+			}
 		}
 
 		return mav;
@@ -184,41 +195,60 @@ public class ItemRegistrationAdminController {
 
 	/**
 	 * tweetTemplate.propertiesからテンプレート文を読み込み
-	 * Tweetを実行するメソッド
+	 * UseTwitter4Jクラスのメソッドを使用してTweetを実行する
 	 *
 	 * @author SatoYusuke0228
+	 * @parm 新規登録処理中の商品オブジェクト
+	 * @return tweetResult ツイート実行の結果
 	 */
-	private void productPropagandaTweet() {
+	private boolean productAdvertisingTweet(TrProductEntity productEntity) {
 
 		//ファイルのpathを設定
 		final String FILE_PATH = "src/main/resources/tweetTemplate.properties";
 
-		//インスタンスと初期化
-		Properties properties = new Properties();
-		InputStreamReader inputStream = null;
-		UseTwitter4jTest twitter = new UseTwitter4jTest();
+		//インスタンス
+		final Properties properties = new Properties();
+		final UseTwitter4jTest twitter = new UseTwitter4jTest();
+
+		//宣言と初期化
+		boolean tweetResult = false;
+		InputStreamReader inputStreamReader = null;
 
 		try {
-			//pathを設定
-			inputStream = new InputStreamReader(new FileInputStream(FILE_PATH), "UTF-8");
+
+			//pathとファイルの文字コードを設定
+			inputStreamReader = new InputStreamReader(new FileInputStream(FILE_PATH), "UTF-8");
 
 			//取得したpathを元にpropaertiesファイルを取得
-			properties.load(inputStream);
+			properties.load(inputStreamReader);
+
+			//取得したファイルからTweetテンプレート文を取得
+			final String tweet1 = properties.getProperty("tweet1");
+			final String tweet2 = properties.getProperty("tweet2");
+			final String itemLink = properties.getProperty("itemLink");
 
 			//Tweet
-			String tweet1 = properties.getProperty("tweetTemplateText1");
-			String tweet2 = properties.getProperty("tweetTemplateText2");
-			twitter.twitter4jTest(tweet1 + "\b" + tweet2 );
+			twitter.twitter4jTest(tweet1 + "\b" + tweet2 + "\b" +
+					itemLink + productEntity.getProductId());
+
+			System.out.println(tweet1 + "\b" + tweet2 + "\b" +
+					itemLink + productEntity.getProductId());
+
+			//Tweet実行成功のFlagを立てる
+			tweetResult = true;
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
+
 			//InputStreamReaderを閉じる
 			try {
-				inputStream.close();
+				inputStreamReader.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
+		//Tweet実行の結果を返す
+		return tweetResult;
 	}
 }

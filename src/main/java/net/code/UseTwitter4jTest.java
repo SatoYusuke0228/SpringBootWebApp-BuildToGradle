@@ -19,9 +19,9 @@ import twitter4j.auth.RequestToken;
  */
 public class UseTwitter4jTest {
 
-	public void twitter4jTest(String twit) {
+	public void twitter4jTest(String tweet) {
 
-		if (twit != null) {
+		if (tweet != null) {
 			System.out.println("Usage: java twitter4j.examples.tweets.UpdateStatus [text]");
 			System.exit(-1);
 		}
@@ -85,7 +85,7 @@ public class UseTwitter4jTest {
 			}
 
 			//ツイート
-			Status status = twitter.updateStatus(twit);
+			Status status = twitter.updateStatus(tweet);
 
 			System.out.println("Successfully updated the status to [" + status.getText() + "].");
 			System.exit(0);

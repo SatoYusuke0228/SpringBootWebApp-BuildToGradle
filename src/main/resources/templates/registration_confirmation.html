@@ -6,7 +6,7 @@
 </head>
 <body>
 
-<h2>登録商品</h2>
+	<h2>登録商品</h2>
 
 	<table class="table" th:object="${trProductEntity}">
 
@@ -57,7 +57,18 @@
 
 	</table>
 
-	<button th:onclick="|location.href='@{/admin/registration/result}'|">登録</button>
+	<br>
+
+	<form th:action="@{/admin/registration/result}" method="POST" th:object="${flag}">
+		<div class="tweetExcecute" th:if="*{tweetExcecute}">
+			<label for="tweetExcecute"> <strong>Tweet</strong></label> <br>
+				<input th:field="*{tweetExcecute}" type="radio"
+				name="tweetExcecute" id="tweetExcecute0" th:value="true" /> する
+				<input th:field="*{tweetExcecute}" type="radio"
+				name="tweetExcecute" id="tweetExcecute1" th:value="false" /> しない <br> <br>
+		</div>
+		<button type="submit">登録</button>
+	</form>
 
 </body>
 </html>
