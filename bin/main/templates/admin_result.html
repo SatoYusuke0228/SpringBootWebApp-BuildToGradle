@@ -8,10 +8,15 @@
 
 <body>
 
-	<!-- 管理者のDBに対する商品操作の結果 -->
+	<!--/* 管理者のDBに対する商品操作の結果 */-->
 	<!--/* ("Result", "成功" or "失敗"); */-->
 	<div class="admin_Query_Execution_result">
-		<h2 th:text="${Result}"></h2>
+		<h2 th:text="${Result}"> message </h2>
+	</div>
+
+	<!--/* ("flag.tweetExcecute", "Tweetする" or "Tweetしない"); */-->
+	<div th:if="| *{tweetResultMessage} != null |">
+		<p th:text="${tweetResultMessage}"> message </p>
 	</div>
 
 	<!-- TOP画面に戻る -->

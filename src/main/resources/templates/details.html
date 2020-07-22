@@ -2,13 +2,13 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>商品詳細</title>
+<title th:text="${pageTitle}">タイトル名</title>
 </head>
 <body>
 
-<h2>商品詳細</h2>
+	<h2 th:text="${pageTitle}">タイトル名</h2>
 
-	<table class="table" th:object="${productEntity}">
+	<table class="table" th:object="${trProductEntity}">
 
 		<tr>
 			<th scope="row">商品ID</th>
@@ -26,8 +26,8 @@
 		</tr>
 
 		<tr>
-			<th scope="row">商品カテゴリーID</th>
-			<td th:text="*{productCategoryId}">商品カテゴリーID</td>
+			<th scope="row">商品カテゴリー</th>
+			<td th:text="${categoryName}">商品カテゴリーID</td>
 		</tr>
 
 		<tr>
@@ -42,20 +42,42 @@
 
 		<tr>
 			<th scope="row">商品写真ファイル名1</th>
-			<td ><img th:src="@{ '/image/' + *{productPhotoFileName1} }"/></td>
+			<td><img th:src="@{ '/image/' + *{productPhotoFileName1} }" /></td>
 		</tr>
 
 		<tr>
 			<th scope="row">商品写真ファイル名2</th>
-			<td><img th:src="@{ '/image/' + *{productPhotoFileName2} }"/></td>
+			<td><img th:src="@{ '/image/' + *{productPhotoFileName2} }" /></td>
 		</tr>
 
 		<tr>
 			<th scope="row">商品写真ファイル名3</th>
-			<td><img th:src="@{ '/image/' + *{productPhotoFileName2} }"/></td>
+			<td><img th:src="@{ '/image/' + *{productPhotoFileName2} }" /></td>
+		</tr>
+
+		<tr>
+			<th scope="row">商品の表示状態</th>
+			<td th:if="*{productShowFlag == 0}">表示</td>
+			<td th:if="*{productShowFlag != 0}">非表示</td>
 		</tr>
 
 	</table>
+
+	<br>
+
+	<form th:action="|@{'/admin'+${urlComponent}+'/result'}|" method="POST"
+		th:if="${buttonName != null}">
+		<div th:object="${flag}">
+			<div class="tweetExcecute" th:if="*{tweetExcecute}">
+				<label for="tweetExcecute"> <strong>Tweet</strong></label> <br>
+				<input th:field="*{tweetExcecute}" type="radio" name="tweetExcecute"
+					id="tweetExcecute0" th:value="true" /> する <input
+					th:field="*{tweetExcecute}" type="radio" name="tweetExcecute"
+					id="tweetExcecute1" th:value="false" /> しない <br> <br>
+			</div>
+		</div>
+		<button type="submit" th:text="${buttonName}">ボタン名</button>
+	</form>
 
 </body>
 </html>

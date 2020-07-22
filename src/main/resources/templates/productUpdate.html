@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>商品情報変更画面</title>
+</head>
+<body th:object="${trProductEntity}">
+	<main>
+
+		<h2>商品情報変更画面</h2>
+
+		<div class="form-row">
+			<form th:action="@{/admin/management/update/confirmation}"
+				method="post">
+
+				<!--/* 商品ID */-->
+				<div class="form-group">
+					<label for="productId">商品ID</label> <br>
+					<input type="hidden" class="form-control" th:field="*{productId}" />
+					<p th:text="*{productId}"> 商品ID </p>
+				</div>
+				<br>
+				<!--/* 商品名 */-->
+				<div class="form-group">
+					<label for="productName">商品名</label> <br> <input type="text"
+						class="form-control" th:field="*{productName}" placeholder="商品名" />
+					<span th:if="${#fields.hasErrors('productName')}"
+						th:errors="*{productName}">ErrorMessage</span>
+				</div>
+				<br>
+				<!--/* 商品単価 */-->
+				<div class="form-group">
+					<label for="productPrice">商品単価</label> <br> <input type="text"
+						class="form-control" th:field="*{productPrice}"
+						placeholder="商品単価(税込み)" />
+				</div>
+				<br>
+				<!--/* 商品カテゴリー */-->
+				<div class="form-group">
+					<label for="productCategoryId">商品カテゴリーID</label> <br> <input
+						type="radio" name="productCategoryId" class="form-control"
+						th:field="*{productCategoryId}" id="productCategoryId"
+						th:value="0" /> コーヒー豆 <input type="radio"
+						name="productCategoryId" class="form-control"
+						th:field="*{productCategoryId}" id="productCategoryId"
+						th:value="1" /> 抽出器具 <input type="radio" name="productCategoryId"
+						class="form-control" th:field="*{productCategoryId}"
+						id="productCategoryId" th:value="2" /> その他
+				</div>
+				<br>
+				<!--/* 在庫 */-->
+				<div class="form-group">
+					<label for="productStock">在庫</label> <br> <input type="text"
+						class="form-control" th:field="*{productStock}" id="productStock"
+						placeholder="在庫" />
+				</div>
+				<br>
+				<!--/* 商品説明 */-->
+				<div class="form-group">
+					<label for="productComment">商品説明</label> <br> <input
+						type="text" class="form-control" th:field="*{productComment}"
+						id="productComment" placeholder="商品説明" /> <span
+						th:if="${#fields.hasErrors('productComment')}"
+						th:errors="*{productComment}">ErrorMessage</span>
+				</div>
+				<br>
+				<!--/* 商品写真ファイル名1 */-->
+				<div class="form-group">
+					<label for="productPhotoFileName1"> 商品写真ファイル名1 </label> <br> <input
+						type="text" class="form-control"
+						th:field="*{productPhotoFileName1}" id="productPhotoFileName1"
+						placeholder="商品写真ファイル名1" /> <span
+						th:if="${#fields.hasErrors('productPhotoFileName1')}"
+						th:errors="*{productPhotoFileName1}">ErrorMessage</span>
+				</div>
+				<br>
+				<!--/* 商品写真ファイル名2 */-->
+				<div class="form-group">
+					<label for="productPhotoFileName2"> 商品写真ファイル名2 </label> <br> <input
+						type="text" class="form-control"
+						th:field="*{productPhotoFileName2}" id="productPhotoFileName2"
+						placeholder="商品写真ファイル名2" /> <span
+						th:if="${#fields.hasErrors('productPhotoFileName2')}"
+						th:errors="*{productPhotoFileName2}">ErrorMessage</span>
+				</div>
+
+				<br>
+				<!--/* 商品写真ファイル名3 */-->
+				<div class="form-group">
+					<label for="productPhotoFileName3"> 商品写真ファイル名3 </label> <br> <input
+						type="text" class="form-control"
+						th:field="*{productPhotoFileName3}" id="productPhotoFileName3"
+						placeholder="商品写真ファイル名3" /> <span
+						th:if="${#fields.hasErrors('productPhotoFileName3')}"
+						th:errors="*{productPhotoFileName3}">ErrorMessage</span>
+				</div>
+				<br>
+				<!--/* 商品の表示・非表示 */-->
+				<div class="form-group">
+					<label for="productShowFlag"> 商品の表示・非表示 </label> <br> <input
+						type="radio" class="form-control" th:field="*{productShowFlag}"
+						id="productShowFlag0" th:value="0" /> 表示 <input type="radio"
+						class="form-control" th:field="*{productShowFlag}"
+						id="productShowFlag1" th:value="1" /> 非表示
+				</div>
+				<br>
+				<!--/* 商品の登録日・登録者と更新日・更新者をhidden経由で渡す */-->
+				<div class="form-group">
+					<input type="hidden" th:field="*{insertDate}"
+						th:value="*{insertDate}" /> <input type="hidden"
+						th:field="*{insertUser}" th:value="*{insertDate}" /> <input
+						type="hidden" th:field="*{updateDate}" th:value="*{updateDate}" />
+					<input type="hidden" th:field="*{updateUser}"
+						th:value="*{updateDate}" />
+				</div>
+
+				<!--*/ 送信ボタン /*-->
+				<button type="submit" class="btn btn-primary">商品情報を変更</button>
+
+			</form>
+		</div>
+
+	</main>
+</body>
+</html>
