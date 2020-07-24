@@ -12,12 +12,15 @@ import java.util.Properties;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.SessionAttribute;
@@ -61,7 +64,7 @@ public class ItemRegistrationAdminController {
 	//viewに渡す命名を統一
 	final private String PAGE_TITLE_NAME = "pageTitle";
 	final private String BUTTON_NAME = "buttonName";
-	final private String URL_CONPONENT= "urlComponent";
+	final private String URL_CONPONENT = "urlComponent";
 	final private String TWEET_FLAG = "flag";
 
 	//Error情報が格納されるobject名を確認する
@@ -69,6 +72,17 @@ public class ItemRegistrationAdminController {
 	//このアルゴリズムだとObject名に設定される前にnullになる為、直接文字列を設定
 	//BindingResult result;
 	//System.out.println(result.getObjectName());
+
+	/**
+	 * Form入力欄にスペース等が入れられた場合にトリミングするメソッド
+	 * @author SatoYusuke0228
+	 */
+	@InitBinder
+	public void InitBinder(WebDataBinder dataBinder) {
+
+		StringTrimmerEditor editor = new StringTrimmerEditor(true);
+		dataBinder.registerCustomEditor(String.class, editor);
+	}
 
 	/**
 	 * 商品登録フォーム画面に遷移するメソッド
@@ -111,7 +125,8 @@ public class ItemRegistrationAdminController {
 		} else { //入力FORMに不備がなければ
 
 			//商品カテゴリーIDから商品カテゴリー名を取得
-			Optional<MsProductCategoryInventoryEntity> category = productCategoryService.findById(productEntity.getProductCategoryId());
+			Optional<MsProductCategoryInventoryEntity> category = productCategoryService
+					.findById(productEntity.getProductCategoryId());
 			String categoryName = new String(category.get().getProductCategoryName());
 			mav.addObject("categoryName", categoryName);
 

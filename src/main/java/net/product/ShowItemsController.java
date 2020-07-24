@@ -16,7 +16,7 @@ public class ShowItemsController {
 
 	//商品テーブルのセレクト文に関わる処理のインスタンス(TrProductServiceインターフェース)
 	@Autowired
-	private TrProductSelectService productSelect;
+	private TrProductSelectService productSelectService;
 
 	//商品カテゴリーテーブルに関わる処理のインスタンス(MsProductCategoryInventoryServiceインターフェース)
 	@Autowired
@@ -61,26 +61,29 @@ public class ShowItemsController {
 		//ランダムクラスのインスタンスを作成
 		Random random = new Random();
 
-		//オススメ商品Listのサイズが４つになるまで商品をランダム抽選
-		while (recommendedItems.size() < 4) {
+		if (4 <= productSelectService.findAll().size()) {
 
-			//ランダムに抽出した商品と、すでにオススメ商品Listに含まれる商品の重複数
-			int duplication = 0;
+			//オススメ商品Listのサイズが４つになるまで商品をランダム抽選
+			while (recommendedItems.size() < 4) {
 
-			//商品をランダム抽選
-			int randomIndex = random.nextInt(items.size() - 1);
-			TrProductEntity randomPickupItem = items.get(randomIndex);
+				//ランダムに抽出した商品と、すでにオススメ商品Listに含まれる商品の重複数
+				int duplication = 0;
 
-			//ランダムに抽出した商品と、すでにオススメ商品Listに含まれる商品が重複していないかチェック
-			for (int i = recommendedItems.size(); 0 < i; i--) {
-				if (randomPickupItem == recommendedItems.get(i - 1)) {
-					duplication++;
+				//商品をランダム抽選
+				int randomIndex = random.nextInt(items.size() - 1);
+				TrProductEntity randomPickupItem = items.get(randomIndex);
+
+				//ランダムに抽出した商品と、すでにオススメ商品Listに含まれる商品が重複していないかチェック
+				for (int i = recommendedItems.size(); 0 < i; i--) {
+					if (randomPickupItem == recommendedItems.get(i - 1)) {
+						duplication++;
+					}
 				}
-			}
 
-			//重複していない場合のみ、オススメ商品Listに格納する
-			if (duplication == 0 && randomPickupItem.getProductShowFlag() == 0) {
-				recommendedItems.add(randomPickupItem);
+				//重複していない場合のみ、オススメ商品Listに格納する
+				if (duplication == 0 && randomPickupItem.getProductShowFlag() == 0) {
+					recommendedItems.add(randomPickupItem);
+				}
 			}
 		}
 
@@ -128,7 +131,7 @@ public class ShowItemsController {
 			@RequestParam String keyword,
 			ModelAndView mav) {
 
-		List<TrProductEntity> items = productSelect.findByKeyword(keyword);
+		List<TrProductEntity> items = productSelectService.findByKeyword(keyword);
 
 		//取得した商品情報の表示FlagがなければListから削除する
 		for (int i = items.size(); 0 < i; i--) {
@@ -155,18 +158,34 @@ public class ShowItemsController {
 	 * @author SatoYusuke0228
 	 */
 	@RequestMapping("/item/{id}")
-	public ModelAndView showItemPage(@PathVariable String id, ModelAndView mav) {
+	public ModelAndView showItemPage(
+			@PathVariable String id,
+			ModelAndView mav) {
 
 		//指定されたIDの商品を取得
-		TrProductEntity item = productSelect.getItemInfo(id);
+		TrProductEntity item = productSelectService.getItemInfo(id);
 
 		//もし引数のIDを持つ商品が非表示設定だったらerrorページに遷移するようにする
 		if (item.getProductShowFlag() != 0) {
-			item =  null;
+			item = null;
 		}
 
-		//EntityをModelに登録
+		String buttonName = new String();
+		String urlConponent = new String();
+
+		if (item.getProductStock() == 0) {
+			buttonName = "※商品の在庫がありません";
+			urlConponent = "/item/";
+		} else {
+			buttonName = "カートに入れる";
+			urlConponent = "/cart/add/";
+		}
+
+		//EntityやObjectをviewで使用可能にする
 		mav.addObject("item", item);
+		mav.addObject("buttonName", buttonName);
+		mav.addObject("urlConponent", urlConponent);
+
 		mav.setViewName("item");
 
 		return mav;

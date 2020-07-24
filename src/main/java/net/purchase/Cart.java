@@ -35,7 +35,10 @@ public class Cart {
 	 * カートに商品を追加するメソッド
 	 *
 	 * @param item
-	 *  引数 これからカートに追加する商品情報
+	 *  引数1 これからカートに追加する商品情報
+	 *
+	 * @param productStock
+	 *  引数2 DB内の商品在庫
 	 *
 	 * @param id
 	 *  商品ID
@@ -43,24 +46,31 @@ public class Cart {
 	 * @param existingCartItem
 	 *  すでにカート内に存在している商品情報
 	 */
-	public void addCartItem(CartItem item) {
+	public void addCartItem(CartItem item, int productStock) {
 
 		String id = item.getId();
 
-		//すでに商品がカート内にある場合(containsKey(id) = true)
-		if (cartItems.containsKey(id)) {
-			//カート内に既にある商品IDを取得
-			CartItem existingCartItem = cartItems.get(id);
-			//カートに入れられていた商品数＋カートに入れた商品数を合算
-			existingCartItem.setQuantity(existingCartItem.getQuantity() + item.getQuantity());
-			//カートに反映させる
-			cartItems.put(id, existingCartItem);
-			//cartItems.put(id, existingCartItem);
-		//まだ商品がカート内にない場合(containsKey(id) = false)
-		} else {
+		//カート内に既にある商品IDを取得
+		CartItem existingCartItem = cartItems.get(id);
+
+		if (cartItems.containsKey(id)) {//すでに商品がカート内にある場合(containsKey(id) = true)
+
+			if (existingCartItem.getQuantity() < productStock) {
+
+				//カートに入れられていた商品数＋カートに入れた商品数を合算
+				existingCartItem.setQuantity(existingCartItem.getQuantity() + item.getQuantity());
+
+				//カートに反映させる
+				cartItems.put(id, existingCartItem);
+			}
+
+			//System.out.println("カート内商品:" + existingCartItem.getQuantity());
+
+		} else {//まだ商品がカート内にない場合(containsKey(id) = false)
 			//カートに反映させる
 			cartItems.put(id, item);
 		}
+
 		//カート内の商品の合計金額を計算
 		updateGrandTotal();
 	}
@@ -69,7 +79,7 @@ public class Cart {
 	 * カートの商品削除メソッド
 	 *
 	 * @param id
-	 *  String
+	 *  カート内の商品ID
 	 */
 	public void removeCartItem(String id) {
 

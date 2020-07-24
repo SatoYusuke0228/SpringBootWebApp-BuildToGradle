@@ -25,16 +25,15 @@
 						<td>[[*{value.name}]]</td>
 						<td>[[*{value.quantity}]]</td>
 						<td>[[*{value.quantity} * *{value.price}]]</td>
-						<td>
-							<button
-								th:onclick="|location.href='@{'/cart/remove/'+ *{key} }'|">削除</button>
-						</td>
+						<td></td>
 					</tr>
 					<tr class="total">
 						<td>合計</td>
 						<td></td>
 						<td th:object="${session.cart}">[[*{grandTotal}]]</td>
-						<td></td>
+						<td>
+							<p>↓から購入</p>
+						</td>
 					</tr>
 				</tbody>
 			</table>

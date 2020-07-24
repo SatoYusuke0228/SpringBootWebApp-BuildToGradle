@@ -27,8 +27,7 @@
 							<td>[[*{productComment}]]</td>
 						</tr>
 					</table>
-					<button th:onclick="|location.href='@{'/cart/add/'+ *{productId} }'|">
-						[[#{item.button}]]</button>
+					<button th:onclick="|location.href='@{ ${urlConponent} + *{productId} }'|" th:text="${buttonName}"> buttonName </button>
 				</div>
 			</div>
 		</div>

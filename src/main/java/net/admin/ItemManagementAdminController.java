@@ -7,13 +7,16 @@ import java.util.Optional;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,6 +50,17 @@ public class ItemManagementAdminController {
 	final private String BUTTON_NAME = "buttonName";
 	final private String URL_CONPONENT = "urlComponent";
 	final private String TWEET_FLAG = "flag";
+
+	/**
+	 * Form入力欄にスペース等が入れられた場合にトリミングするメソッド
+	 * @author SatoYusuke0228
+	 */
+	@InitBinder
+	public void InitBinder(WebDataBinder dataBinder) {
+
+		StringTrimmerEditor editor = new StringTrimmerEditor(true);
+		dataBinder.registerCustomEditor(String.class, editor);
+	}
 
 	/**
 	 * 管理者用の商品管理画面を表示するメソッド
@@ -206,6 +220,10 @@ public class ItemManagementAdminController {
 		//選択された商品のIDを元にDBから商品を取得
 		TrProductEntity productEntity = productSelectService.getItemInfo(id);
 
+		//category名を取得するメソッド
+		String categoryName = getCategoryName(productEntity);
+		mav.addObject("categoryName", categoryName);
+
 		//取得した商品をModelAndViewとSessionに渡す
 		session.setAttribute(OBJECT_NAME, productEntity);
 
@@ -254,7 +272,7 @@ public class ItemManagementAdminController {
 		//もし商品の削除日が入力されている場合、DBの商品を削除する
 		if (productEntity.getProductId() != null
 				&& productEntity.getDeleteDate() != null
-		//				productEntity.getDeleteDate().equals(productEntity.getUpdateDate())
+		//productEntity.getDeleteDate().equals(productEntity.getUpdateDate())
 		) {
 
 			//DBに対して商品削除を実行

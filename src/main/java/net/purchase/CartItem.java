@@ -1,7 +1,6 @@
 package net.purchase;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import net.product.TrProductEntity;
 
 /**
@@ -23,28 +22,16 @@ import net.product.TrProductEntity;
  *
  * @author SatoYusuke0228
  */
+@Data
 public class CartItem {
 
-	@Getter
-	@Setter
 	private String id;
 
-	@Getter
-	@Setter
 	private String name;
 
-	@Getter
-	@Setter
 	private int quantity;
 
-	@Getter
-	@Setter
 	private int price;
-
-	/**
-	 * コンストラクタ
-	 */
-	public CartItem() {}
 
 	public CartItem(TrProductEntity productEntity) {
 		this.id = productEntity.getProductId();

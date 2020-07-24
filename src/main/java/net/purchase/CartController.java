@@ -73,7 +73,9 @@ public class CartController {
 		//カートにアイテムを追加
 		TrProductEntity selectedItem = productService.getItemInfo(id);
 		CartItem cartItem = new CartItem(selectedItem);
-		cart.addCartItem(cartItem);
+
+		//カートに商品を追加 && DBから取得した商品の在庫数を渡す
+		cart.addCartItem(cartItem, selectedItem.getProductStock());
 
 		//カートをsessionスコープに保存
 		session.setAttribute("cart", cart);
