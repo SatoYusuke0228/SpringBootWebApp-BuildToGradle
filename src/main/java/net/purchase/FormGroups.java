@@ -10,6 +10,6 @@ package net.purchase;
  */
 public interface FormGroups {
 
-	interface BuyerInfo{}
-	interface BuyerCeditCard{}
+	public interface BuyerInfo{}
+	public interface BuyerCeditCard{}
 }

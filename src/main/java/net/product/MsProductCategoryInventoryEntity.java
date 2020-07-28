@@ -44,9 +44,10 @@ import lombok.Setter;
  * INCREMENT 1 MINVALUE 0 MAXVALUE 2147483647 RESTART 0
  * ;
  *
+ * @category
   ********************************************************************
- *   PRODUCT_CATEGORY_ID is 0 == PRODUCT_CATEGORY_NAME is 'コーヒー豆'     *
- *   PRODUCT_CATEGORY_ID is 1 == PRODUCT_CATEGORY_NAME is '抽出器具' *
+ *   PRODUCT_CATEGORY_ID is 0 == PRODUCT_CATEGORY_NAME is 'コーヒー豆' *
+ *   PRODUCT_CATEGORY_ID is 1 == PRODUCT_CATEGORY_NAME is '抽出器具'   *
  *   PRODUCT_CATEGORY_ID is 2 == PRODUCT_CATEGORY_NAME is 'その他'     *
   ********************************************************************
  *

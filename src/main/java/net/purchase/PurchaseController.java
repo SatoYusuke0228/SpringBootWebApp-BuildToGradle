@@ -72,7 +72,7 @@ public class PurchaseController {
 	}
 
 	@GetMapping("/checkout")
-	public String getCheckoutPage(Checkout checkaout) {
+	public String getCheckoutPage(Checkout checkout) {
 		return "checkout";
 	}
 
@@ -102,11 +102,11 @@ public class PurchaseController {
 			BindingResult result,
 			ModelAndView mav) {
 
-		if (result.hasErrors()) {
+		// カートの中身に商品があればtrue、なければfalse
+		cart = (Cart) session.getAttribute("cart");
+		mav.addObject("check", cart.getCartItems().size() != 0);
 
-			// カートの中身に商品があればtrue、なければfalse
-			cart = (Cart) session.getAttribute("cart");
-			mav.addObject("check", cart.getCartItems().size() != 0);
+		if (result.hasErrors()) {
 
 			// 元の画面に戻りエラーメッセージを表示
 			mav.setViewName("checkout");
@@ -119,10 +119,18 @@ public class PurchaseController {
 
 			//売れた商品ごとに商品在庫から商品個数を減算していく処理
 			for (CartItem soldItem : soldItems.values()) {
-				System.out.println(soldItem.getId());
+
+				//商品IDを元にDBの商品を取得
 				TrProductEntity productEntity = productSelectService.getItemInfo(soldItem.getId());
+
+//				System.out.println("現在の在庫 : " + productEntity.getProductStock());
+
+				//商品在庫数を変更してDBに反映させる
 				productEntity.setProductStock(productEntity.getProductStock() - soldItem.getQuantity());
 				productDeleteAndUpdateService.saveAndFlush(productEntity);
+
+//				productEntity = productSelectService.getItemInfo(soldItem.getId());
+//				System.out.println("購入後の在庫 : " + productEntity.getProductStock());
 			}
 
 			// カートの中身を初期化
