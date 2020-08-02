@@ -66,10 +66,10 @@ public class TrSalesProductHistoryEntity {
 	 * @param cartItem カートの内の商品
 	 */
 	public TrSalesProductHistoryEntity(
-			TrSalesHistoryEntity salesHistoryEntity,
+			long salesHistoryId,
 			CartItem cartItem) {
 
-		this.salesHistoryId = salesHistoryEntity.getSalesHistoryId();
+		this.salesHistoryId = salesHistoryId;
 		this.salesProductId = cartItem.getId();
 		this.salesProductName = cartItem.getName();
 		this.salesProductQuantity = cartItem.getQuantity();
