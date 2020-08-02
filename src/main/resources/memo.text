@@ -35,19 +35,6 @@ C:\eclipse\pleiades\workspace\SpringBootWebApp-BuildToGradle
 
     ・決済機能の追加
 
-  ◆販売履歴テーブル
- 
-  販売ID（int）
-  販売日（TIMESTUMP）
-  販売商品（複数種類の場合は？商品テーブルとの紐づけは？）
-  販売合計金額（int）
-  購入者（String）
-  購入者〒番号
-  購入者住所１
-  購入者住所２
-  購入者電話番号
-  購入者メールアドレス
-  購入者
 
 
 
