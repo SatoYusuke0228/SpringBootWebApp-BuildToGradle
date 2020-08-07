@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TrSalesProductHistoryRepository extends
-		JpaRepository<TrSalesProductHistoryEntity, Long> {
+		JpaRepository <TrSalesProductHistoryEntity, Long> {
 }

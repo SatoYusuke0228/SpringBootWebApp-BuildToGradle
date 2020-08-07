@@ -12,16 +12,18 @@ public abstract interface TrSalesProductHistoryService {
 	 */
 	public abstract List<TrSalesProductHistoryEntity> findAll();
 
-	/**
-	 * 販売履歴IDを元に商品販売履歴一覧をDBから取得
-	 *
-	 * @param id 販売履歴ID
-	 * @return 販売履歴IDに応じた商品販売履歴
-	 */
+//	/**
+//	 * 販売履歴IDを元に商品販売履歴一覧をDBから取得
+//	 *
+//	 * @param id 販売履歴ID + 商品ID
+//	 * @return 販売履歴IDに応じた商品販売履歴
+//	 */
+//	public abstract TrSalesProductHistoryEntity getOne(String id);
+
 	public Optional<TrSalesProductHistoryEntity> findById(long id);
 
 	/**
-	 * 販売商品履歴一覧に新規で登録する
+	 * 販売商品履歴ListをDBに新規登録する
 	 */
-	public abstract void saveSalesHistory(TrSalesProductHistoryEntity salesProductHistoryEntity);
+	public abstract void saveSalesProductHistory(List<TrSalesProductHistoryEntity> salesProductHistoryEntity);
 }

@@ -1,6 +1,9 @@
 package net.purchase;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
@@ -21,6 +24,10 @@ import org.springframework.web.servlet.ModelAndView;
 import net.product.TrProductDeleteAndUpdateService;
 import net.product.TrProductEntity;
 import net.product.TrProductSelectService;
+import net.sales_history.TrSalesHistoryEntity;
+import net.sales_history.TrSalesHistoryService;
+import net.sales_history.TrSalesProductHistoryEntity;
+import net.sales_history.TrSalesProductHistoryService;
 
 /**
  * 商品購入手続き関係のコントローラー
@@ -34,6 +41,12 @@ public class PurchaseController {
 
 	@Autowired
 	TrProductDeleteAndUpdateService productDeleteAndUpdateService;
+
+	@Autowired
+	TrSalesHistoryService salesHistoryService;
+
+	@Autowired
+	TrSalesProductHistoryService salesProductHistoryService;
 
 	//セッションスコープのインスタンス
 	@Autowired
@@ -96,7 +109,6 @@ public class PurchaseController {
 	 */
 	@PostMapping("/purchase")
 	public ModelAndView postPurchasePage(
-			//@Valid @ModelAttribute("checkout"),
 			@SessionAttribute("cart") Cart cart,
 			@Validated Checkout checkout,
 			BindingResult result,
@@ -117,7 +129,15 @@ public class PurchaseController {
 			Map<String, CartItem> soldItems = new HashMap<>();
 			soldItems = cart.getCartItems();
 
-			//売れた商品ごとに商品在庫から商品個数を減算していく処理
+			//販売履歴オブジェクトを作成してDBに保存する
+			TrSalesHistoryEntity salesHistoryEntity =
+					new TrSalesHistoryEntity(cart, checkout, new Timestamp(System.currentTimeMillis()));
+			salesHistoryService.saveSalesHistory(salesHistoryEntity);
+
+			//販売商品履歴を商品種類ごとに格納するListを作成
+			List<TrSalesProductHistoryEntity> salesProductHistoryEntity = new ArrayList<>();
+
+			//売れた商品ごとに商品在庫から商品個数を減算し、販売商品履歴Listに格納していく処理
 			for (CartItem soldItem : soldItems.values()) {
 
 				//商品IDを元にDBの商品を取得
@@ -131,7 +151,18 @@ public class PurchaseController {
 
 //				productEntity = productSelectService.getItemInfo(soldItem.getId());
 //				System.out.println("購入後の在庫 : " + productEntity.getProductStock());
+
+//				販売履歴ID表示テスト
+				System.out.println(salesHistoryEntity.getSalesHistoryId());
+
+				//販売商品履歴Listに格納していく
+				final TrSalesProductHistoryEntity salesProductHistory =
+						new TrSalesProductHistoryEntity(salesHistoryEntity.getSalesHistoryId(), soldItem);
+				salesProductHistoryEntity.add(salesProductHistory);
 			}
+
+			//販売商品を格納したListをすべて保存する
+			salesProductHistoryService.saveSalesProductHistory(salesProductHistoryEntity);
 
 			// カートの中身を初期化
 			cart = new Cart();

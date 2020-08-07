@@ -1,13 +1,12 @@
 package net.sales_history;
 
 import java.sql.Timestamp;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import lombok.Data;
@@ -43,7 +42,8 @@ import net.purchase.Checkout;
 public class TrSalesHistoryEntity {
 
 	@Id
-	@Column(name = "SALES_HISTORY_ID", nullable = false)
+	@Column(name = "SALES_HISTORY_ID")
+	@GeneratedValue(strategy = GenerationType.IDENTITY) //主キーを自動生成する
 	private long salesHistoryId;
 
 	@Column(name = "TOTAL_SALES_AMOUNT")
@@ -54,7 +54,7 @@ public class TrSalesHistoryEntity {
 	 *
 	 * 0 == 未決済,
 	 * 1 == 決済完了,
-	 * 2 == キャンセル
+	 * 2以上 == キャンセル
 	 */
 	@Column(name = "SETTLEMENT_FLAG")
 	private int settlementFlag;
@@ -80,7 +80,7 @@ public class TrSalesHistoryEntity {
 	/**
 	 * 購入者クレジットカード情報
 	 */
-	@Column(name = "CUSTOMER_CREDIT_CARD_NUM", unique = true, nullable = false)
+	@Column(name = "CUSTOMER_CREDIT_CARD_NUM", nullable = false)
 	private String customerCreditCardNum;
 
 	@Column(name = "CUSTOMER_CREDIT_CARD_NAME", nullable = false)
@@ -112,13 +112,13 @@ public class TrSalesHistoryEntity {
 
 	@Column(name = "CANCELLETION_USER", nullable = true)
 	private String transactionCancellationUser;
-
-	/**
-	 * 販売した商品
-	 */
-	@OneToMany
-	@JoinColumn(name = "SALES_HISTORY_ID")
-	private List<TrSalesProductHistoryEntity> salesProductHistoryEntity;
+//
+//	/**
+//	 * 販売した商品
+//	 */
+//	@OneToMany(mappedBy="salesHistoryEntity")
+////	@JoinColumn(name = "SALES_HISTORY_ID")
+//	private List<TrSalesProductHistoryEntity> salesProductHistoryEntity;
 
 	/**
 	 * コンストラクタ
@@ -142,9 +142,9 @@ public class TrSalesHistoryEntity {
 		this.totalSalesAmount = cart.getGrandTotal();
 		this.settlementFlag = 0;
 
-		this.customerName = checkout.getFirstName() + checkout.getLastName();
+		this.customerName = checkout.getFirstName() + " " + checkout.getLastName();
 		this.customerZipcode = checkout.getZipcode();
-		this.customerAddress = checkout.getMainAddress() + checkout.getBuildingAddress();
+		this.customerAddress = checkout.getMainAddress() + " " + checkout.getBuildingAddress();
 		this.customerTell = checkout.getTell();
 		this.customerEmail = checkout.getEmail();
 

@@ -15,22 +15,25 @@ public class TrSalesProductHistoryServiceImpl implements TrSalesProductHistorySe
 	@Override
 	public List<TrSalesProductHistoryEntity> findAll() {
 
-		List<TrSalesProductHistoryEntity> salesProductHistoryEntity = salesProductHistoryRepository.findAll();
-
-		return salesProductHistoryEntity;
+		return salesProductHistoryRepository.findAll();
 	}
+
+//	@Override
+//	public TrSalesProductHistoryEntity getOne(String id) {
+//
+//		return salesProductHistoryRepository.getOne(id);
+//	}
 
 	@Override
 	public Optional<TrSalesProductHistoryEntity> findById(long id) {
-
-		Optional<TrSalesProductHistoryEntity> salesProductHistoryEntity = salesProductHistoryRepository.findById(id);
-
-		return salesProductHistoryEntity;
+		return salesProductHistoryRepository.findById(id);
 	}
 
 	@Override
-	public void saveSalesHistory(TrSalesProductHistoryEntity salesProductHistoryEntity) {
+	public void saveSalesProductHistory(List<TrSalesProductHistoryEntity> salesProductHistoryEntity) {
 
-		salesProductHistoryRepository.save(salesProductHistoryEntity);
+			for (TrSalesProductHistoryEntity salesProductHistory : salesProductHistoryEntity) {
+				salesProductHistoryRepository.save(salesProductHistory);
+			}
 	}
 }

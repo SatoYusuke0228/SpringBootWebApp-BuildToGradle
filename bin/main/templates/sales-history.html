@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>販売履歴</title>
+</head>
+<body>
+	<h2>販売履歴</h2>
+
+	<table>
+
+		<thead>
+			<tr>
+				<th>販売履歴ID</th>
+				<th>購入者</th>
+				<th>郵便番号</th>
+				<th>住所</th>
+				<th>電話番号</th>
+				<th>メール</th>
+				<th>状態</th>
+				<th>詳細</th>
+			</tr>
+		</thead>
+
+		<tbody th:each=" trSalesHistoryEntity : ${trSalesHistoryEntity} "
+			th:object="${trSalesHistoryEntity}">
+			<tr>
+				<td th:text="*{salesHistoryId}">販売履歴ID</td>
+				<td th:text="*{customerName}">購入者</td>
+				<td th:text="*{customerZipcode}">郵便番号</td>
+				<td th:text="*{customerAddress}">住所</td>
+				<td th:text="*{customerTell}">電話番号</td>
+				<td th:text="*{customerEmail}">メール</td>
+				<td>決済状態</td>
+				<td><button
+						th:onclick="|location.href='@{'/admin/history/'+ *{salesHistoryId} }'|">詳細</button></td>
+			</tr>
+		</tbody>
+
+	</table>
+
+</body>
+</html>

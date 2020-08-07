@@ -29,10 +29,13 @@ import net.purchase.CartItem;
 public class TrSalesProductHistoryEntity {
 
 	@Id
-	@Column(name = "SALES_HISTORY_ID", nullable = false)
+	@Column(name = "SALES_PRODUCT_HISTORY_ID")
+	private String salesProductHistoryId;
+
+	@Column(name = "SALES_HISTORY_ID" , unique = false)
 	private long salesHistoryId;
 
-	@Column(name = "SALES_PRODUCT_ID", nullable = false)
+	@Column(name = "SALES_PRODUCT_ID", unique = true, nullable = false)
 	private String salesProductId;
 
 	@Column(name = "SALES_PRODUCT_NAME", nullable = false)
@@ -54,6 +57,9 @@ public class TrSalesProductHistoryEntity {
 	@Column(name = "PRODUCT_CANCELLETION_USER", nullable = true)
 	private String productCancellationUser;
 
+//	@ManyToOne
+//	private TrSalesHistoryEntity salesHistoryEntity;
+
 	/**
 	 * コンストラクタ
 	 */
@@ -65,11 +71,10 @@ public class TrSalesProductHistoryEntity {
 	 * @param salesHistoryEntity 販売履歴テーブルのEntity
 	 * @param cartItem カートの内の商品
 	 */
-	public TrSalesProductHistoryEntity(
-			long salesHistoryId,
-			CartItem cartItem) {
+	public TrSalesProductHistoryEntity(long salesHistoryId, CartItem cartItem) {
 
 		this.salesHistoryId = salesHistoryId;
+
 		this.salesProductId = cartItem.getId();
 		this.salesProductName = cartItem.getName();
 		this.salesProductQuantity = cartItem.getQuantity();
@@ -77,5 +82,8 @@ public class TrSalesProductHistoryEntity {
 
 		this.productCancellationDate = null;
 		this.productCancellationUser = null;
+
+		//コンストラクタの引数を元に設定したこのクラスの値で更に一意のIDを設定
+		this.salesProductHistoryId = this.salesHistoryId + "-" + this.salesProductId;
 	}
 }
