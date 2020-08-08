@@ -25,6 +25,7 @@ public class SalesHistoryAdminController {
 
 		//Viewファイル名セット
 		mav.setViewName("sales-history");
+		mav.addObject("settlementFlag");
 
 		System.out.println(salesHistoryList.get(0).getSalesHistoryId());
 

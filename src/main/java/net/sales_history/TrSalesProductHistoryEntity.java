@@ -83,7 +83,7 @@ public class TrSalesProductHistoryEntity {
 		this.productCancellationDate = null;
 		this.productCancellationUser = null;
 
-		//コンストラクタの引数を元に設定したこのクラスの値で更に一意のIDを設定
+		//コンストラクタの引数を元に設定したこのオブジェクトの値で更に一意のIDを生成
 		this.salesProductHistoryId = this.salesHistoryId + "-" + this.salesProductId;
 	}
 }

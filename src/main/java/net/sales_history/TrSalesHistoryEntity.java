@@ -3,6 +3,7 @@ package net.sales_history;
 import java.sql.Timestamp;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -50,14 +51,15 @@ public class TrSalesHistoryEntity {
 	private int totalSalesAmount;
 
 	/**
-	 * int型 決済Flag,
+	 * 決済Flag,
 	 *
 	 * 0 == 未決済,
 	 * 1 == 決済完了,
-	 * 2以上 == キャンセル
+	 * それ以外 == キャンセル
 	 */
 	@Column(name = "SETTLEMENT_FLAG")
-	private int settlementFlag;
+	@Convert(converter = SettlementFlagConverter.class)
+	private String settlementFlag;
 
 	/**
 	 * 購入者情報
@@ -112,13 +114,13 @@ public class TrSalesHistoryEntity {
 
 	@Column(name = "CANCELLETION_USER", nullable = true)
 	private String transactionCancellationUser;
-//
-//	/**
-//	 * 販売した商品
-//	 */
-//	@OneToMany(mappedBy="salesHistoryEntity")
-////	@JoinColumn(name = "SALES_HISTORY_ID")
-//	private List<TrSalesProductHistoryEntity> salesProductHistoryEntity;
+
+	//	/**
+	//	 * 販売した商品
+	//	 */
+	//	@OneToMany(mappedBy="salesHistoryEntity")
+	////	@JoinColumn(name = "SALES_HISTORY_ID")
+	//	private List<TrSalesProductHistoryEntity> salesProductHistoryEntity;
 
 	/**
 	 * コンストラクタ
@@ -140,7 +142,7 @@ public class TrSalesHistoryEntity {
 			Timestamp salesDate) {
 
 		this.totalSalesAmount = cart.getGrandTotal();
-		this.settlementFlag = 0;
+		this.settlementFlag = "未決済";
 
 		this.customerName = checkout.getFirstName() + " " + checkout.getLastName();
 		this.customerZipcode = checkout.getZipcode();

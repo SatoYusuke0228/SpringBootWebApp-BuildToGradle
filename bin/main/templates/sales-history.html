@@ -31,7 +31,7 @@
 				<td th:text="*{customerAddress}">住所</td>
 				<td th:text="*{customerTell}">電話番号</td>
 				<td th:text="*{customerEmail}">メール</td>
-				<td>決済状態</td>
+				<td th:text="*{SettlementFlag}">決済状態</td>
 				<td><button
 						th:onclick="|location.href='@{'/admin/history/'+ *{salesHistoryId} }'|">詳細</button></td>
 			</tr>

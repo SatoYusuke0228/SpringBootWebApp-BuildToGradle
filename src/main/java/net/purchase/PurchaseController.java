@@ -152,8 +152,7 @@ public class PurchaseController {
 //				productEntity = productSelectService.getItemInfo(soldItem.getId());
 //				System.out.println("購入後の在庫 : " + productEntity.getProductStock());
 
-//				販売履歴ID表示テスト
-				System.out.println(salesHistoryEntity.getSalesHistoryId());
+//				System.out.println("販売履歴ID表示テスト : " + salesHistoryEntity.getSalesHistoryId());
 
 				//販売商品履歴Listに格納していく
 				final TrSalesProductHistoryEntity salesProductHistory =
