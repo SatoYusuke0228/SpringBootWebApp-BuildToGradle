@@ -18,6 +18,11 @@
 			<input name="keyword" type="text" size="25" placeholder="販売履歴検索">
 			<input type="submit" value="&#xf002; 検索">
 		</form>
+		<form action="/admin/history/search/date" method="GET"
+			class="date_search">
+			<input type="date" id="start" name="trip-start"
+				min="2020-01-01" max="9999-12-31" value="&#xf002; 検索">
+		</form>
 	</div>
 
 	<table>

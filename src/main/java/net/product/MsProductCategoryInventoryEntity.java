@@ -11,8 +11,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import net.common.FormatTimestamp;
 
 /**
  * 商品カテゴリーテーブルのフィールドの宣言及びカプセル化
@@ -55,49 +57,61 @@ import lombok.Setter;
  */
 
 @Entity
+@Data
 @Table(name = "MS_PRODUCT_CATEGORY_INVENTORY")
 public class MsProductCategoryInventoryEntity {
 
 	@Id
 	@Column(name = "PRODUCT_CATEGORY_ID", nullable = false)
-	@Getter
-	@Setter
 	private int productCategoryId;
 
 	@Column(name = "PRODUCT_CATEGORY_NAME", unique = true, nullable = false, length = 64)
-	@Getter
-	@Setter
 	private String productCategoryName;
 
 	@Column(name = "INSERT_DATE", nullable = false)
-	@Getter
-	@Setter
 	private Timestamp insertDate;
 
 	@Column(name = "INSERT_USER", nullable = false, length = 64)
-	@Getter
-	@Setter
 	private String insertUser;
 
 	@Column(name = "UPDATE_DATE", nullable = false)
-	@Getter
-	@Setter
 	private Timestamp updateDate;
 
 	@Column(name = "UPDATE_USER", nullable = false, length = 64)
-	@Getter
-	@Setter
 	private String updateUser;
 
 	@Column(name = "DELETE_DATE", nullable = true)
-	@Getter
-	@Setter
 	private Timestamp deleteDate;
 
 	@Column(name = "DELETE_USER", nullable = true, length = 64)
-	@Getter
-	@Setter
 	private String deleteUser;
+
+	/**
+	 * INSERT文実行日時を取得
+	 * ※ Timestamp → String に変換
+	 */
+	public String getInsertDate() {
+		FormatTimestamp ft = new FormatTimestamp();
+		return ft.formatTimestamp(this.insertDate);
+	}
+
+	/**
+	 * 最終UPDATE文実行日時を取得
+	 * ※ Timestamp → String に変換
+	 */
+	public String getUpdateDate() {
+		FormatTimestamp ft = new FormatTimestamp();
+		return ft.formatTimestamp(this.updateDate);
+	}
+
+	/**
+	 * delete文実行日時を取得
+	 * ※ Timestamp → String に変換
+	 */
+	public String getDaleteDate() {
+		FormatTimestamp ft = new FormatTimestamp();
+		return ft.formatTimestamp(this.deleteDate);
+	}
 
 	/**
 	 * @OneToMany(

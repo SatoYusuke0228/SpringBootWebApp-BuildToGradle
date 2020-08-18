@@ -14,7 +14,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Data;
+import net.common.FormatTimestamp;
 import net.purchase.Cart;
 import net.purchase.Checkout;
 
@@ -44,6 +47,7 @@ import net.purchase.Checkout;
 @Table(name = "TR_SALES_HISTORY")
 @Entity
 @Data
+@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 public class TrSalesHistoryEntity {
 
 	@Id
@@ -127,6 +131,34 @@ public class TrSalesHistoryEntity {
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "SALES_HISTORY_ID")
 	private List<TrSalesProductHistoryEntity> salesProductHistoryEntity;
+
+
+	/**
+	 * 取引日時を取得
+	 * ※ Timestamp → String に変換
+	 */
+	public String getSalesDate() {
+		FormatTimestamp ft = new FormatTimestamp();
+		return ft.formatTimestamp(this.salesDate);
+	}
+
+	/**
+	 * 取引の決済完了日時を取得
+	 * ※ Timestamp → String に変換
+	 */
+	public String getTransactionCancellationDate() {
+		FormatTimestamp ft = new FormatTimestamp();
+		return ft.formatTimestamp(this.settlementDate);
+	}
+
+	/**
+	 * 取引のキャンセル日時を取得
+	 * ※ Timestamp → String に変換
+	 */
+	public String getSettlementDate() {
+		FormatTimestamp ft = new FormatTimestamp();
+		return ft.formatTimestamp(this.transactionCancellationDate);
+	}
 
 	/**
 	 * コンストラクタ

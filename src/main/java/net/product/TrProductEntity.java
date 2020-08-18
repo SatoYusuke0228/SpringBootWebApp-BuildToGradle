@@ -10,6 +10,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 import lombok.Data;
+import net.common.FormatTimestamp;
 
 /**
  * 商品テーブルのフィールドの宣言及びカプセル化
@@ -129,4 +130,31 @@ public class TrProductEntity {
 
 	@Column(name = "DELETE_USER", nullable = true, length = 64)
 	private String deleteUser;
+
+	/**
+	 * INSERT文実行日時を取得
+	 * ※ Timestamp → String に変換
+	 */
+	public String getInsertDate() {
+		FormatTimestamp ft = new FormatTimestamp();
+		return ft.formatTimestamp(this.insertDate);
+	}
+
+	/**
+	 * 最終UPDATE文実行日時を取得
+	 * ※ Timestamp → String に変換
+	 */
+	public String getUpdateDate() {
+		FormatTimestamp ft = new FormatTimestamp();
+		return ft.formatTimestamp(this.updateDate);
+	}
+
+	/**
+	 * delete文実行日時を取得
+	 * ※ Timestamp → String に変換
+	 */
+	public String getDaleteDate() {
+		FormatTimestamp ft = new FormatTimestamp();
+		return ft.formatTimestamp(this.deleteDate);
+	}
 }

@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import lombok.Data;
+import net.common.FormatTimestamp;
 import net.purchase.CartItem;
 
 /**
@@ -60,6 +61,15 @@ public class TrSalesProductHistoryEntity {
 
 	@Column(name = "PRODUCT_CANCELLETION_USER", nullable = true)
 	private String productCancellationUser;
+
+	/**
+	 * 販売商品のキャンセル日時を取得
+	 * ※ Timestamp → String に変換
+	 */
+	public String getProductCancellationDate() {
+		FormatTimestamp ft = new FormatTimestamp();
+		return ft.formatTimestamp(this.productCancellationDate);
+	}
 
 	/**
 	 * コンストラクタ
