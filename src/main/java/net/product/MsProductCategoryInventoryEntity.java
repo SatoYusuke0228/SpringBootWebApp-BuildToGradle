@@ -101,10 +101,9 @@ public class MsProductCategoryInventoryEntity {
 
 	/**
 	 * @OneToMany(
-	 * 		cascade  = 元が消えたら関連テーブルはどうするか,
-	 * 		fetch    = 一緒に取り出すか
 	 * 		mappedBy = 関連ドメインクラス
-	 * )
+	 * 		cascade  = 元が消えたら関連テーブルはどうするか,
+	 * 		fetch    = 一緒に取り出すか)
 	 */
 	@OneToMany
 	@JoinColumn(name="PRODUCT_CATEGORY_ID")

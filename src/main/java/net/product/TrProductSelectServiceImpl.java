@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-
 /**
  * TrProductServiceのselect文に関する実装クラス
  * @author SatoYusuke0228
@@ -45,15 +44,27 @@ class TrProductSelectServiceImpl implements TrProductSelectService {
 	 * @param 入力キーワード
 	 * @return 絞り込み条件
 	 */
-	private Specification<TrProductEntity> nameContains(String name) {
-		return new Specification<TrProductEntity>() {
-			@Override
-			public Predicate toPredicate(Root<TrProductEntity> root,
-					CriteriaQuery<?> query,
-					CriteriaBuilder cb) {
-				return cb.like(root.get(TrProductEntity_.productName), "%" + name + "%");
-			}
-		};
+	private Specification<TrProductEntity> nameContains(String keyword) {
+
+		return Specification
+				//商品IDでlike検索
+				.where(new Specification<TrProductEntity>() {
+					@Override
+					public Predicate toPredicate(Root<TrProductEntity> root,
+							CriteriaQuery<?> query,
+							CriteriaBuilder cb) {
+						return cb.like(root.get(TrProductEntity_.PRODUCT_ID), "%" + keyword.toLowerCase() + "%");
+					}
+				})
+				//商品名でlike検索
+				.or(new Specification<TrProductEntity>() {
+					@Override
+					public Predicate toPredicate(Root<TrProductEntity> root,
+							CriteriaQuery<?> query,
+							CriteriaBuilder cb) {
+						return cb.like(root.get(TrProductEntity_.PRODUCT_Name), "%" + keyword.toLowerCase() + "%");
+					}
+				});
 	}
 
 	/*
@@ -73,7 +84,7 @@ class TrProductSelectServiceImpl implements TrProductSelectService {
 		return Arrays.asList(trimmedMonoSpaceQuery.split("\\s"));
 	}
 
-	/*
+	/**
 	 * 商品検索をAND検索する為の検索条件を返す関数
 	 * @param nameQuery 引数
 	 * 検索ボックスの検索ワード

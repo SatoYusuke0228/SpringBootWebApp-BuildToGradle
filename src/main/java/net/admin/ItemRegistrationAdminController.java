@@ -216,7 +216,7 @@ public class ItemRegistrationAdminController {
 		mav.addObject("Result", "商品登録成功");
 
 		//Viewファイル名をセット
-		mav.setViewName("admin_result");
+		mav.setViewName("admin-result");
 
 		//ツイート実行Flagがtrueの場合は商品をツイートする
 		if (flag.isTweetExcecute()) {

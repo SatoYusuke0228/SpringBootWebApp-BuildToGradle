@@ -1,13 +1,17 @@
 package net.sales_history;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import lombok.Data;
@@ -51,11 +55,13 @@ public class TrSalesHistoryEntity {
 	private int totalSalesAmount;
 
 	/**
-	 * 決済Flag,
+	 * 販売履歴テーブルの決済Flag
 	 *
-	 * 0 == 未決済,
-	 * 1 == 決済完了,
-	 * それ以外 == キャンセル
+	 * @see  0 == 未決済
+	 * @see  1 == 決済完了
+	 * @see -1 == キャンセル
+	 *
+	 * @see SettlementFlagConverter
 	 */
 	@Column(name = "SETTLEMENT_FLAG")
 	@Convert(converter = SettlementFlagConverter.class)
@@ -115,12 +121,12 @@ public class TrSalesHistoryEntity {
 	@Column(name = "CANCELLETION_USER", nullable = true)
 	private String transactionCancellationUser;
 
-	//	/**
-	//	 * 販売した商品
-	//	 */
-	//	@OneToMany(mappedBy="salesHistoryEntity")
-	////	@JoinColumn(name = "SALES_HISTORY_ID")
-	//	private List<TrSalesProductHistoryEntity> salesProductHistoryEntity;
+	/**
+	 * 販売した商品
+	 */
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "SALES_HISTORY_ID")
+	private List<TrSalesProductHistoryEntity> salesProductHistoryEntity;
 
 	/**
 	 * コンストラクタ

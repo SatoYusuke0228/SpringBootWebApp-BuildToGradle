@@ -19,7 +19,7 @@ public class SettlementFlagConverter
 		if ("決済完了".equals(settlementFlag)) {
 			flag = 1;
 		} else if ("キャンセル".equals(settlementFlag)) {
-			flag = 2;
+			flag = -1;
 		}
 
 		return flag;
@@ -40,40 +40,4 @@ public class SettlementFlagConverter
 
 		return str;
 	}
-
-//	@Override
-//	public String convertToDatabaseColumn( settlementFlag) {
-//SettlementFlag
-//		StringBuilder sb = new StringBuilder();
-//
-//		if (settlementFlag.getSettlementFlag() == 0) {
-//			sb.append("未決済");
-//		} else if (settlementFlag.getSettlementFlag() == 1) {
-//			sb.append("決済完了");
-//		} else {
-//			sb.append("キャンセル");
-//		}
-//
-//		return sb.toString();
-//	}
-//
-//	@Override
-//	public SettlementFlag convertToEntityAttribute(String SettlementFlaginDB) {
-//
-//		if (SettlementFlaginDB == null || SettlementFlaginDB.isEmpty()) {
-//			return null;
-//		}
-//
-//		SettlementFlag settlementFlag = new SettlementFlag();
-//
-//		if ("未決済".equals(SettlementFlaginDB)) {
-//			settlementFlag.setSettlementFlag(0);
-//		} else if ("決済完了".equals(SettlementFlaginDB)) {
-//			settlementFlag.setSettlementFlag(1);
-//		} else {
-//			settlementFlag.setSettlementFlag(2);
-//		}
-//
-//		return settlementFlag;
-//	}
 }

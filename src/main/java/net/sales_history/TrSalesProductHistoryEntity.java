@@ -32,7 +32,11 @@ public class TrSalesProductHistoryEntity {
 	@Column(name = "SALES_PRODUCT_HISTORY_ID")
 	private String salesProductHistoryId;
 
-	@Column(name = "SALES_HISTORY_ID" , unique = false)
+	/*
+	 * 商品関係
+	 */
+
+	@Column(name = "SALES_HISTORY_ID")
 	private long salesHistoryId;
 
 	@Column(name = "SALES_PRODUCT_ID", unique = true, nullable = false)
@@ -47,7 +51,7 @@ public class TrSalesProductHistoryEntity {
 	@Column(name = "SALES_PRODUCT_PRICE", nullable = false)
 	private int salesProductPrice;
 
-	/**
+	/*
 	 * 商品ごとのキャンセル日と、その処理をした管理者名
 	 */
 
@@ -57,9 +61,6 @@ public class TrSalesProductHistoryEntity {
 	@Column(name = "PRODUCT_CANCELLETION_USER", nullable = true)
 	private String productCancellationUser;
 
-//	@ManyToOne
-//	private TrSalesHistoryEntity salesHistoryEntity;
-
 	/**
 	 * コンストラクタ
 	 */
@@ -68,22 +69,24 @@ public class TrSalesProductHistoryEntity {
 	/**
 	 * コンストラクタ
 	 *
-	 * @param salesHistoryEntity 販売履歴テーブルのEntity
-	 * @param cartItem カートの内の商品
+	 * @param salesHistoryId 販売履歴ID
+	 * @param cartItem       購入されたカート内の商品
 	 */
 	public TrSalesProductHistoryEntity(long salesHistoryId, CartItem cartItem) {
+
+		//コンストラクタの引数を元に一意のIDを生成
+		this.salesProductHistoryId = salesHistoryId + "(" + cartItem.getId() + ")" ;
 
 		this.salesHistoryId = salesHistoryId;
 
 		this.salesProductId = cartItem.getId();
 		this.salesProductName = cartItem.getName();
 		this.salesProductQuantity = cartItem.getQuantity();
-		this.salesProductPrice = cartItem.getPrice();
+		this.salesProductPrice = cartItem.getPrice() * cartItem.getQuantity();
 
 		this.productCancellationDate = null;
 		this.productCancellationUser = null;
 
-		//コンストラクタの引数を元に設定したこのオブジェクトの値で更に一意のIDを生成
-		this.salesProductHistoryId = this.salesHistoryId + "-" + this.salesProductId;
+
 	}
 }

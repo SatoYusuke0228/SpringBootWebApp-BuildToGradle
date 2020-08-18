@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>販売商品履歴</title>
+</head>
+<body th:object="${trSalesHistoryEntity}">
+
+	<h2>販売商品履歴</h2>
+
+	<ul>
+
+		<li>
+			<h3>販売履歴情報</h3>
+			<table class="table">
+
+				<tr>
+					<th scope="row">販売履歴ID</th>
+					<td th:text="*{salesHistoryId}">販売履歴ID</td>
+					<td></td>
+					<td></td>
+				</tr>
+
+				<tr>
+					<th scope="row">合計購入金額</th>
+					<td th:text="*{totalSalesAmount} + 円">合計購入金額</td>
+					<td></td>
+					<td></td>
+				</tr>
+
+				<tr>
+					<th scope="row">決済ステータス</th>
+					<td th:text="*{settlementFlag}">決済ステータス</td>
+					<td>
+						<button th:if="*{'未決済'.equals(settlementFlag)}"
+							th:onclick="|location.href='@{'/admin/history/' + *{salesHistoryId} + '/settlement'}'|">『決済完了』に変更</button>
+					</td>
+					<td>
+						<button th:if="*{'未決済'.equals(settlementFlag)}"
+							th:onclick="|location.href='@{'/admin/history/' + *{salesHistoryId} + '/cancel'}'|">『キャンセル』に変更</button>
+					</td>
+				</tr>
+
+				<tr>
+					<th scope="row">販売日</th>
+					<td th:text="*{salesDate}">販売日</td>
+					<td></td>
+					<td></td>
+				</tr>
+
+				<tr
+					th:if="*{settlementDate != null && transactionCancellationDate == null}">
+					<th scope="row">決済完了日</th>
+					<td th:text="*{settlementDate}">決済完了日</td>
+					<td></td>
+					<td></td>
+				</tr>
+
+				<tr
+					th:if="*{settlementUser != null && transactionCancellationUser == null}">
+					<th scope="row">決済処理担当者</th>
+					<td th:text="*{settlementUser}">決済処理担当者</td>
+					<td></td>
+					<td></td>
+				</tr>
+
+				<tr
+					th:if="*{settlementDate == null && transactionCancellationDate != null}">
+					<th scope="row">キャンセル日</th>
+					<td th:text="*{transactionCancellationDate}">キャンセル日</td>
+					<td></td>
+					<td></td>
+				</tr>
+
+				<tr
+					th:if="*{settlementUser == null && transactionCancellationUser != null}">
+					<th scope="row">キャンセル処理担当者</th>
+					<td th:text="*{transactionCancellationUser}">キャンセル処理担当者</td>
+					<td></td>
+					<td></td>
+				</tr>
+
+			</table>
+		</li>
+
+		<li>
+			<h3>購入者情報</h3>
+			<table class="table">
+
+				<tr>
+					<th scope="row">購入者</th>
+					<td th:text="*{customerName}">購入者</td>
+				</tr>
+
+				<tr>
+					<th scope="row">郵便番号</th>
+					<td th:text="*{customerZipcode}">郵便番号</td>
+				</tr>
+
+				<tr>
+					<th scope="row">住所</th>
+					<td th:text="*{customerAddress}">住所</td>
+				</tr>
+
+				<tr>
+					<th scope="row">電話番号</th>
+					<td th:text="*{customerTell}">電話番号</td>
+				</tr>
+
+				<tr>
+					<th scope="row">メール</th>
+					<td th:text="*{customerEmail}">メール</td>
+				</tr>
+
+			</table>
+		</li>
+
+		<li>
+			<h3>購入者カード情報</h3>
+			<table class="table">
+
+				<tr>
+					<th scope="row">カード番号</th>
+					<td th:text="*{customerCreditCardNum}">カード番号</td>
+				</tr>
+
+				<tr>
+					<th scope="row">カード名義</th>
+					<td th:text="*{customerCreditCardName}">カード名義</td>
+				</tr>
+
+				<tr>
+					<th scope="row">カード期限</th>
+					<td
+						th:text="|*{customerCreditCardYear}年 / *{customerCreditCardMonth}月|">カード期限</td>
+				</tr>
+
+				<tr>
+					<th scope="row">CVS</th>
+					<td th:text="*{customerCreditCardCvs}">CVS</td>
+				</tr>
+
+			</table>
+		</li>
+
+		<li>
+			<h3>購入商品情報</h3>
+			<table>
+
+				<thead>
+
+					<tr>
+						<th>商品名</th>
+						<th>個数</th>
+						<th>小計</th>
+						<th>商品詳細</th>
+						<th>商品キャンセル</th>
+						<th>キャンセル日</th>
+						<th>キャンセル処理者</th>
+					</tr>
+
+				</thead>
+
+				<tbody class="table"
+					th:each=" salesProductHistory : *{salesProductHistoryEntity}"
+					th:object="${salesProductHistory}">
+
+					<tr>
+						<td scope="row" th:text="*{salesProductName}">商品名</td>
+						<td scope="row" th:text="*{salesProductQuantity}">個数</td>
+						<td scope="row" th:text="*{salesProductPrice} + 円">小計</td>
+						<td>
+							<button
+								th:onclick="|location.href='@{'/admin/management/details/' + *{salesProductId} }'|">詳細</button>
+						</td>
+						<td><button
+								th:if="${'未決済'.equals(trSalesHistoryEntity.settlementFlag) && salesProductHistory.productCancellationDate == null && salesProductHistory.productCancellationUser == null}"
+								th:onclick="|location.href='@{'/admin/history/' + *{salesHistoryId} + '/cancel/' + *{salesProductId}} '|">商品キャンセル</button>
+							<p th:if="${!'未決済'.equals(trSalesHistoryEntity.settlementFlag) || salesProductHistory.productCancellationDate != null && salesProductHistory.productCancellationUser != null}">
+								-</p></td>
+						<td scope="row">
+							<p
+							th:if="*{productCancellationDate != null && productCancellationUser != null}"
+							th:text="*{productCancellationDate}">キャンセル日</p>
+							<p
+							th:if="*{productCancellationDate == null && productCancellationUser == null}">
+								-</p>
+						</td>
+						<td scope="row">
+							<p
+							th:if="*{productCancellationDate != null && productCancellationUser != null}"
+							th:text="*{productCancellationUser}">キャンセル処理者</p>
+							<p
+							th:if="*{productCancellationDate == null && productCancellationUser == null}">
+								-</p>
+						</td>
+					</tr>
+
+				</tbody>
+
+			</table>
+		</li>
+
+	</ul>
+</html>

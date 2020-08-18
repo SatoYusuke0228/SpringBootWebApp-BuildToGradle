@@ -3,9 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <title>販売履歴</title>
+<link
+	href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+	rel="stylesheet">
 </head>
 <body>
+
 	<h2>販売履歴</h2>
+
+	<div class="search">
+		<!-- ヘッダー検索機能 -->
+		<form action="/admin/history/search" method="GET"
+			class="search_container">
+			<input name="keyword" type="text" size="25" placeholder="販売履歴検索">
+			<input type="submit" value="&#xf002; 検索">
+		</form>
+	</div>
 
 	<table>
 
@@ -17,7 +30,8 @@
 				<th>住所</th>
 				<th>電話番号</th>
 				<th>メール</th>
-				<th>状態</th>
+				<th>購入日</th>
+				<th>ステータス</th>
 				<th>詳細</th>
 			</tr>
 		</thead>
@@ -31,6 +45,7 @@
 				<td th:text="*{customerAddress}">住所</td>
 				<td th:text="*{customerTell}">電話番号</td>
 				<td th:text="*{customerEmail}">メール</td>
+				<td th:text="*{salesDate}">購入日</td>
 				<td th:text="*{SettlementFlag}">決済状態</td>
 				<td><button
 						th:onclick="|location.href='@{'/admin/history/'+ *{salesHistoryId} }'|">詳細</button></td>

@@ -1,6 +1,7 @@
 package net.admin;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -80,6 +82,31 @@ public class ItemManagementAdminController {
 
 		return mav;
 	}
+	/**
+	 * 管理者用の商品管理画面で商品をキーワード検索したときの画面に遷移するメソッド
+	 *
+	 * @author SatoYusuke0228
+	 */
+	@RequestMapping("/admin/management/search")
+	public ModelAndView showItemManagementPageFindByKeyword(
+			@RequestParam String keyword,
+			ModelAndView mav) {
+
+		List<TrProductEntity> productEntity = new ArrayList<>();
+
+		try {
+			//キーワードをもとにDB内の商品を取得してViewに渡す
+			productEntity = productSelectService.findByKeyword(keyword);
+			mav.addObject(OBJECT_NAME, productEntity);
+		} catch (NullPointerException e) {
+
+		}
+
+		//Viewファイル名セット
+		mav.setViewName("management");
+
+		return mav;
+	}
 
 	/**
 	 * 管理者用の商品管理画面をから
@@ -129,7 +156,7 @@ public class ItemManagementAdminController {
 		mav.addObject(OBJECT_NAME, productEntity);
 
 		//Viewファイル名セット
-		mav.setViewName("productUpdate");
+		mav.setViewName("product-update");
 
 		return mav;
 	}
@@ -150,7 +177,7 @@ public class ItemManagementAdminController {
 			//System.out.println(result.getFieldError());
 
 			//元のページに戻る
-			mav.setViewName("productUpdate");
+			mav.setViewName("product-update");
 
 		} else { //FORMに不備がない場合
 
@@ -182,7 +209,7 @@ public class ItemManagementAdminController {
 			ModelAndView mav) {
 
 		//result画面Viewファイル名セット
-		mav.setViewName("admin_result");
+		mav.setViewName("admin-result");
 
 		//ログイン中のユーザー名を取得してUpdateUserに設定
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -288,7 +315,7 @@ public class ItemManagementAdminController {
 		}
 
 		//Viewファイル名セット
-		mav.setViewName("admin_result");
+		mav.setViewName("admin-result");
 
 		return mav;
 	}
