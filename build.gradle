@@ -26,10 +26,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 
-	//Twitter4J 4.0.7
-	//http://github.com/yusuke/twitter4j/
-	compileOnly 'org.twitter4j:twitter4j-core:4.0.7'
-
 	//Bean Validation 2.0 を導入する
 	implementation 'javax.validation:validation-api:2.0.1.Final'
 	runtimeOnly 'org.hibernate.validator:hibernate-validator:6.0.17.Final'
@@ -44,6 +40,14 @@ dependencies {
 
 	//postgresql
 	runtimeOnly("org.postgresql:postgresql")
+
+	//Twitter4J 4.0.7(twitterAPI)
+	//http://github.com/yusuke/twitter4j/
+	compileOnly 'org.twitter4j:twitter4j-core:4.0.7'
+
+	//stripe(決済API)
+	//https://stripe.com/docs/payments/integration-builder
+	implementation("com.stripe:stripe-java:{VERSION}")
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'

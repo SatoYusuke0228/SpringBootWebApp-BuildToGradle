@@ -1,11 +1,13 @@
-#製作者用ローカルリポジトリのpath
+#製作者用
+
+・ローカルリポジトリのpath
 C:\eclipse\pleiades\workspace\SpringBootWebApp-BuildToGradle
 
+・データベース名
+webapp
 
-
-◇現実的な運用に耐えられるように機能を追加する
-
-  ◆Controller→serviceInterface→Service→RepositoryInterFace→JPARepository→DB
+・データベースロール名
+test
 
   ◆商品追加に関する項目
 
@@ -26,9 +28,9 @@ C:\eclipse\pleiades\workspace\SpringBootWebApp-BuildToGradle
 
   ◆販売に関する項目
 
-    ・販売履歴機能の作成
-    ・販売履歴の検索機能
-    ・販売履歴の決済ステータス変更機能
+    ?販売履歴機能の作成
+    ?販売履歴の検索機能
+    ?販売履歴の決済ステータス変更機能
     ?商品在庫が0のときにページ上に入荷待ちの案内を表示し、その状態でカートに入れようとした場合はページ遷移しないように設定
     ?商品をカートの中に入れたときに購入量＞在庫になった場合の処理を作成
 	?商品販売時に商品テーブルの商品個数にも影響を及ぼすように変更
@@ -37,7 +39,7 @@ C:\eclipse\pleiades\workspace\SpringBootWebApp-BuildToGradle
     ・決済機能の追加
 
 
-
+■発生した問題の記録
 
 ◆2020/07/10
 
@@ -82,3 +84,4 @@ VIEW側で使用していた自作のスコープ名を統一させることで解決
 Timestamp →String型に変換するゲッターを使用しているためview遷移ごとにhidden経由で渡すことができなくなっている
 
 ・解決方法
+スタンダードゲッターを維持したまま、VIEW側でメソッド名を指定して取得することで解決
