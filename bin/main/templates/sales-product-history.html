@@ -43,7 +43,7 @@
 
 				<tr>
 					<th scope="row">販売日</th>
-					<td th:text="*{salesDate}">販売日</td>
+					<td th:text="*{getFormatSalesDate()}">販売日</td>
 					<td></td>
 					<td></td>
 				</tr>
@@ -51,7 +51,7 @@
 				<tr
 					th:if="*{settlementDate != null && transactionCancellationDate == null}">
 					<th scope="row">決済完了日</th>
-					<td th:text="*{settlementDate}">決済完了日</td>
+					<td th:text="*{getFormatSettlementDate()}">決済完了日</td>
 					<td></td>
 					<td></td>
 				</tr>
@@ -67,7 +67,7 @@
 				<tr
 					th:if="*{settlementDate == null && transactionCancellationDate != null}">
 					<th scope="row">キャンセル日</th>
-					<td th:text="*{transactionCancellationDate}">キャンセル日</td>
+					<td th:text="*{getFormatTransactionCancellationDate()}">キャンセル日</td>
 					<td></td>
 					<td></td>
 				</tr>
@@ -154,7 +154,7 @@
 						<th>個数</th>
 						<th>小計</th>
 						<th>商品詳細</th>
-						<th>商品キャンセル</th>
+						<th>キャンセル</th>
 						<th>キャンセル日</th>
 						<th>キャンセル処理者</th>
 					</tr>
@@ -180,18 +180,18 @@
 								-</p></td>
 						<td scope="row">
 							<p
-							th:if="*{productCancellationDate != null && productCancellationUser != null}"
-							th:text="*{productCancellationDate}">キャンセル日</p>
+							th:if="*{productCancellationDate != null}"
+							th:text="*{getFormatProductCancellationDate()}">キャンセル日</p>
 							<p
-							th:if="*{productCancellationDate == null && productCancellationUser == null}">
+							th:if="*{productCancellationDate == null}">
 								-</p>
 						</td>
 						<td scope="row">
 							<p
-							th:if="*{productCancellationDate != null && productCancellationUser != null}"
+							th:if="*{productCancellationUser != null}"
 							th:text="*{productCancellationUser}">キャンセル処理者</p>
 							<p
-							th:if="*{productCancellationDate == null && productCancellationUser == null}">
+							th:if="*{productCancellationUser == null}">
 								-</p>
 						</td>
 					</tr>

@@ -9,6 +9,7 @@ public class FormatTimestamp {
 
 		String str = null;
 
+
 		if (t != null && !t.toString().isEmpty()) {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 			str = sdf.format(t);
@@ -16,6 +17,4 @@ public class FormatTimestamp {
 
 		return str;
 	}
-
-
 }

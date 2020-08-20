@@ -66,7 +66,7 @@ public class TrSalesProductHistoryEntity {
 	 * 販売商品のキャンセル日時を取得
 	 * ※ Timestamp → String に変換
 	 */
-	public String getProductCancellationDate() {
+	public String getFormatProductCancellationDate() {
 		FormatTimestamp ft = new FormatTimestamp();
 		return ft.formatTimestamp(this.productCancellationDate);
 	}
@@ -96,7 +96,5 @@ public class TrSalesProductHistoryEntity {
 
 		this.productCancellationDate = null;
 		this.productCancellationUser = null;
-
-
 	}
 }

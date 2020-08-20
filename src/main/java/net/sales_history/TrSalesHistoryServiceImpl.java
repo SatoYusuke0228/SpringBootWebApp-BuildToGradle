@@ -1,5 +1,6 @@
 package net.sales_history;
 
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
@@ -188,4 +189,38 @@ public class TrSalesHistoryServiceImpl implements TrSalesHistoryService {
 		return Arrays.asList(trimmedMonoSpaceQuery.split("\\s"));
 	}
 
+	@Override
+	public List<TrSalesHistoryEntity> findByDates(Timestamp startDate, Timestamp endDate) {
+
+		if (startDate == null && endDate == null) {
+			return null;
+		}
+
+		//指定された期間を元にDBから取得したデータ一覧を返す
+		return salesHistoryRepository.findAll(dateContains(startDate, endDate));
+
+	}
+
+	public Specification<TrSalesHistoryEntity> dateContains(Timestamp startDate, Timestamp endDate) {
+
+		return Specification.where(new Specification<TrSalesHistoryEntity>() {
+
+			@Override
+			public Predicate toPredicate(Root<TrSalesHistoryEntity> root,
+					CriteriaQuery<?> query,
+					CriteriaBuilder cb) {
+
+				if (startDate != null && endDate == null) {
+					//startDate以降の検索
+					return cb.greaterThanOrEqualTo(root.get("salesDate"), startDate);
+				} else if (startDate == null && endDate != null) {
+					//endDate以前の検索
+					return cb.lessThanOrEqualTo(root.get("salesDate"), endDate);
+				} else {
+					//期間検索
+					return cb.between(root.get("salesDate"), startDate, endDate);
+				}
+			}
+		});
+	}
 }

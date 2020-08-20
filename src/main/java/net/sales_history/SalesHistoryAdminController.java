@@ -1,6 +1,8 @@
 package net.sales_history;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +54,42 @@ public class SalesHistoryAdminController {
 
 		//検索ワードを元に販売履歴を取得
 		final List<TrSalesHistoryEntity> salesHistoryList = salesHistoryService.findByKeyword(keyword);
+		mav.addObject(SALES_HISTORY, salesHistoryList);
+
+		//Viewファイル名セット
+		mav.setViewName("sales-history");
+
+		return mav;
+	}
+
+	/**
+	 * 販売履歴を期間ごとに表示するためのメソッドe
+	 * @author SatoYusuke0228
+	 */
+	@RequestMapping("/admin/history/search/date")
+	public ModelAndView sendItemsByDate(
+			@RequestParam String start,
+			@RequestParam String end,
+			Timestamp startDate,
+			Timestamp endDate,
+			ModelAndView mav) {
+
+		try { //検索開始日チェックとTimestamp型への変換
+			startDate = new Timestamp(
+					new SimpleDateFormat("yyyy-MM-dd" + "HH:mm:ss.SSS").parse(start + "00:00:00.000").getTime());
+		} catch (ParseException e) {
+			startDate = null;
+		}
+
+		try { //検索終了日のチェックとTimestamp型への変換
+			endDate = new Timestamp(
+					new SimpleDateFormat("yyyy-MM-dd" + "HH:mm:ss.SSS").parse(end + "23:59:59.999").getTime());
+		} catch (ParseException e) {
+			endDate = null;
+		}
+
+		//期間検索するメソッドを実行してDBから該当のデータを取得してスコープに保存
+		final List<TrSalesHistoryEntity> salesHistoryList = salesHistoryService.findByDates(startDate, endDate);
 		mav.addObject(SALES_HISTORY, salesHistoryList);
 
 		//Viewファイル名セット
@@ -203,6 +241,9 @@ public class SalesHistoryAdminController {
 			//ENTITYの決済フラグを変更
 			salesHistoryEntity.setSettlementFlag("キャンセル");
 
+			//販売合計額を0円に設定
+			salesHistoryEntity.setTotalSalesAmount(0);
+
 			//ログイン中のユーザー名を取得してTransactionCancellationUserに設定
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			final String loginUserName = auth.getName();
@@ -231,7 +272,7 @@ public class SalesHistoryAdminController {
 	}
 
 	/**
-	 * 指定した商品の決済ステータスを『キャンセル』に変更した結果を表示するメソッド
+	 * 指定した商品の決済ステータスを『キャンセル』に変更するか確認するページを表示するメソッド
 	 */
 	@RequestMapping("/admin/history/{salesHistoryId}/cancel/{salesProductId}")
 	public ModelAndView showSalesProductCancelPage(
@@ -262,7 +303,7 @@ public class SalesHistoryAdminController {
 	}
 
 	/**
-	 * 指定した商品の決済ステータスを『キャンセル』に変更するか確認するページを表示するメソッド
+	 * 指定した商品の決済ステータスを『キャンセル』に変更した結果を表示するメソッド
 	 */
 	@RequestMapping("/admin/history/{salesHistoryId}/cancel/{salesProductId}/result")
 	public ModelAndView showSalesProductCancelResultPage(
@@ -287,8 +328,6 @@ public class SalesHistoryAdminController {
 				&& cancelProduct.getProductCancellationUser() == null) {
 
 			//販売履歴の販売合計額を更新
-			System.out.println(salesHistoryEntity.getTotalSalesAmount());
-			System.out.println(cancelProduct.getSalesProductPrice());
 			salesHistoryEntity.setTotalSalesAmount(
 					salesHistoryEntity.getTotalSalesAmount() - cancelProduct.getSalesProductPrice());
 

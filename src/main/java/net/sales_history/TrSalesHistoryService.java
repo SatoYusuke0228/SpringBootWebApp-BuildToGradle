@@ -1,5 +1,6 @@
 package net.sales_history;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 public abstract interface TrSalesHistoryService {
@@ -39,4 +40,11 @@ public abstract interface TrSalesHistoryService {
 	 */
 	public abstract List<TrSalesHistoryEntity> findByKeyword(String keyword);
 
+	/**
+	 * 『検索ワード』を元に売履歴一覧をDBから取得
+	 *
+	 * @param startDate 検索開始日
+	 * @param endDate   検索終了日
+	 */
+	public abstract List<TrSalesHistoryEntity> findByDates(Timestamp startDate, Timestamp endDate);
 }

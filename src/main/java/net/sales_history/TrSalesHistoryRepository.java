@@ -7,5 +7,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TrSalesHistoryRepository extends
 		JpaRepository<TrSalesHistoryEntity, Long>,
-		JpaSpecificationExecutor<TrSalesHistoryEntity> {
-}
+		JpaSpecificationExecutor<TrSalesHistoryEntity> {}

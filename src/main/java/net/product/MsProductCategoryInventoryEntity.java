@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
@@ -90,7 +91,7 @@ public class MsProductCategoryInventoryEntity {
 	 * INSERT文実行日時を取得
 	 * ※ Timestamp → String に変換
 	 */
-	public String getInsertDate() {
+	public String getFormatInsertDate() {
 		FormatTimestamp ft = new FormatTimestamp();
 		return ft.formatTimestamp(this.insertDate);
 	}
@@ -99,7 +100,7 @@ public class MsProductCategoryInventoryEntity {
 	 * 最終UPDATE文実行日時を取得
 	 * ※ Timestamp → String に変換
 	 */
-	public String getUpdateDate() {
+	public String getFormatUpdateDate() {
 		FormatTimestamp ft = new FormatTimestamp();
 		return ft.formatTimestamp(this.updateDate);
 	}
@@ -108,7 +109,7 @@ public class MsProductCategoryInventoryEntity {
 	 * delete文実行日時を取得
 	 * ※ Timestamp → String に変換
 	 */
-	public String getDaleteDate() {
+	public String getFormatDaleteDate() {
 		FormatTimestamp ft = new FormatTimestamp();
 		return ft.formatTimestamp(this.deleteDate);
 	}
@@ -119,7 +120,7 @@ public class MsProductCategoryInventoryEntity {
 	 * 		cascade  = 元が消えたら関連テーブルはどうするか,
 	 * 		fetch    = 一緒に取り出すか)
 	 */
-	@OneToMany
+	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name="PRODUCT_CATEGORY_ID")
 	@Getter
 	@Setter

@@ -47,7 +47,7 @@ import net.purchase.Checkout;
 @Table(name = "TR_SALES_HISTORY")
 @Entity
 @Data
-@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 public class TrSalesHistoryEntity {
 
 	@Id
@@ -132,12 +132,11 @@ public class TrSalesHistoryEntity {
 	@JoinColumn(name = "SALES_HISTORY_ID")
 	private List<TrSalesProductHistoryEntity> salesProductHistoryEntity;
 
-
 	/**
 	 * 取引日時を取得
 	 * ※ Timestamp → String に変換
 	 */
-	public String getSalesDate() {
+	public String getFormatSalesDate() {
 		FormatTimestamp ft = new FormatTimestamp();
 		return ft.formatTimestamp(this.salesDate);
 	}
@@ -146,16 +145,17 @@ public class TrSalesHistoryEntity {
 	 * 取引の決済完了日時を取得
 	 * ※ Timestamp → String に変換
 	 */
-	public String getTransactionCancellationDate() {
+	public String getFormatSettlementDate() {
 		FormatTimestamp ft = new FormatTimestamp();
 		return ft.formatTimestamp(this.settlementDate);
 	}
+
 
 	/**
 	 * 取引のキャンセル日時を取得
 	 * ※ Timestamp → String に変換
 	 */
-	public String getSettlementDate() {
+	public String getFormatTransactionCancellationDate() {
 		FormatTimestamp ft = new FormatTimestamp();
 		return ft.formatTimestamp(this.transactionCancellationDate);
 	}
@@ -163,7 +163,8 @@ public class TrSalesHistoryEntity {
 	/**
 	 * コンストラクタ
 	 */
-	public TrSalesHistoryEntity() {};
+	public TrSalesHistoryEntity() {
+	};
 
 	/**
 	 * コンストラクタ

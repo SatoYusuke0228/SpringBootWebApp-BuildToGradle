@@ -11,7 +11,7 @@
 	<div class="search">
 		<!-- ヘッダー検索機能 -->
 		<form action="/admin/management/search" method="GET" class="search_container">
-			<input name="keyword" type="text" size="25" placeholder="商品検索">
+			<input name="keyword" type="text" size="25" placeholder="キーワードで探す">
 			<input type="submit" value="&#xf002; 検索">
 		</form>
 	</div>
@@ -21,6 +21,8 @@
 			<tr>
 				<th>商品ID</th>
 				<th>商品名</th>
+				<th>在庫</th>
+				<th>表示</th>
 				<th></th>
 				<th>詳細</th>
 				<th></th>
@@ -31,6 +33,9 @@
 			<tr>
 				<td th:text="*{productId}">商品ID</td>
 				<td th:text="*{productName}">商品名</td>
+				<td th:text="*{productStock}">在庫</td>
+				<td th:if="*{productShowFlag == 0}">◎</td>
+				<td th:if="*{productShowFlag != 0}">×</td>
 				<td><button th:onclick="|location.href='@{'/admin/management/details/'+ *{productId} }'|">詳細</button></td>
 				<td><button th:onclick="|location.href='@{'/admin/management/update/'+ *{productId} }'|">変更</button></td>
 				<td><button th:onclick="|location.href='@{'/admin/management/delete/'+ *{productId} }'|">削除</button></td>

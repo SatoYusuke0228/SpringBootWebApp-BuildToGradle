@@ -2,27 +2,36 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>販売履歴</title>
+<title>販売履歴一覧</title>
 <link
 	href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
 	rel="stylesheet">
 </head>
 <body>
 
-	<h2>販売履歴</h2>
+	<h2>販売履歴一覧</h2>
 
 	<div class="search">
-		<!-- ヘッダー検索機能 -->
-		<form action="/admin/history/search" method="GET"
-			class="search_container">
-			<input name="keyword" type="text" size="25" placeholder="販売履歴検索">
-			<input type="submit" value="&#xf002; 検索">
-		</form>
-		<form action="/admin/history/search/date" method="GET"
-			class="date_search">
-			<input type="date" id="start" name="trip-start"
-				min="2020-01-01" max="9999-12-31" value="&#xf002; 検索">
-		</form>
+
+		<div class="search_keyword">
+			<form action="/admin/history/search" method="GET"
+				class="search_container">
+				<input name="keyword" type="text" size="25" placeholder="キーワードで探す">
+				<input type="submit" value="&#xf002; 検索">
+			</form>
+		</div>
+
+		<div class="search_date">
+			<form action="/admin/history/search/date" method="GET">
+				<p>検索開始日:<input type="date" class="date_search_start" id="start" name="start"
+					min="2020-01-01" max="9999-12-31" value="" />
+				<p>検索終了日:<input type="date"
+					class="date_search_end" id="start" name="end" min="2020-01-01"
+					max="9999-12-31" value="" />
+				<input type="submit" value="&#xf002; 検索">
+			</form>
+		</div>
+
 	</div>
 
 	<table>
@@ -50,7 +59,7 @@
 				<td th:text="*{customerAddress}">住所</td>
 				<td th:text="*{customerTell}">電話番号</td>
 				<td th:text="*{customerEmail}">メール</td>
-				<td th:text="*{salesDate}">購入日</td>
+				<td th:text="*{getFormatSalesDate()}">購入日</td>
 				<td th:text="*{SettlementFlag}">決済状態</td>
 				<td><button
 						th:onclick="|location.href='@{'/admin/history/'+ *{salesHistoryId} }'|">詳細</button></td>

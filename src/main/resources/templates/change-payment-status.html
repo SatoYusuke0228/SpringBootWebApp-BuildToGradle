@@ -6,48 +6,101 @@
 </head>
 <body th:object="${trSalesHistoryEntity}">
 
-	<div th:if="${settlement}">
-		<h2>決済ステータスを『決済完了』に変更しますか？</h2>
-		<button
-			th:onclick="|location.href='@{'/admin/history/' + *{salesHistoryId} + '/settlement/result'}'|">『決済完了』に変更</button>
-		<button th:onclick="|location.href='@{/admin}'|">管理者画面に戻る</button>
+	<div class="page_title">
+
+		<div th:if="${settlement}">
+			<h2>決済ステータスを『決済完了』に変更しますか？</h2>
+		</div>
+		<div th:if="${cancel}">
+			<h2>決済ステータスを『キャンセル』に変更しますか?</h2>
+		</div>
+
+		<div th:if="${productCancel}">
+			<h2>決済ステータスを『キャンセル』に変更しますか?</h2>
+		</div>
+
 	</div>
 
-	<div th:if="${cancel}">
-		<h2>決済ステータスを『キャンセル』に変更しますか?</h2>
-		<button
-			th:onclick="|location.href='@{'/admin/history/' + *{salesHistoryId} + '/cancel/result'}'|">『キャンセル』に変更</button>
-		<button th:onclick="|location.href='@{/admin}'|">管理者画面に戻る</button>
+	<ul>
+		<li class="customer_info">
+			<h2>販売履歴情報</h2>
+			<table class="table">
+
+				<tr>
+					<th scope="row">販売履歴ID</th>
+					<td th:text="*{salesHistoryId}">販売履歴ID</td>
+				</tr>
+
+				<tr>
+					<th scope="row">購入者</th>
+					<td th:text="*{customerName}">購入者</td>
+				</tr>
+
+				<tr>
+					<th scope="row">購入金額</th>
+					<td th:text="*{totalSalesAmount + '円'}">購入金額</td>
+				</tr>
+
+				<tr>
+					<th scope="row">販売日</th>
+					<td th:text="*{salesDate}">販売日</td>
+				</tr>
+
+			</table>
+		</li>
+
+		<li class="product_info" th:if="${productCancel}"
+			th:object="${cancelProduct}">
+
+		<h2>商品情報</h2>
+
+			<table class="table">
+
+				<tr>
+					<th scope="row">商品ID</th>
+					<td th:text="*{salesProductId}">商品ID</td>
+				</tr>
+
+				<tr>
+					<th scope="row">商品名</th>
+					<td th:text="*{salesProductName}">商品名</td>
+				</tr>
+
+				<tr>
+					<th scope="row">個数</th>
+					<td th:text="*{salesProductQuantity}">個数</td>
+				</tr>
+
+				<tr>
+					<th scope="row">小計</th>
+					<td th:text="*{salesProductPrice + '円'}">小計</td>
+				</tr>
+
+			</table>
+		</li>
+	</ul>
+
+	<div class="submit_button">
+
+		<div th:if="${settlement}">
+			<button
+				th:onclick="|location.href='@{'/admin/history/' + *{salesHistoryId} + '/settlement/result'}'|">変更</button>
+			<button th:onclick="|location.href='@{/admin}'|">管理者画面に戻る</button>
+		</div>
+
+		<div th:if="${cancel}">
+			<button
+				th:onclick="|location.href='@{'/admin/history/' + *{salesHistoryId} + '/cancel/result'}'|">変更</button>
+			<button th:onclick="|location.href='@{/admin}'|">管理者画面に戻る</button>
+		</div>
+
+		<div th:if="${productCancel}" th:object="${cancelProduct}">
+			<button
+				th:onclick="|location.href='@{'/admin/history/' + *{salesHistoryId} + '/cancel/' + *{salesProductId} + '/result'}'|">変更</button>
+			<button th:onclick="|location.href='@{/admin}'|">管理者画面に戻る</button>
+		</div>
+
 	</div>
-
-	<div th:if="${productCancel}" th:object="${cancelProduct}">
-		<h2>決済ステータスを『キャンセル』に変更しますか?</h2>
-		<button
-			th:onclick="|location.href='@{'/admin/history/' + *{salesHistoryId} + '/cancel/' + *{salesProductId} + '/result'}'|">『キャンセル』に変更</button>
-		<button th:onclick="|location.href='@{/admin}'|">管理者画面に戻る</button>
-	</div>
-
-
-
-	<h3>販売履歴情報</h3>
-	<table class="table">
-
-		<tr>
-			<th scope="row">販売履歴ID</th>
-			<td th:text="*{salesHistoryId}">販売履歴ID</td>
-		</tr>
-
-		<tr>
-			<th scope="row">購入者</th>
-			<td th:text="*{customerName}">購入者</td>
-		</tr>
-
-		<tr>
-			<th scope="row">販売日</th>
-			<td th:text="*{salesDate}">販売日</td>
-		</tr>
-
-	</table>
 
 </body>
 </html>

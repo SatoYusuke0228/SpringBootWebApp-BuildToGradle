@@ -135,7 +135,7 @@ public class TrProductEntity {
 	 * INSERT文実行日時を取得
 	 * ※ Timestamp → String に変換
 	 */
-	public String getInsertDate() {
+	public String getFormatInsertDate() {
 		FormatTimestamp ft = new FormatTimestamp();
 		return ft.formatTimestamp(this.insertDate);
 	}
@@ -144,7 +144,7 @@ public class TrProductEntity {
 	 * 最終UPDATE文実行日時を取得
 	 * ※ Timestamp → String に変換
 	 */
-	public String getUpdateDate() {
+	public String getFormatUpdateDate() {
 		FormatTimestamp ft = new FormatTimestamp();
 		return ft.formatTimestamp(this.updateDate);
 	}
@@ -153,7 +153,7 @@ public class TrProductEntity {
 	 * delete文実行日時を取得
 	 * ※ Timestamp → String に変換
 	 */
-	public String getDaleteDate() {
+	public String getFormatDaleteDate() {
 		FormatTimestamp ft = new FormatTimestamp();
 		return ft.formatTimestamp(this.deleteDate);
 	}
