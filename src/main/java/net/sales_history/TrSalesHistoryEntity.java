@@ -187,13 +187,20 @@ public class TrSalesHistoryEntity {
 		this.customerZipcode = checkout.getZipcode();
 		this.customerAddress = checkout.getMainAddress() + " " + checkout.getBuildingAddress();
 		this.customerTell = checkout.getTell();
-		this.customerEmail = checkout.getEmail();
+//		this.customerEmail = checkout.getEmail();
+		this.customerEmail = "aaa@gmail.com";
 
-		this.customerCreditCardNum = checkout.getCreditCardNum();
-		this.customerCreditCardName = checkout.getCreditCardName();
-		this.customerCreditCardMonth = checkout.getCreditCardMonth();
-		this.customerCreditCardYear = checkout.getCreditCardYear();
-		this.customerCreditCardCvs = checkout.getCreditCardCvs();
+//		this.customerCreditCardNum = checkout.getCreditCardNum();
+//		this.customerCreditCardName = checkout.getCreditCardName();
+//		this.customerCreditCardMonth = checkout.getCreditCardMonth();
+//		this.customerCreditCardYear = checkout.getCreditCardYear();
+//		this.customerCreditCardCvs = checkout.getCreditCardCvs();
+
+		this.customerCreditCardNum = "1234123412341234";
+		this.customerCreditCardName = "Test";
+		this.customerCreditCardMonth = "8";
+		this.customerCreditCardYear = "24";
+		this.customerCreditCardCvs = "123";
 
 		this.salesDate = salesDate;
 		this.settlementDate = null;

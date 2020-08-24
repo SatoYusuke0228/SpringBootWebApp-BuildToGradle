@@ -47,7 +47,12 @@ dependencies {
 
 	//stripe(決済API)
 	//https://stripe.com/docs/payments/integration-builder
-	implementation("com.stripe:stripe-java:{VERSION}")
+	//https://github.com/stripe/stripe-java
+	implementation("com.stripe:stripe-java:19.45.0")
+
+	//gson
+    implementation group: "com.google.code.gson", name: "gson", version:"2.8.6"
+    testImplementation group: "com.google.guava", name: "guava", version:"28.2-jre"
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'

@@ -165,7 +165,10 @@ public class TrSalesHistoryServiceImpl implements TrSalesHistoryService {
 					public Predicate toPredicate(Root<TrSalesHistoryEntity> root,
 							CriteriaQuery<?> query,
 							CriteriaBuilder cb) {
-						query.distinct(true); //同一IDで複数データある場合は１つだけ抽出
+
+						//同一IDで複数データある場合は１つだけ抽出
+						query.distinct(true);
+
 						return cb.like(root.join("salesProductHistoryEntity", JoinType.LEFT)
 								.get("productCancellationUser"), "%" + keyword.toLowerCase() + "%");
 					}
@@ -192,13 +195,13 @@ public class TrSalesHistoryServiceImpl implements TrSalesHistoryService {
 	@Override
 	public List<TrSalesHistoryEntity> findByDates(Timestamp startDate, Timestamp endDate) {
 
+		//もし日付の指定がされなかった場合はスタンダードなfindAllを返す
 		if (startDate == null && endDate == null) {
-			return null;
+			return salesHistoryRepository.findAll();
 		}
 
 		//指定された期間を元にDBから取得したデータ一覧を返す
 		return salesHistoryRepository.findAll(dateContains(startDate, endDate));
-
 	}
 
 	public Specification<TrSalesHistoryEntity> dateContains(Timestamp startDate, Timestamp endDate) {

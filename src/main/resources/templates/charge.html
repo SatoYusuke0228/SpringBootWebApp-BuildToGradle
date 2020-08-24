@@ -7,10 +7,17 @@
 	<header th:replace="common :: header"></header>
 	<!-- メイン -->
 	<main>
-		<div class="maincol">
+
+		<div th:if="${charge_success}" class="maincol">
 			<h2>購入ありがとうございました。</h2>
-			<button onclick="location.href='/'">TOPに戻る</button>
 		</div>
+
+		<div th:if="${charge_failed}" class="maincol">
+			<h2>購入に失敗しました</h2>
+		</div>
+
+		<button onclick="location.href='/'">TOPに戻る</button>
+
 	</main>
 	<!-- メイン終了 -->
 	<!-- footer読み込み -->

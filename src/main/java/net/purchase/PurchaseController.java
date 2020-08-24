@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -17,13 +18,16 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.stripe.exception.StripeException;
+import com.stripe.model.Charge;
 
 import net.product.TrProductDeleteAndUpdateService;
 import net.product.TrProductEntity;
 import net.product.TrProductSelectService;
+import net.purchase.ChargeRequest.Currency;
 import net.sales_history.TrSalesHistoryEntity;
 import net.sales_history.TrSalesHistoryService;
 import net.sales_history.TrSalesProductHistoryEntity;
@@ -48,6 +52,13 @@ public class PurchaseController {
 	@Autowired
 	TrSalesProductHistoryService salesProductHistoryService;
 
+	@Autowired
+	private StripeService paymentsService;
+
+	//StripeAPIパブリックキー
+	@Value("pk_test_51HJ6pwG2TPycVyZrEyKZDWmeOMZsppzPupPZGU2cEYyB5ep1TKjzUTuGJX3w3TmelaDjNe6JWMzQgFXceCE6s6op006Bovigok")
+	private String stripePublicKey;
+
 	//セッションスコープのインスタンス
 	@Autowired
 	private HttpSession session;
@@ -68,25 +79,21 @@ public class PurchaseController {
 	 *
 	 * @author SatoYusuke0228
 	 */
-	@RequestMapping("/showform")
-	public ModelAndView showForm(ModelAndView mav) {
+	@GetMapping("/showform")
+	public ModelAndView showForm(
+			@SessionAttribute("cart") Cart cart,
+			ModelAndView mav) {
 
 		//カートの中身に商品があればtrue、なければfalse
-		Cart cart = (Cart) session.getAttribute("cart");
-		mav.addObject("check", cart.getCartItems().size() != 0);
+		mav.addObject("check", 0 < cart.getCartItems().size());
 
 		//購入情報オブジェクトを作成してモデルに登録
 		mav.addObject("checkout", new Checkout());
-		mav.setViewName("checkout");
+		mav.setViewName("form");
 
 		session.setAttribute("cart", cart);
 
 		return mav;
-	}
-
-	@GetMapping("/checkout")
-	public String getCheckoutPage(Checkout checkout) {
-		return "checkout";
 	}
 
 	/**
@@ -107,70 +114,132 @@ public class PurchaseController {
 	 *
 	 * @author SatoYusuke0228
 	 */
-	@PostMapping("/purchase")
+	@PostMapping("/checkout")
 	public ModelAndView postPurchasePage(
 			@SessionAttribute("cart") Cart cart,
 			@Validated Checkout checkout,
 			BindingResult result,
 			ModelAndView mav) {
 
-		// カートの中身に商品があればtrue、なければfalse
-		cart = (Cart) session.getAttribute("cart");
-		mav.addObject("check", cart.getCartItems().size() != 0);
+		//カートの中身に商品があればtrue、なければfalse
+		mav.addObject("check", 0 < cart.getCartItems().size());
 
-		if (result.hasErrors()) {
+		if (result.hasErrors()) { //FROMに不備があれば入力画面を再表示する
 
 			// 元の画面に戻りエラーメッセージを表示
 			mav.setViewName("checkout");
 
 		} else { //FORMに不備がなければ販売処理をする
 
-			//Sessinに保存したカートから売れた商品を取得
-			Map<String, CartItem> soldItems = new HashMap<>();
-			soldItems = cart.getCartItems();
-
-			//販売履歴オブジェクトを作成してDBに保存する
-			TrSalesHistoryEntity salesHistoryEntity =
-					new TrSalesHistoryEntity(cart, checkout, new Timestamp(System.currentTimeMillis()));
-			salesHistoryService.saveSalesHistory(salesHistoryEntity);
-
-			//販売商品履歴を商品種類ごとに格納するListを作成
-			List<TrSalesProductHistoryEntity> salesProductHistoryEntity = new ArrayList<>();
-
-			//売れた商品ごとに商品在庫から商品個数を減算し、販売商品履歴Listに格納していく処理
-			for (CartItem soldItem : soldItems.values()) {
-
-				//商品IDを元にDBの商品を取得
-				TrProductEntity productEntity = productSelectService.getItemInfo(soldItem.getId());
-
-//				System.out.println("現在の在庫 : " + productEntity.getProductStock());
-
-				//商品在庫数を変更してDBに反映させる
-				productEntity.setProductStock(productEntity.getProductStock() - soldItem.getQuantity());
-				productDeleteAndUpdateService.saveAndFlush(productEntity);
-
-//				productEntity = productSelectService.getItemInfo(soldItem.getId());
-//				System.out.println("購入後の在庫 : " + productEntity.getProductStock());
-
-//				System.out.println("販売履歴ID表示テスト : " + salesHistoryEntity.getSalesHistoryId());
-
-				//販売商品履歴Listに格納していく
-				final TrSalesProductHistoryEntity salesProductHistory =
-						new TrSalesProductHistoryEntity(salesHistoryEntity.getSalesHistoryId(), soldItem);
-				salesProductHistoryEntity.add(salesProductHistory);
-			}
-
-			//販売商品を格納したListをすべて保存する
-			salesProductHistoryService.saveSalesProductHistory(salesProductHistoryEntity);
-
-			// カートの中身を初期化
-			cart = new Cart();
+			session.setAttribute("checkout", checkout);
 			session.setAttribute("cart", cart);
 
-			// 購入完了画面を表示
-			mav.setViewName("purchase");
+			//通貨単位のセット
+			mav.addObject("amount", 2000); //in JPY
+			mav.addObject("currency", ChargeRequest.Currency.JPY);
+
+			//StripeAPIキー
+			mav.addObject("stripePublicKey", stripePublicKey);
+
+			// 購入確認画面を表示
+			mav.setViewName("checkout");
 		}
+		return mav;
+	}
+
+
+
+	@GetMapping("/checkout")
+	public String getCheckoutPage() {
+		return "checkout";
+	}
+
+	@PostMapping("/charge")
+	public ModelAndView showChargePage(
+			@SessionAttribute("cart") Cart cart,
+			@SessionAttribute("checkout") Checkout checkout,
+			ChargeRequest chargeRequest,
+			Charge charge,
+			ModelAndView mav) {
+
+		mav.setViewName("charge");
+
+		//決済処理の準備
+		chargeRequest.setDescription("テスト決済");
+		chargeRequest.setCurrency(Currency.JPY);
+
+		try {
+
+			//決済処理
+			charge = paymentsService.charge(chargeRequest);
+
+			//決済ステータス
+			mav.addObject("id", charge.getId());
+			mav.addObject("status", charge.getStatus());
+			mav.addObject("chargeId", charge.getId());
+			mav.addObject("balance__transaction", charge.getBalanceTransaction());
+
+			System.out.println(chargeRequest.getStripeEmail());
+			System.out.println(charge.getReceiptNumber());
+
+			//決済成功フラグ
+			mav.addObject("charge_success", true);
+
+		} catch (StripeException e) {
+
+			//決済失敗フラグ
+			mav.addObject("charge_failed", true);
+			e.printStackTrace();
+
+			return mav;
+		}
+
+		//Sessinに保存したカートから売れた商品を取得
+		Map<String, CartItem> soldItems = new HashMap<>();
+		soldItems = cart.getCartItems();
+
+		//販売履歴オブジェクトを作成してDBに保存する
+		TrSalesHistoryEntity salesHistoryEntity = new TrSalesHistoryEntity(cart, checkout,
+				new Timestamp(System.currentTimeMillis()));
+		salesHistoryService.saveSalesHistory(salesHistoryEntity);
+
+		//販売商品履歴を商品種類ごとに格納するListを作成
+		List<TrSalesProductHistoryEntity> salesProductHistoryEntity = new ArrayList<>();
+
+		//売れた商品ごとに商品在庫から商品個数を減算し、販売商品履歴Listに格納していく処理
+		for (CartItem soldItem : soldItems.values()) {
+
+			//商品IDを元にDBの商品を取得
+			TrProductEntity productEntity = productSelectService.getItemInfo(soldItem.getId());
+
+			//商品在庫数を変更してDBに反映させる
+			productEntity.setProductStock(productEntity.getProductStock() - soldItem.getQuantity());
+			productDeleteAndUpdateService.saveAndFlush(productEntity);
+
+			//販売商品履歴Listに格納していく
+			final TrSalesProductHistoryEntity salesProductHistory = new TrSalesProductHistoryEntity(
+					salesHistoryEntity.getSalesHistoryId(), soldItem);
+			salesProductHistoryEntity.add(salesProductHistory);
+		}
+
+		//販売商品を格納したListをすべて保存する
+		salesProductHistoryService.saveSalesProductHistory(salesProductHistoryEntity);
+
+		// カートの中身に商品があればtrue、なければfalse
+		cart = (Cart) session.getAttribute("cart");
+		mav.addObject("check", 0 < cart.getCartItems().size());
+
+		// カートの中身を初期化
+		cart = new Cart();
+		session.setAttribute("cart", cart);
 
 		return mav;
 	}
+
+//		@ExceptionHandler(StripeException.class)
+//		public String handleError(ModelAndView mav, StripeException e) {
+//			mav.addObject("error", e.getMessage());
+//			mav.addObject("charge_failed", true);
+//			return "charge";
+//		}
 }
