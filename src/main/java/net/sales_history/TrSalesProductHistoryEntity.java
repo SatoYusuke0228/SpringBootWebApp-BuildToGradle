@@ -11,18 +11,24 @@ import lombok.Data;
 import net.common.FormatTimestamp;
 import net.purchase.CartItem;
 
-/**
- * 販売商品履歴テーブルのEntity
- *
- * SALES_HISTORY_ID
- * SALES_PRODUCT_ID
- * SALES_PRODUCT_NAME
- * SALES_PRODUCT_QUANTITY
- * SALES_PRODUCT_PRICE
- * PRODUCT_CANCELLETION_DATE
- * PRODUCT_CANCELLETION_USER
- *
- * @author SatoYusuke0228
+/******************************
+ * 販売商品履歴テーブルのEntity *
+ ******************************
+
+ CREATE TABLE TR_SALES_PRODUCT_HISTORY (
+	SALES_PRODUCT_HISTORY_ID VARCHAR(64) NOT NULL,
+	SALES_HISTORY_ID BIGINT NOT NULL,
+	SALES_PRODUCT_ID VARCHAR(16) NOT NULL,
+	SALES_PRODUCT_NAME VARCHAR(128) NOT NULL,
+	SALES_PRODUCT_QUANTITY INTEGER,
+	SALES_PRODUCT_PRICE INTEGER,
+	SALES_PRODUCT_STATUS INTEGER,
+	PDORUCT_SHIPPING_DATE TIMESTAMP,
+	PDORUCT_SHIPPING_USER VARCHAR(256),
+	PRODUCT_CANCELLETION_DATE TIMESTAMP,
+	PRODUCT_CANCELLETION_USER VARCHAR(256)
+ );
+	@author SatoYusuke0228
  */
 @Entity
 @Data
@@ -53,8 +59,14 @@ public class TrSalesProductHistoryEntity {
 	private int salesProductPrice;
 
 	/*
-	 * 商品ごとのキャンセル日と、その処理をした管理者名
+	 * 商品ごとの発送日とキャンセル日と処理をした管理者名
 	 */
+
+	@Column(name = "PRODUCT_SHIPPING_DATE", nullable = true)
+	private Timestamp productShippingDate;
+
+	@Column(name = "PRODUCT_SHIPPING_USER", nullable = true)
+	private String productShippingUser;
 
 	@Column(name = "PRODUCT_CANCELLETION_DATE", nullable = true)
 	private Timestamp productCancellationDate;
@@ -94,6 +106,8 @@ public class TrSalesProductHistoryEntity {
 		this.salesProductQuantity = cartItem.getQuantity();
 		this.salesProductPrice = cartItem.getPrice() * cartItem.getQuantity();
 
+		this.productShippingDate = null;
+		this.productShippingUser = null;
 		this.productCancellationDate = null;
 		this.productCancellationUser = null;
 	}

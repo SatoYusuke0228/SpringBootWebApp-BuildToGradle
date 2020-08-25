@@ -8,7 +8,9 @@
 
 	<!-- メイン -->
 	<main th:unless="${check}">
-		<h2>カートに商品はありません。</h2>
+		<div>
+			<h2>カートに商品はありません。</h2>
+		</div>
 	</main>
 
 	<main th:if="${check}">

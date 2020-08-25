@@ -29,19 +29,6 @@
 				</tr>
 
 				<tr>
-					<th scope="row">決済ステータス</th>
-					<td th:text="*{settlementFlag}">決済ステータス</td>
-					<td>
-						<button th:if="*{'未決済'.equals(settlementFlag)}"
-							th:onclick="|location.href='@{'/admin/history/' + *{salesHistoryId} + '/settlement'}'|">『決済完了』に変更</button>
-					</td>
-					<td>
-						<button th:if="*{'未決済'.equals(settlementFlag)}"
-							th:onclick="|location.href='@{'/admin/history/' + *{salesHistoryId} + '/cancel'}'|">『キャンセル』に変更</button>
-					</td>
-				</tr>
-
-				<tr>
 					<th scope="row">販売日</th>
 					<td th:text="*{getFormatSalesDate()}">販売日</td>
 					<td></td>
@@ -116,28 +103,30 @@
 		</li>
 
 		<li>
-			<h3>購入者カード情報</h3>
+			<h3>決済情報</h3>
 			<table class="table">
 
 				<tr>
-					<th scope="row">カード番号</th>
-					<td th:text="*{customerCreditCardNum}">カード番号</td>
+					<th scope="row">決済ステータス</th>
+					<td th:text="*{settlementFlag}">決済ステータス</td>
+					<td>
+						<button th:if="*{'未決済'.equals(settlementFlag)}"
+							th:onclick="|location.href='@{'/admin/history/' + *{salesHistoryId} + '/settlement'}'|">『決済完了』に変更</button>
+					</td>
+					<td>
+						<button th:if="*{'未決済'.equals(settlementFlag)}"
+							th:onclick="|location.href='@{'/admin/history/' + *{salesHistoryId} + '/cancel'}'|">『キャンセル』に変更</button>
+					</td>
 				</tr>
 
 				<tr>
-					<th scope="row">カード名義</th>
-					<td th:text="*{customerCreditCardName}">カード名義</td>
+					<th scope="row">決済ID</th>
+					<td th:text="*{stripeChargeId}">決済ID</td>
 				</tr>
 
 				<tr>
-					<th scope="row">カード期限</th>
-					<td
-						th:text="|*{customerCreditCardYear}年 / *{customerCreditCardMonth}月|">カード期限</td>
-				</tr>
-
-				<tr>
-					<th scope="row">CVS</th>
-					<td th:text="*{customerCreditCardCvs}">CVS</td>
+					<th scope="row">取引ID</th>
+					<td th:text="*{stripeBalanceTransactionId}">取引ID</td>
 				</tr>
 
 			</table>
@@ -153,7 +142,7 @@
 						<th>商品名</th>
 						<th>個数</th>
 						<th>小計</th>
-						<th>商品詳細</th>
+						<th>詳細</th>
 						<th>キャンセル</th>
 						<th>キャンセル日</th>
 						<th>キャンセル処理者</th>

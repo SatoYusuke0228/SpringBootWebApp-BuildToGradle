@@ -15,32 +15,39 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.stripe.model.Charge;
 
 import lombok.Data;
 import net.common.FormatTimestamp;
 import net.purchase.Cart;
+import net.purchase.ChargeRequest;
 import net.purchase.Checkout;
 
-/**
- * 販売履歴テーブルのEntity
- *
- * SALES_HISTORY_ID
- * TOTAL_SALES_AMOUNT
- * SETTLEMENT_FLAG
- * CUSTOMER_NAME
- * CUSTOMER_ZIPCODE
- * CUSTOMER_ADDRESS
- * CUSTOMER_TELL
- * CUSTOMER_EMAIL
- * CUSTOMER_CREDITCARD_NUM
- * CUSTOMER_CREDITCARD_NAMECUSTOMER_CREDIT_CARD_MONTH
- * CUSTOMER_CREDITCARD_YEAR
- * CUSTOMER_CREDITCARD_CVS
- * SALES_DATE
- * SETTLEMENT_DATE
- * SETTLEMENT_USER
- * CANCELLETION_DATE
- * CANCELLETION_USER
+/**************************
+ * 販売履歴テーブルのEntity *
+ * @author SatoYusuke0228  *
+ **************************
+
+ CREATE TABLE
+	TR_SALES_HISTORY (
+		SALES_HISTORY_ID bigserial NOT NULL unique,
+		TOTAL_SALES_AMOUNT INTEGER,
+		SETTLEMENT_FLAG INTEGER DEFAULT 0,
+		CUSTOMER_NAME VARCHAR(256) NOT NULL,
+		CUSTOMER_ZIPCODE VARCHAR(7) NOT NULL,
+		CUSTOMER_ADDRESS VARCHAR(256) NOT NULL,
+		CUSTOMER_TELL VARCHAR(11) NOT NULL,
+		CUSTOMER_E_MAIL VARCHAR(512) NOT NULL,
+		STRIPE_CHARGE_ID VARCHAR(32),
+		STRIPE_BALANCE_TRANSACTION_ID VARCHAR(32),
+		SALES_DATE TIMESTAMP DEFAULT now() NOT NULL,
+		SETTLEMENT_DATE TIMESTAMP,
+		SETTLEMENT_USER VARCHAR(256),
+		CANCELLETION_DATE TIMESTAMP,
+		CANCELLETION_USER VARCHAR(256),
+		PRIMARY KEY (SALES_HISTORY_ID)
+ );
+
  *
  * @author SatoYusuke0228
  */
@@ -90,22 +97,14 @@ public class TrSalesHistoryEntity {
 	private String customerEmail;
 
 	/**
-	 * 購入者クレジットカード情報
+	 * 決済情報
 	 */
-	@Column(name = "CUSTOMER_CREDIT_CARD_NUM", nullable = false)
-	private String customerCreditCardNum;
 
-	@Column(name = "CUSTOMER_CREDIT_CARD_NAME", nullable = false)
-	private String customerCreditCardName;
+	@Column(name = "STRIPE_CHARGE_ID", nullable = true)
+	private String stripeChargeId;
 
-	@Column(name = "CUSTOMER_CREDIT_CARD_MONTH", nullable = false)
-	private String customerCreditCardMonth;
-
-	@Column(name = "CUSTOMER_CREDIT_CARD_YEAR", nullable = false)
-	private String customerCreditCardYear;
-
-	@Column(name = "CUSTOMER_CREDIT_CARD_CVS", nullable = false)
-	private String customerCreditCardCvs;
+	@Column(name = "STRIPE_BALANCE_TRANSACTION_ID", nullable = true)
+	private String stripeBalanceTransactionId;
 
 	/**
 	 * 販売日と決済日とキャンセル日と、その処理者名
@@ -150,7 +149,6 @@ public class TrSalesHistoryEntity {
 		return ft.formatTimestamp(this.settlementDate);
 	}
 
-
 	/**
 	 * 取引のキャンセル日時を取得
 	 * ※ Timestamp → String に変換
@@ -171,6 +169,8 @@ public class TrSalesHistoryEntity {
 	 *
 	 * @param totalSalesAmount １つの取引の合計金額
 	 * @param checkout 購入時の入力FORM
+	 * @param chargeRequest 決済準備の情報
+	 * @param charge 決済完了の情報
 	 * @param salesDate 購入日
 	 * @param settlementDate & User 決済日とその処理者
 	 * @param settlementDate & User キャンセル日とその処理者
@@ -178,6 +178,8 @@ public class TrSalesHistoryEntity {
 	public TrSalesHistoryEntity(
 			Cart cart,
 			Checkout checkout,
+			ChargeRequest chargeRequest,
+			Charge charge,
 			Timestamp salesDate) {
 
 		this.totalSalesAmount = cart.getGrandTotal();
@@ -187,20 +189,10 @@ public class TrSalesHistoryEntity {
 		this.customerZipcode = checkout.getZipcode();
 		this.customerAddress = checkout.getMainAddress() + " " + checkout.getBuildingAddress();
 		this.customerTell = checkout.getTell();
-//		this.customerEmail = checkout.getEmail();
-		this.customerEmail = "aaa@gmail.com";
+		this.customerEmail = chargeRequest.getStripeEmail();
 
-//		this.customerCreditCardNum = checkout.getCreditCardNum();
-//		this.customerCreditCardName = checkout.getCreditCardName();
-//		this.customerCreditCardMonth = checkout.getCreditCardMonth();
-//		this.customerCreditCardYear = checkout.getCreditCardYear();
-//		this.customerCreditCardCvs = checkout.getCreditCardCvs();
-
-		this.customerCreditCardNum = "1234123412341234";
-		this.customerCreditCardName = "Test";
-		this.customerCreditCardMonth = "8";
-		this.customerCreditCardYear = "24";
-		this.customerCreditCardCvs = "123";
+		this.stripeChargeId = charge.getId();
+		this.stripeBalanceTransactionId = charge.getBalanceTransaction();
 
 		this.salesDate = salesDate;
 		this.settlementDate = null;

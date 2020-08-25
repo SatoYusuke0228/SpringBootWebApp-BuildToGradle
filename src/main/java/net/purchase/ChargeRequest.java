@@ -19,9 +19,9 @@ public class ChargeRequest {
 	//解説(?)
 	private String description;
 
-	//Stripeアクセストークン
+	//Stripe アクセストークン
 	private String stripeToken;
 
-	//StripeEmail
+	//Stripe Email
 	private String stripeEmail;
 }
