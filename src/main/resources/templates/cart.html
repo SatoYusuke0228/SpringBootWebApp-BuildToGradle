@@ -6,11 +6,18 @@
 	<!-- header読み込み -->
 	<header th:replace="common :: header"></header>
 	<!-- メイン -->
-	<main>
+
+	<!-- ("check" , cart.cartItems().size != 0) -->
+
+	<main th:unless="${check}">
+		<div>
+			<h2>カートに商品はありません。</h2>
+		</div>
+	</main>
+
+	<main th:if="${check}" >
 		<div class="maincol">
-			<!-- ("check" , cart.cartItems().size != 0) -->
-			<h2 th:unless="${check}">カートに商品はありません。</h2>
-			<table th:if="${check}" class="table">
+			<table class="table">
 				<thead>
 					<tr>
 						<th class="name-space" scope="col">商品</th>

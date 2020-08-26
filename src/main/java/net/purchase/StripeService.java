@@ -15,8 +15,7 @@ import com.stripe.model.Charge;
 @Service
 public class StripeService {
 
-	//@Value("${STRIPE__SECRET__KEY}")
-	@Value("sk_test_51HJ6pwG2TPycVyZrmObscEBaF0moFGE3AvOrz1SoiNR6JIsS7ZvrWnQeVxup6RB517kSIXYUIkZBgdZeHEhFPKB3007up9o1hb")
+	@Value("${STRIPE__SECRET__KEY}")
 	private String secretKey;
 
 	@PostConstruct

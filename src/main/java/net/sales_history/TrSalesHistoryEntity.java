@@ -68,10 +68,6 @@ public class TrSalesHistoryEntity {
 	/**
 	 * 販売履歴テーブルの決済Flag
 	 *
-	 * @see  0 == 未決済
-	 * @see  1 == 決済完了
-	 * @see -1 == キャンセル
-	 *
 	 * @see SettlementFlagConverter
 	 */
 	@Column(name = "SETTLEMENT_FLAG")
@@ -176,6 +172,7 @@ public class TrSalesHistoryEntity {
 	 * @param settlementDate & User キャンセル日とその処理者
 	 */
 	public TrSalesHistoryEntity(
+			String stripePaymentStatus,
 			Cart cart,
 			Checkout checkout,
 			ChargeRequest chargeRequest,
@@ -183,7 +180,7 @@ public class TrSalesHistoryEntity {
 			Timestamp salesDate) {
 
 		this.totalSalesAmount = cart.getGrandTotal();
-		this.settlementFlag = "未決済";
+		this.settlementFlag = stripePaymentStatus;
 
 		this.customerName = checkout.getFirstName() + " " + checkout.getLastName();
 		this.customerZipcode = checkout.getZipcode();

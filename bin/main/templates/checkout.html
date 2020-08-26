@@ -44,28 +44,33 @@
 			</table>
 		</div>
 
-		<h2>購入確認画面</h2>
+		<div class="customer">
 
-		<div>
+			<div class="customer_title">
+				<h2>お客様情報の確認</h2>
+			</div>
 
-			<table th:object="${checkout}">
+			<div class="customer_info">
 
-				<tr>
-					<th>名前：</th>
-					<th>郵便番号：</th>
-					<th>住所：</th>
-					<th>電話番号：</th>
-				</tr>
+				<table th:object="${checkout}">
 
-				<tr>
-					<td th:text="*{firstName} + *{lastName}">名前</td>
-					<td th:text="*{zipcode}">郵便番号</td>
-					<td th:text="*{mainAddress} + *{buildingAddress}">住所</td>
-					<td th:text="*{tell}">電話番号</td>
-				</tr>
+					<tr>
+						<th>名前：</th>
+						<th>郵便番号：</th>
+						<th>住所：</th>
+						<th>電話番号：</th>
+					</tr>
 
-			</table>
+					<tr>
+						<td th:text="*{firstName} + *{lastName}">名前</td>
+						<td th:text="*{zipcode}">郵便番号</td>
+						<td th:text="*{mainAddress} + *{buildingAddress}">住所</td>
+						<td th:text="*{tell}">電話番号</td>
+					</tr>
 
+				</table>
+
+			</div>
 		</div>
 
 		<div class="charge_form">
@@ -74,15 +79,15 @@
 				<input type='hidden' th:value='${amount}' name='amount' /><br>
 				<!--/* NOTE: data-key/data-amount/data-currency will be rendered by Thymeleaf */-->
 				<!--*/ ※th:attr = 属性はカンマ区切りで複数の式をとることができます /*-->
-				<script src='https://checkout.stripe.com/checkout.js' class='stripe-button'
+				<script src='https://checkout.stripe.com/checkout.js'
+					class='stripe-button'
 					th:attr='data-key=${stripePublicKey},
 							data-amount=${amount},
 							data-currency=${currency}'
-					data-name='お支払い'
-					data-description='テスト'
+					data-name='お支払い' data-description='テスト'
 					data-image='http://www.baeldung.com/uploads/android-chrome-192x192.png'
-					data-locale='auto'
-					data-zip-code='false'>
+					data-locale='auto' data-zip-code='false'>
+
 				</script>
 			</form>
 		</div>

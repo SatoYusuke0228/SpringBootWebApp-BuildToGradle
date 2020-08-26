@@ -121,12 +121,22 @@
 
 				<tr>
 					<th scope="row">決済ID</th>
-					<td th:text="*{stripeChargeId}">決済ID</td>
+					<td th:if="*{stripeChargeId != null}" th:text="*{stripeChargeId}">決済ID</td>
+					<td th:if="*{stripeChargeId == null}">-</td>
 				</tr>
 
 				<tr>
 					<th scope="row">取引ID</th>
-					<td th:text="*{stripeBalanceTransactionId}">取引ID</td>
+					<td th:if="*{stripeBalanceTransactionId != null}"
+						th:text="*{stripeBalanceTransactionId}">取引ID</td>
+					<td th:if="*{stripeBalanceTransactionId == null}">-</td>
+				</tr>
+
+				<tr>
+					<th scope="row">詳細</th>
+					<td th:if="*{stripeChargeId != null}"><button
+							th:onclick="|href=window.open('@{'https://dashboard.stripe.com/test/payments/' + *{stripeChargeId} }')|">詳細</button></td>
+					<td th:if="*{stripeChargeId == null}">-</td>
 				</tr>
 
 			</table>
@@ -165,23 +175,18 @@
 						<td><button
 								th:if="${'未決済'.equals(trSalesHistoryEntity.settlementFlag) && salesProductHistory.productCancellationDate == null && salesProductHistory.productCancellationUser == null}"
 								th:onclick="|location.href='@{'/admin/history/' + *{salesHistoryId} + '/cancel/' + *{salesProductId}} '|">商品キャンセル</button>
-							<p th:if="${!'未決済'.equals(trSalesHistoryEntity.settlementFlag) || salesProductHistory.productCancellationDate != null && salesProductHistory.productCancellationUser != null}">
+							<p
+							th:if="${!'未決済'.equals(trSalesHistoryEntity.settlementFlag) || salesProductHistory.productCancellationDate != null && salesProductHistory.productCancellationUser != null}">
 								-</p></td>
 						<td scope="row">
-							<p
-							th:if="*{productCancellationDate != null}"
+							<p th:if="*{productCancellationDate != null}"
 							th:text="*{getFormatProductCancellationDate()}">キャンセル日</p>
-							<p
-							th:if="*{productCancellationDate == null}">
-								-</p>
+							<p th:if="*{productCancellationDate == null}">-</p>
 						</td>
 						<td scope="row">
-							<p
-							th:if="*{productCancellationUser != null}"
+							<p th:if="*{productCancellationUser != null}"
 							th:text="*{productCancellationUser}">キャンセル処理者</p>
-							<p
-							th:if="*{productCancellationUser == null}">
-								-</p>
+							<p th:if="*{productCancellationUser == null}">-</p>
 						</td>
 					</tr>
 

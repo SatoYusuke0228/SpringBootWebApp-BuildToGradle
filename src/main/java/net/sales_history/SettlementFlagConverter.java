@@ -20,6 +20,8 @@ public class SettlementFlagConverter
 			flag = 1;
 		} else if ("キャンセル".equals(settlementFlag)) {
 			flag = -1;
+		} else if ("決済拒否".equals(settlementFlag)) {
+			flag = -2;
 		}
 
 		return flag;
@@ -30,12 +32,20 @@ public class SettlementFlagConverter
 
 		String str = new String();
 
-		if (settlementFlagInDB == 0) {
+		switch (settlementFlagInDB) {
+
+		case (0):
 			str = "未決済";
-		} else if (settlementFlagInDB == 1) {
+			break;
+		case (1):
 			str = "決済完了";
-		} else {
+			break;
+		case (-1):
 			str = "キャンセル";
+			break;
+		case (-2):
+			str = "決済拒否";
+			break;
 		}
 
 		return str;
