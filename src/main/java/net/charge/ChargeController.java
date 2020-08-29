@@ -1,0 +1,195 @@
+package net.charge;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.stripe.exception.CardException;
+import com.stripe.exception.StripeException;
+import com.stripe.model.Charge;
+
+import net.cart.Cart;
+import net.cart.CartItem;
+import net.charge.ChargeRequest.Currency;
+import net.checkout.Checkout;
+import net.product.TrProductDeleteAndUpdateService;
+import net.product.TrProductEntity;
+import net.product.TrProductSelectService;
+import net.sales_history.TrSalesHistoryEntity;
+import net.sales_history.TrSalesHistoryService;
+import net.sales_history.TrSalesProductHistoryEntity;
+import net.sales_history.TrSalesProductHistoryService;
+
+@Controller
+public class ChargeController {
+
+	@Autowired
+	TrProductSelectService productSelectService;
+
+	@Autowired
+	TrProductDeleteAndUpdateService productDeleteAndUpdateService;
+
+	@Autowired
+	TrSalesHistoryService salesHistoryService;
+
+	@Autowired
+	TrSalesProductHistoryService salesProductHistoryService;
+
+	@Autowired
+	private StripeService paymentsService;
+
+	//セッションスコープのインスタンス
+	@Autowired
+	private HttpSession session;
+
+	/**
+	 * 購入完了の処理をする
+	 */
+	@PostMapping("/charge")
+	public ModelAndView postChargePage(
+			@SessionAttribute("cart") Cart cart,
+			@SessionAttribute("checkout") Checkout checkout,
+			ChargeRequest chargeRequest,
+			Charge charge,
+			ModelAndView mav) throws StripeException {
+
+		//viewファイル名をセット
+		mav.setViewName("charge");
+
+		try {
+
+			//決済処理の準備
+			chargeRequest.setDescription(cart.getCartItems().size() + "商品の販売");
+			chargeRequest.setCurrency(Currency.JPY);
+
+			//決済処理
+			charge = paymentsService.charge(checkout, chargeRequest);
+
+			//決済ステータス
+			mav.addObject("chargeId", charge.getId());
+			mav.addObject("balance__transaction", charge.getBalanceTransaction());
+
+			//販売履歴の作成及び商品テーブルのデータ更新
+			if ("succeeded".equals(charge.getStatus())) {
+
+				//決済ステータス『未決済』の販売履歴を１件作成
+				createSalesHistory(true, cart, charge, chargeRequest, checkout);
+
+				//決済成功フラグ
+				mav.addObject("charge_success", true);
+
+			}
+
+		} catch (CardException e) {
+
+			//決済ステータス『決済拒否』の販売履歴を１件作成
+			createSalesHistory(false, cart, charge, chargeRequest, checkout);
+
+			//決済失敗フラグ
+			mav.addObject("charge_failed", true);
+
+			//エラーメッセージ
+			mav.addObject("error", e.getMessage());
+
+			return mav;
+		}
+
+		//System.out.println(charge.getStatus());
+
+		// カートの中身に商品があればtrue、なければfalse
+		mav.addObject("check", 0 < cart.getCartItems().size());
+
+		return mav;
+	}
+
+	/**
+	 * 販売した商品を商品テーブルから減算処理して
+	 * 販売履歴テーブルに１件の販売履歴を作成するメソッド
+	 *
+	 */
+	private void createSalesHistory(
+			boolean stripePaymentStatusFlag,
+			Cart cart,
+			Charge charge,
+			ChargeRequest chargeRequest,
+			Checkout checkout) {
+
+		//販売履歴に使用する決済ステータスの準備
+		String stripePaymentStatus = new String();
+
+		if (stripePaymentStatusFlag) {
+			stripePaymentStatus = "未決済";
+		} else {
+			stripePaymentStatus = "決済拒否";
+		}
+
+		//Sessinに保存したカートから売れた商品を取得
+		Map<String, CartItem> soldItems = new HashMap<>();
+		soldItems = cart.getCartItems();
+
+		//販売履歴オブジェクトを作成してDBに保存する
+		TrSalesHistoryEntity salesHistoryEntity = new TrSalesHistoryEntity(
+				stripePaymentStatus, charge, chargeRequest, checkout, new Timestamp(System.currentTimeMillis()));
+		salesHistoryService.saveSalesHistory(salesHistoryEntity);
+
+		//販売商品履歴を商品種類ごとに格納するListを作成
+		List<TrSalesProductHistoryEntity> salesProductHistoryEntity = new ArrayList<>();
+
+		//売れた商品ごとに商品在庫から商品個数を減算し、販売商品履歴Listに格納していく処理
+		for (CartItem soldItem : soldItems.values()) {
+
+			//決済ステータスが『決済拒否』でなければ商品テーブルから在庫数を減算処理
+			if (stripePaymentStatusFlag) {
+
+				//商品IDを元にDBの商品を取得
+				TrProductEntity productEntity = productSelectService.getItemInfo(soldItem.getId());
+
+				//商品在庫数を変更してDBに反映させる
+				productEntity.setProductStock(productEntity.getProductStock() - soldItem.getQuantity());
+				productDeleteAndUpdateService.saveAndFlush(productEntity);
+			}
+
+			//販売商品履歴Listに格納していく
+			final TrSalesProductHistoryEntity salesProductHistory = new TrSalesProductHistoryEntity(
+					salesHistoryEntity.getSalesHistoryId(), soldItem);
+			salesProductHistoryEntity.add(salesProductHistory);
+		}
+
+		//販売商品を格納したListをすべて保存する
+		salesProductHistoryService.saveSalesProductHistory(salesProductHistoryEntity);
+
+		// カートの中身を初期化
+		cart = new Cart();
+		session.setAttribute("cart", cart);
+	}
+
+	/**
+	 * Stripeエラーがthrowされた場合の処理
+	 * 商品購入失敗の結果とエラーメッセージをVIEWに表示させる
+	 */
+	@ExceptionHandler(StripeException.class)
+	public ModelAndView handleError(ModelAndView mav, StripeException e) {
+
+		//viewファイル名をセット
+		mav.setViewName("charge");
+
+		//決済失敗フラグ
+		mav.addObject("charge_failed", true);
+
+		//エラーメッセージ
+		mav.addObject("error", e.getMessage());
+
+		return mav;
+	}
+}

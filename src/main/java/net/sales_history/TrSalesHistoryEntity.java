@@ -18,37 +18,14 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.stripe.model.Charge;
 
 import lombok.Data;
+import net.charge.ChargeRequest;
+import net.checkout.Checkout;
 import net.common.FormatTimestamp;
-import net.purchase.Cart;
-import net.purchase.ChargeRequest;
-import net.purchase.Checkout;
 
-/**************************
+/***************************
  * 販売履歴テーブルのEntity *
- * @author SatoYusuke0228  *
- **************************
-
- CREATE TABLE
-	TR_SALES_HISTORY (
-		SALES_HISTORY_ID bigserial NOT NULL unique,
-		TOTAL_SALES_AMOUNT INTEGER,
-		SETTLEMENT_FLAG INTEGER DEFAULT 0,
-		CUSTOMER_NAME VARCHAR(256) NOT NULL,
-		CUSTOMER_ZIPCODE VARCHAR(7) NOT NULL,
-		CUSTOMER_ADDRESS VARCHAR(256) NOT NULL,
-		CUSTOMER_TELL VARCHAR(11) NOT NULL,
-		CUSTOMER_E_MAIL VARCHAR(512) NOT NULL,
-		STRIPE_CHARGE_ID VARCHAR(32),
-		STRIPE_BALANCE_TRANSACTION_ID VARCHAR(32),
-		SALES_DATE TIMESTAMP DEFAULT now() NOT NULL,
-		SETTLEMENT_DATE TIMESTAMP,
-		SETTLEMENT_USER VARCHAR(256),
-		CANCELLETION_DATE TIMESTAMP,
-		CANCELLETION_USER VARCHAR(256),
-		PRIMARY KEY (SALES_HISTORY_ID)
- );
-
- *
+ ***************************
+ * @see src/main/resources/TrSalesHistory.sql
  * @author SatoYusuke0228
  */
 @Table(name = "TR_SALES_HISTORY")
@@ -63,7 +40,7 @@ public class TrSalesHistoryEntity {
 	private long salesHistoryId;
 
 	@Column(name = "TOTAL_SALES_AMOUNT")
-	private int totalSalesAmount;
+	private long totalSalesAmount;
 
 	/**
 	 * 販売履歴テーブルの決済Flag
@@ -86,11 +63,23 @@ public class TrSalesHistoryEntity {
 	@Column(name = "CUSTOMER_ADDRESS", nullable = false)
 	private String customerAddress;
 
-	@Column(name = "CUSTOMER_TELL", nullable = false)
-	private String customerTell;
-
 	@Column(name = "CUSTOMER_E_MAIL", nullable = false)
 	private String customerEmail;
+
+	/**
+	 * 配送先情報
+	 */
+	@Column(name = "SHIPPING_NAME", nullable = false)
+	private String shippingName;
+
+	@Column(name = "SHIPPING_ZIPCODE", nullable = false)
+	private String shippingZipcode;
+
+	@Column(name = "SHIPPING_ADDRESS", nullable = false)
+	private String shippingAddress;
+
+	@Column(name = "SHIPPING_TELL", nullable = false)
+	private String shippingTell;
 
 	/**
 	 * 決済情報
@@ -173,20 +162,24 @@ public class TrSalesHistoryEntity {
 	 */
 	public TrSalesHistoryEntity(
 			String stripePaymentStatus,
-			Cart cart,
-			Checkout checkout,
-			ChargeRequest chargeRequest,
 			Charge charge,
+			ChargeRequest chargeRequest,
+			Checkout checkout,
 			Timestamp salesDate) {
 
-		this.totalSalesAmount = cart.getGrandTotal();
+		this.totalSalesAmount = charge.getAmount();
 		this.settlementFlag = stripePaymentStatus;
 
-		this.customerName = checkout.getFirstName() + " " + checkout.getLastName();
-		this.customerZipcode = checkout.getZipcode();
-		this.customerAddress = checkout.getMainAddress() + " " + checkout.getBuildingAddress();
-		this.customerTell = checkout.getTell();
+		this.customerName = charge.getBillingDetails().getName();
+		this.customerZipcode = charge.getBillingDetails().getAddress().getPostalCode();
+		this.customerAddress = charge.getBillingDetails().getAddress().getCity() + " "
+									+ charge.getBillingDetails().getAddress().getLine1();
 		this.customerEmail = chargeRequest.getStripeEmail();
+
+		this.shippingName = checkout.getShippingFirstName() + checkout.getShippingLastName();
+		this.shippingZipcode = checkout.getShippingZipcode();
+		this.shippingAddress = checkout.getShippingMainAddress() + " " + checkout.getShippingBuildingAddress();
+		this.shippingTell = checkout.getShippingTell();
 
 		this.stripeChargeId = charge.getId();
 		this.stripeBalanceTransactionId = charge.getBalanceTransaction();

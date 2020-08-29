@@ -90,13 +90,35 @@
 				</tr>
 
 				<tr>
-					<th scope="row">電話番号</th>
-					<td th:text="*{customerTell}">電話番号</td>
+					<th scope="row">メール</th>
+					<td th:text="*{customerEmail}">メール</td>
+				</tr>
+
+			</table>
+		</li>
+
+		<li>
+			<h3>配送先情報</h3>
+			<table class="table">
+
+				<tr>
+					<th scope="row">配送先</th>
+					<td th:text="*{shippingName}">購入者</td>
 				</tr>
 
 				<tr>
-					<th scope="row">メール</th>
-					<td th:text="*{customerEmail}">メール</td>
+					<th scope="row">郵便番号</th>
+					<td th:text="*{shippingZipcode}">郵便番号</td>
+				</tr>
+
+				<tr>
+					<th scope="row">住所</th>
+					<td th:text="*{shippingAddress}">住所</td>
+				</tr>
+
+				<tr>
+					<th scope="row">電話番号</th>
+					<td th:text="*{shippingTell}">電話番号</td>
 				</tr>
 
 			</table>

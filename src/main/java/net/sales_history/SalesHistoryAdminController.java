@@ -14,6 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.stripe.exception.StripeException;
+import com.stripe.model.Refund;
+
+import net.charge.StripeService;
+
 @Controller
 public class SalesHistoryAdminController {
 
@@ -22,6 +27,9 @@ public class SalesHistoryAdminController {
 
 	@Autowired
 	TrSalesProductHistoryService salesProductHistoryService;
+
+	@Autowired
+	private StripeService stripeService;
 
 	//Viewに渡すObjectの命名
 	private final String SALES_HISTORY = "trSalesHistoryEntity";
@@ -238,6 +246,24 @@ public class SalesHistoryAdminController {
 				&& salesHistoryEntity.getSettlementDate() == null
 				&& salesHistoryEntity.getSettlementUser() == null) {
 
+			//Viewファイル名セット
+			mav.setViewName("admin-result");
+
+			try {
+
+				//Stripeの金額を更新
+				Refund refund = stripeService.refund(salesHistoryEntity.getStripeChargeId(),
+						salesHistoryEntity.getTotalSalesAmount());
+				System.out.println("払い戻し金額：" + refund.getAmount());
+
+			} catch (StripeException e) {
+
+				//表示Flagをキャンセル失敗に設定
+				mav.addObject("Result", "取引の決済ステータス変更を失敗しました");
+
+				return mav;
+			}
+
 			//ENTITYの決済フラグを変更
 			salesHistoryEntity.setSettlementFlag("キャンセル");
 
@@ -264,9 +290,6 @@ public class SalesHistoryAdminController {
 			//表示Flagをキャンセル失敗に設定
 			mav.addObject("Result", "取引の決済ステータス変更を失敗しました");
 		}
-
-		//Viewファイル名セット
-		mav.setViewName("admin-result");
 
 		return mav;
 	}
@@ -311,6 +334,9 @@ public class SalesHistoryAdminController {
 			@PathVariable String salesProductId,
 			ModelAndView mav) {
 
+		//Viewファイル名セット
+		mav.setViewName("admin-result");
+
 		//URLの販売履歴IDを元に１件の販売履歴を取得
 		TrSalesHistoryEntity salesHistoryEntity = salesHistoryService.getOne(salesHistoryId);
 
@@ -326,6 +352,20 @@ public class SalesHistoryAdminController {
 				&& salesHistoryEntity.getTransactionCancellationUser() == null
 				&& cancelProduct.getProductCancellationDate() == null
 				&& cancelProduct.getProductCancellationUser() == null) {
+
+			try {
+
+				//Stripeの金額を更新
+				Refund refund = stripeService.refund(salesHistoryEntity.getStripeChargeId(),
+						cancelProduct.getSalesProductPrice());
+				System.out.println("払い戻し金額：" + refund.getAmount());
+
+			} catch (StripeException e) {
+
+				//表示Flagをキャンセル失敗に設定
+				mav.addObject("Result", "販売商品の決済ステータス変更を失敗しました");
+				return mav;
+			}
 
 			//販売履歴の販売合計額を更新
 			salesHistoryEntity.setTotalSalesAmount(
@@ -383,9 +423,6 @@ public class SalesHistoryAdminController {
 			//表示Flagをキャンセル失敗に設定
 			mav.addObject("Result", "販売商品の決済ステータス変更を失敗しました");
 		}
-
-		//Viewファイル名セット
-		mav.setViewName("admin-result");
 
 		return mav;
 	}

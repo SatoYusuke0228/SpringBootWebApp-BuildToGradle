@@ -8,27 +8,14 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import lombok.Data;
+import net.cart.CartItem;
 import net.common.FormatTimestamp;
-import net.purchase.CartItem;
 
-/******************************
+/*******************************
  * 販売商品履歴テーブルのEntity *
- ******************************
-
- CREATE TABLE TR_SALES_PRODUCT_HISTORY (
-	SALES_PRODUCT_HISTORY_ID VARCHAR(64) NOT NULL,
-	SALES_HISTORY_ID BIGINT NOT NULL,
-	SALES_PRODUCT_ID VARCHAR(16) NOT NULL,
-	SALES_PRODUCT_NAME VARCHAR(128) NOT NULL,
-	SALES_PRODUCT_QUANTITY INTEGER,
-	SALES_PRODUCT_PRICE INTEGER,
-	SALES_PRODUCT_STATUS INTEGER,
-	PDORUCT_SHIPPING_DATE TIMESTAMP,
-	PDORUCT_SHIPPING_USER VARCHAR(256),
-	PRODUCT_CANCELLETION_DATE TIMESTAMP,
-	PRODUCT_CANCELLETION_USER VARCHAR(256)
- );
-	@author SatoYusuke0228
+ *******************************
+ *@see src/main/resources/TrSalesProductHistory.sql
+ *@author SatoYusuke0228
  */
 @Entity
 @Data
@@ -96,7 +83,7 @@ public class TrSalesProductHistoryEntity {
 	 */
 	public TrSalesProductHistoryEntity(long salesHistoryId, CartItem cartItem) {
 
-		//コンストラクタの引数を元に一意のIDを生成
+		//コンストラクタの引数を元に商品の種類ごとに一意のIDを生成
 		this.salesProductHistoryId = salesHistoryId + "(" + cartItem.getId() + ")" ;
 
 		this.salesHistoryId = salesHistoryId;

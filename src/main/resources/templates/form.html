@@ -4,8 +4,10 @@
 <head
 	th:replace="common :: meta_header('CHECKOUT',~{::link},~{::script})"></head>
 <body th:object="${checkout}">
+
 	<!-- header読み込み -->
 	<header th:replace="common :: header"></header>
+
 	<!-- メイン -->
 
 	<!--/* ("check" , 0 < cart.cartItems().size) */-->
@@ -49,56 +51,67 @@
 			<form th:if="${check}" method="post" th:action="@{/checkout}"
 				th:object="${checkout}">
 				<!--/* Address */-->
-				<h2>Address</h2>
-				<p>(*)入力必須です</p> <br>
+				<h2>商品の配送先を入力してください。</h2>
+				<p>(*)入力必須です</p>
+
 				<!--/* 名前 */-->
 				<div class="form-row">
+
 					<!--/* 性 */-->
 					<div class="form-group col-md-6">
-						<label for="firstName">姓(*) </label> <br> <input type="text"
-							th:field="*{firstName}" class="form-control" /> <span
-							th:if="${#fields.hasErrors('firstName')}"
-							th:errors="*{firstName}">ErrorMessage</span>
+						<label for="shippingfirstName">姓(*) </label> <br> <input
+							type="text" th:field="*{shippingFirstName}" class="form-control" />
+						<span th:if="${#fields.hasErrors('shippingFirstName')}"
+							th:errors="*{shippingFirstName}">ErrorMessage</span>
 					</div>
+
 					<!--/* 名 */-->
 					<div class="form-group col-md-6">
-						<label>名(*)</label> <br> <input type="text"
-							th:field="*{lastName}" class="form-control" /> <span
-							th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}">
-							ErrorMessage</span>
+						<label for="shippingLastName">名(*)</label> <br> <input
+							type="text" th:field="*{shippingLastName}" class="form-control" />
+						<span th:if="${#fields.hasErrors('shippingLastName')}"
+							th:errors="*{shippingLastName}"> ErrorMessage</span>
 					</div>
 				</div>
 				<div class="form-row">
+
 					<!--/* 郵便番号 */-->
 					<div class="form-group col-md-6">
-						<label>郵便番号(-なしで入力してください)(*)</label> <br> <input type="text"
-							th:field="*{zipcode}" class="form-control" /> <span
-							th:if="${#fields.hasErrors('zipcode')}" th:errors="*{zipcode}">
-							ErrorMessage</span>
+						<label for="shippingZipcode">郵便番号(-なしで入力してください)(*)</label> <br>
+						<input type="text" th:field="*{shippingZipcode}"
+							class="form-control" /> <span
+							th:if="${#fields.hasErrors('shippingZipcode')}"
+							th:errors="*{shippingZipcode}"> ErrorMessage</span>
 					</div>
 				</div>
+
 				<!--/* 住所 */-->
 				<div class="form-group">
-					<label>住所(*)</label> <br> <input type="text"
-						th:field="*{mainAddress}" class="form-control" /> <span
-						th:if="${#fields.hasErrors('mainAddress')}"
-						th:errors="*{mainAddress}">error message</span>
+					<label for="shippingMainAddress">住所(*)</label> <br> <input
+						type="text" th:field="*{shippingMainAddress}" class="form-control" />
+					<span th:if="${#fields.hasErrors('shippingMainAddress')}"
+						th:errors="*{shippingMainAddress}">error message</span>
 				</div>
+
 				<!--/* アパート名、号室など */-->
 				<div class="form-row">
 					<div class="form-group col-md-6">
-						<label>アパート名、号室など</label> <br> <input type="text"
-							th:field="*{buildingAddress}" class="form-control" /> <span
-							th:if="${#fields.hasErrors('buildingAddress')}"
-							th:errors="*{buildingAddress}">ErrorMessage</span>
+						<label for="shippingBuildingAddress">アパート名、号室など</label> <br>
+						<input type="text" th:field="*{shippingBuildingAddress}"
+							class="form-control" /> <span
+							th:if="${#fields.hasErrors('shippingBuildingAddress')}"
+							th:errors="*{shippingBuildingAddress}">ErrorMessage</span>
 					</div>
 				</div>
+
 				<!--/* 電話番号 */-->
 				<div class="form-group">
-					<label>電話番号(-なしで入力してください)(*)</label> <br> <input type="text"
-						th:field="*{tell}" class="form-control" /> <span
-						th:if="${#fields.hasErrors('tell')}" th:errors="*{tell}">ErrorMessage</span>
+					<label for="shippingTell">電話番号(-なしで入力してください)(*)</label> <br> <input
+						type="text" th:field="*{shippingTell}" class="form-control" /> <span
+						th:if="${#fields.hasErrors('shippingTell')}"
+						th:errors="*{shippingTell}">ErrorMessage</span>
 				</div>
+
 				<!--/* メールアドレス */-->
 				<!--/*
 				<div class="form-group">
@@ -108,7 +121,6 @@
 						ErrorMessage</span>
 				</div>
 				 */-->
-				<br> <br> <br>
 
 				<!--/* Credit Card */-->
 				<!--/*
@@ -163,8 +175,14 @@
 						th:if="${#fields.hasErrors('creditCardCvs')}"
 						th:errors="*{creditCardCvs}">ErrorMessage</span>
 				</div>
-				<!--/* 購入ボタン */-->
-				<input class="btn btn-primary" type="submit" value="確認画面へ進む" />
+				-->
+
+
+				<!--/* 確認画面ボタン */-->
+				<div>
+					<br>
+					<input class="btn btn-primary" type="submit" value="確認画面へ進む" />
+				</div>
 
 			</form>
 		</div>

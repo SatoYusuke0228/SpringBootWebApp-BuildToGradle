@@ -3,10 +3,14 @@
 <!-- meta_header読み込み -->
 <head th:replace="common :: meta_header('ITEM',~{::link},~{::script})"></head>
 <body>
+
 	<!-- header読み込み -->
 	<header th:replace="common :: header"></header>
 
 	<!-- メイン -->
+
+	<!--/* ("check" , 0 < cart.cartItems().size) */-->
+
 	<main th:unless="${check}">
 		<div>
 			<h2>カートに商品はありません。</h2>
@@ -14,8 +18,8 @@
 	</main>
 
 	<main th:if="${check}">
-
 		<div class="maincol">
+
 			<table class="table">
 				<thead>
 					<tr>
@@ -42,56 +46,52 @@
 					</tr>
 				</tbody>
 			</table>
-		</div>
 
-		<div class="customer">
+			<div class="shipping">
 
-			<div class="customer_title">
-				<h2>お客様情報の確認</h2>
-			</div>
+				<div class="_shipping_title">
+					<h2>配送先様の情報をご確認ください。</h2>
+				</div>
 
-			<div class="customer_info">
+				<div class="shipping_info" th:object="${checkout}">
 
-				<table th:object="${checkout}">
+					<p><strong>配送先様：</strong><span
+						th:text="*{shippingFirstName} + *{shippingLastName}">配送先様</span></p>
+					<p><strong>郵便番号：</strong><span th:text="*{shippingZipcode}">郵便番号</span></p>
+					<p><strong>住所：</strong><span
+						th:text="*{shippingMainAddress}">mainAddress</span>
+						<span th:if="*{shippingBuildingAddress != null}"
+						th:text="*{shippingBuildingAddress}">buildingAddress</span></p>
+					<p><strong>電話番号：</strong><span th:text="*{shippingTell}">電話番号</span></p>
 
-					<tr>
-						<th>名前：</th>
-						<th>郵便番号：</th>
-						<th>住所：</th>
-						<th>電話番号：</th>
-					</tr>
-
-					<tr>
-						<td th:text="*{firstName} + *{lastName}">名前</td>
-						<td th:text="*{zipcode}">郵便番号</td>
-						<td th:text="*{mainAddress} + *{buildingAddress}">住所</td>
-						<td th:text="*{tell}">電話番号</td>
-					</tr>
-
-				</table>
+				</div>
 
 			</div>
-		</div>
 
-		<div class="charge_form">
-			<form th:action="@{/charge}" method='POST' id='checkout-form'>
-				<!--/* ここから決済処理 */-->
-				<input type='hidden' th:value='${amount}' name='amount' /><br>
-				<!--/* NOTE: data-key/data-amount/data-currency will be rendered by Thymeleaf */-->
-				<!--*/ ※th:attr = 属性はカンマ区切りで複数の式をとることができます /*-->
-				<script src='https://checkout.stripe.com/checkout.js'
-					class='stripe-button'
-					th:attr='data-key=${stripePublicKey},
+			<div class="charge_form">
+				<form th:action="@{/charge}" method='POST' id='checkout-form'>
+
+					<!--/* ここから決済処理 */-->
+					<input type='hidden' th:value='${amount}' name='amount' /><br>
+
+					<!--/* NOTE: data-key/data-amount/data-currency will be rendered by Thymeleaf */-->
+					<!--*/ ※th:attr = 属性はカンマ区切りで複数の式をとることができます /*-->
+					<script src='https://checkout.stripe.com/checkout.js'
+						class='stripe-button'
+						th:attr='data-key=${stripePublicKey},
 							data-amount=${amount},
 							data-currency=${currency}'
-					data-name='お支払い' data-description='テスト'
-					data-image='http://www.baeldung.com/uploads/android-chrome-192x192.png'
-					data-locale='auto' data-zip-code='false'>
+						data-name='お支払い' data-description='テスト'
+						data-billingAddress='true'
+						data-shippingAddress='false'
+						data-image='http://www.baeldung.com/uploads/android-chrome-192x192.png'
+						data-locale='auto' data-zip-code='false'>
 
-				</script>
-			</form>
+					</script>
+				</form>
+			</div>
+
 		</div>
-
 	</main>
 	<!-- メイン終了 -->
 	<!-- footer読み込み -->
