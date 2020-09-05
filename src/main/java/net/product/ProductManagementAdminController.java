@@ -1,4 +1,4 @@
-package net.admin;
+package net.product;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -26,14 +26,9 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.ModelAndView;
 
 import net.common.Flag;
-import net.product.MsProductCategoryInventoryEntity;
-import net.product.MsProductCategoryInventoryService;
-import net.product.TrProductDeleteAndUpdateService;
-import net.product.TrProductEntity;
-import net.product.TrProductSelectService;
 
 @Controller
-public class ItemManagementAdminController {
+public class ProductManagementAdminController {
 
 	@Autowired
 	private TrProductSelectService productSelectService;

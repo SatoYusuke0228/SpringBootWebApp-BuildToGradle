@@ -1,4 +1,4 @@
-package net.admin;
+package net.product;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -28,11 +28,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import net.common.Flag;
 import net.common.UseTwitter4jTest;
-import net.product.MsProductCategoryInventoryEntity;
-import net.product.MsProductCategoryInventoryService;
-import net.product.TrProductEntity;
-import net.product.TrProductInsertService;
-import net.product.TrProductSelectService;
 
 /*
  * 管理者の商品追加機能をまとめたControllerクラス
@@ -44,7 +39,7 @@ import net.product.TrProductSelectService;
  * @auther SatoYusuke0228
  */
 @Controller
-public class ItemRegistrationAdminController {
+public class ProductRegistrationAdminController {
 
 	@Autowired
 	private TrProductInsertService productInsertService;

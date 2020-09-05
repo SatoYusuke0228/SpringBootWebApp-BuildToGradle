@@ -17,10 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import net.cart.Cart;
 import net.charge.ChargeRequest;
-import net.product.TrProductDeleteAndUpdateService;
-import net.product.TrProductSelectService;
-import net.sales_history.TrSalesHistoryService;
-import net.sales_history.TrSalesProductHistoryService;
+import net.charge.StripeService;
 
 /**
  * 商品購入手続き関係のコントローラー
@@ -30,16 +27,7 @@ import net.sales_history.TrSalesProductHistoryService;
 public class CheckoutController {
 
 	@Autowired
-	TrProductSelectService productSelectService;
-
-	@Autowired
-	TrProductDeleteAndUpdateService productDeleteAndUpdateService;
-
-	@Autowired
-	TrSalesHistoryService salesHistoryService;
-
-	@Autowired
-	TrSalesProductHistoryService salesProductHistoryService;
+	private StripeService stripeService;
 
 	//StripeAPIパブリックキー
 	@Value("${STRIPE__PUBLIC__KEY}")
@@ -61,7 +49,7 @@ public class CheckoutController {
 	}
 
 	/**
-	 * checkout画面を表示するメソッド
+	 * form画面を表示するメソッド
 	 *
 	 * @author SatoYusuke0228
 	 */
@@ -80,6 +68,11 @@ public class CheckoutController {
 		session.setAttribute("cart", cart);
 
 		return mav;
+	}
+
+	@GetMapping("/checkout")
+	public String getCheckoutPage() {
+		return "checkout";
 	}
 
 	/**
@@ -118,23 +111,18 @@ public class CheckoutController {
 		} else { //FORMに不備がなければ販売処理をする
 
 			session.setAttribute("checkout", checkout);
-			session.setAttribute("cart", cart);
 
 			//請求金額と通貨単位のセット
 			mav.addObject("amount", cart.getGrandTotal()); //in JPY
 			mav.addObject("currency", ChargeRequest.Currency.JPY);
+			//mav.addObject("billing_details", stripeService.setBillingDetails(checkout));
 
-			//StripeAPIキー
+			//StripePublicキー
 			mav.addObject("stripePublicKey", stripePublicKey);
 
 			// 購入確認画面を表示
 			mav.setViewName("checkout");
 		}
 		return mav;
-	}
-
-	@GetMapping("/checkout")
-	public String getCheckoutPage() {
-		return "checkout";
 	}
 }

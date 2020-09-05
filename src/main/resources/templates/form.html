@@ -50,138 +50,164 @@
 
 			<form th:if="${check}" method="post" th:action="@{/checkout}"
 				th:object="${checkout}">
-				<!--/* Address */-->
-				<h2>商品の配送先を入力してください。</h2>
-				<p>(*)入力必須です</p>
 
-				<!--/* 名前 */-->
-				<div class="form-row">
+				<!--/* 商品購入者情報の入力FORM */-->
+				<div class="billing">
 
-					<!--/* 性 */-->
-					<div class="form-group col-md-6">
-						<label for="shippingfirstName">姓(*) </label> <br> <input
-							type="text" th:field="*{shippingFirstName}" class="form-control" />
-						<span th:if="${#fields.hasErrors('shippingFirstName')}"
-							th:errors="*{shippingFirstName}">ErrorMessage</span>
+					<h2>お客様の情報を入力してください。</h2>
+					<p>(*)入力必須です</p>
+
+					<!--/* 名前 */-->
+					<div class="form-row">
+
+						<!--/* 性 */-->
+						<div class="form-group col-md-6">
+							<label for="customerfirstName">姓(*) </label> <br> <input
+								type="text" th:field="*{customerFirstName}" class="form-control" />
+							<span th:if="${#fields.hasErrors('customerFirstName')}"
+								th:errors="*{customerFirstName}">ErrorMessage</span>
+						</div>
+
+						<!--/* 名 */-->
+						<div class="form-group col-md-6">
+							<label for="customerLastName">名(*)</label> <br> <input
+								type="text" th:field="*{customerLastName}" class="form-control" />
+							<span th:if="${#fields.hasErrors('customerLastName')}"
+								th:errors="*{customerLastName}"> ErrorMessage</span>
+						</div>
 					</div>
 
-					<!--/* 名 */-->
-					<div class="form-group col-md-6">
-						<label for="shippingLastName">名(*)</label> <br> <input
-							type="text" th:field="*{shippingLastName}" class="form-control" />
-						<span th:if="${#fields.hasErrors('shippingLastName')}"
-							th:errors="*{shippingLastName}"> ErrorMessage</span>
+					<!--/* 住所 */-->
+					<div class="form-group">
+
+						<!--/* 郵便番号 */-->
+						<div class="form-group col-md-6">
+							<label for="customerZipcode">郵便番号(-なしで入力してください)(*)</label> <br>
+							<input type="text" th:field="*{customerZipcode}"
+								class="form-control" /> <span
+								th:if="${#fields.hasErrors('customerZipcode')}"
+								th:errors="*{customerZipcode}"> ErrorMessage</span>
+						</div>
+
+
+						<!--/* 都道府県～市区町村 */-->
+						<div class="form-group col-md-6">
+							<label for="customerMainAddress">住所(*)</label> <br> <input
+								type="text" th:field="*{customerMainAddress}"
+								class="form-control" /> <span
+								th:if="${#fields.hasErrors('customerMainAddress')}"
+								th:errors="*{customerMainAddress}">error message</span>
+						</div>
+
+						<!--/* アパート名、号室など */-->
+						<div class="form-group col-md-6">
+							<label for="customerBuildingAddress">アパート名、号室など</label> <br>
+							<input type="text" th:field="*{customerBuildingAddress}"
+								class="form-control" /> <span
+								th:if="${#fields.hasErrors('customerBuildingAddress')}"
+								th:errors="*{customerBuildingAddress}">ErrorMessage</span>
+						</div>
 					</div>
-				</div>
-				<div class="form-row">
 
-					<!--/* 郵便番号 */-->
-					<div class="form-group col-md-6">
-						<label for="shippingZipcode">郵便番号(-なしで入力してください)(*)</label> <br>
-						<input type="text" th:field="*{shippingZipcode}"
-							class="form-control" /> <span
-							th:if="${#fields.hasErrors('shippingZipcode')}"
-							th:errors="*{shippingZipcode}"> ErrorMessage</span>
+					<!--/* メール */-->
+					<div class="form-group">
+						<label for="customerEmail">メールアドレス(*)</label> <br> <input
+							type="text" th:field="*{customerEmail}" class="form-control" /> <span
+							th:if="${#fields.hasErrors('customerEmail')}"
+							th:errors="*{customerEmail}">ErrorMessage</span>
 					</div>
-				</div>
 
-				<!--/* 住所 */-->
-				<div class="form-group">
-					<label for="shippingMainAddress">住所(*)</label> <br> <input
-						type="text" th:field="*{shippingMainAddress}" class="form-control" />
-					<span th:if="${#fields.hasErrors('shippingMainAddress')}"
-						th:errors="*{shippingMainAddress}">error message</span>
-				</div>
-
-				<!--/* アパート名、号室など */-->
-				<div class="form-row">
-					<div class="form-group col-md-6">
-						<label for="shippingBuildingAddress">アパート名、号室など</label> <br>
-						<input type="text" th:field="*{shippingBuildingAddress}"
-							class="form-control" /> <span
-							th:if="${#fields.hasErrors('shippingBuildingAddress')}"
-							th:errors="*{shippingBuildingAddress}">ErrorMessage</span>
+					<!--/* 電話番号 */-->
+					<div class="form-group">
+						<label for="customerTell">電話番号(-なしで入力してください)(*)</label> <br> <input
+							type="text" th:field="*{customerTell}" class="form-control" /> <span
+							th:if="${#fields.hasErrors('customerTell')}"
+							th:errors="*{customerTell}">ErrorMessage</span>
 					</div>
+
 				</div>
 
-				<!--/* 電話番号 */-->
-				<div class="form-group">
-					<label for="shippingTell">電話番号(-なしで入力してください)(*)</label> <br> <input
-						type="text" th:field="*{shippingTell}" class="form-control" /> <span
-						th:if="${#fields.hasErrors('shippingTell')}"
-						th:errors="*{shippingTell}">ErrorMessage</span>
-				</div>
+				<!--/* 商品配送先情報の入力FORM */-->
+				<div class="shipping">
 
-				<!--/* メールアドレス */-->
-				<!--/*
-				<div class="form-group">
-					<label>メールアドレス(*)</label> <br> <input type="email"
-						th:field="*{email}" class="form-control" /> <span
-						th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
-						ErrorMessage</span>
-				</div>
-				 */-->
+					<h2>商品の配送先を入力してください。</h2>
+					<p>(*)入力必須です</p>
 
-				<!--/* Credit Card */-->
-				<!--/*
-				<h2>Credit Card Information</h2>
-				<p>(*)入力必須です</p> <br>
-				*/ -->
+					<!--/* 名前 */-->
+					<div class="form-row">
 
-				<!--/* カード番号 */-->
-				<!--/*
-				<div class="form-group">
-					<label>カード番号(-なしで入力してください)(*)</label> <br> <input type="text"
-						th:field="*{creditCardNum}" class="form-control" /> <span
-						th:if="${#fields.hasErrors('creditCardNum')}"
-						th:errors="*{creditCardNum}">ErrorMessage</span>
-				</div>
-				*/-->
+						<!--/* 性 */-->
+						<div class="form-group col-md-6">
+							<label for="shippingfirstName">姓(*) </label> <br> <input
+								type="text" th:field="*{shippingFirstName}" class="form-control" />
+							<span th:if="${#fields.hasErrors('shippingFirstName')}"
+								th:errors="*{shippingFirstName}">ErrorMessage</span>
+						</div>
 
-				<!-- /* カード名義 */ -->
-				<!--/*
-				<div class="form-group">
-					<label>カード名義(*)</label> <br> <input type="text"
-						th:field="*{creditCardName}" class="form-control" /> <span
-						th:if="${#fields.hasErrors('creditCardName')}"
-						th:errors="*{creditCardName}">ErrorMessage</span>
-				</div>
-				*/-->
+						<!--/* 名 */-->
+						<div class="form-group col-md-6">
+							<label for="shippingLastName">名(*)</label> <br> <input
+								type="text" th:field="*{shippingLastName}" class="form-control" />
+							<span th:if="${#fields.hasErrors('shippingLastName')}"
+								th:errors="*{shippingLastName}"> ErrorMessage</span>
+						</div>
 
-				<!--/* 有効年月 */-->
-				<!--/*
-				<div class="form-row">
-					<div class="form-group col-md-4">
-						<label>有効年月(*)</label> <br> <input type="text"
-							th:field="*{creditCardMonth}" class="form-control"
-							placeholder="月" /> <span
-							th:if="${#fields.hasErrors('creditCardMonth')}"
-							th:errors="*{creditCardMonth}">ErrorMessage</span>
 					</div>
-					<div class="form-group col-md-4">
-						<label></label> <input type="text" th:field="*{creditCardYear}"
-							class="form-control" placeholder="年" /> <span
-							th:if="${#fields.hasErrors('creditCardYear')}"
-							th:errors="*{creditCardYear}">ErrorMessage</span>
+
+					<!--/* 住所 */-->
+					<div class="form-row">
+
+						<!--/* 郵便番号 */-->
+						<div class="form-group col-md-6">
+							<label for="shippingZipcode">郵便番号(-なしで入力してください)(*)</label> <br>
+							<input type="text" th:field="*{shippingZipcode}"
+								class="form-control" /> <span
+								th:if="${#fields.hasErrors('shippingZipcode')}"
+								th:errors="*{shippingZipcode}"> ErrorMessage</span>
+						</div>
+
+						<!--/* 都道府県～市区町村 */-->
+						<div class="form-group col-md-6">
+							<label for="shippingMainAddress">住所(*)</label> <br> <input
+								type="text" th:field="*{shippingMainAddress}"
+								class="form-control" /> <span
+								th:if="${#fields.hasErrors('shippingMainAddress')}"
+								th:errors="*{shippingMainAddress}">error message</span>
+						</div>
+
+						<!--/* アパート名、号室など */-->
+						<div class="form-group col-md-6">
+							<label for="shippingBuildingAddress">アパート名、号室など</label> <br>
+							<input type="text" th:field="*{shippingBuildingAddress}"
+								class="form-control" /> <span
+								th:if="${#fields.hasErrors('shippingBuildingAddress')}"
+								th:errors="*{shippingBuildingAddress}">ErrorMessage</span>
+						</div>
+
 					</div>
-				</div>
-				*/-->
 
-				<!--/* セキュリティコード(CVS) */-->
-				<!--/*
-				<div class="form-group col-md-4">
-					<label>セキュリティコード(CVS)(*)</label> <br> <input type="text"
-						th:field="*{creditCardCvs}" class="form-control" /> <span
-						th:if="${#fields.hasErrors('creditCardCvs')}"
-						th:errors="*{creditCardCvs}">ErrorMessage</span>
-				</div>
-				-->
+					<!--/* メール */-->
+					<div class="form-group">
+						<label for="shippingEmail">メールアドレス</label> <br> <input
+							type="text" th:field="*{shippingEmail}" class="form-control" /> <span
+							th:if="${#fields.hasErrors('shippingEmail')}"
+							th:errors="*{shippingEmail}">ErrorMessage</span>
+					</div>
 
+					<!--/* 電話番号 */-->
+					<div class="form-group">
+						<label for="shippingTell">電話番号(-なしで入力してください)</label> <br>
+						<input type="text" th:field="*{shippingTell}" class="form-control" />
+						<span th:if="${#fields.hasErrors('shippingTell')}"
+							th:errors="*{shippingTell}">ErrorMessage</span>
+					</div>
+
+				</div>
 
 				<!--/* 確認画面ボタン */-->
 				<div>
-					<br>
-					<input class="btn btn-primary" type="submit" value="確認画面へ進む" />
+					<br> <input class="btn btn-primary" type="submit"
+						value="確認画面へ進む" />
 				</div>
 
 			</form>

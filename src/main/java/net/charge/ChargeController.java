@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.ModelAndView;
@@ -35,16 +36,19 @@ import net.sales_history.TrSalesProductHistoryService;
 public class ChargeController {
 
 	@Autowired
-	TrProductSelectService productSelectService;
+	private TrProductSelectService productSelectService;
 
 	@Autowired
-	TrProductDeleteAndUpdateService productDeleteAndUpdateService;
+	private TrProductDeleteAndUpdateService productDeleteAndUpdateService;
 
 	@Autowired
-	TrSalesHistoryService salesHistoryService;
+	private TrSalesHistoryService salesHistoryService;
 
 	@Autowired
-	TrSalesProductHistoryService salesProductHistoryService;
+	private TrSalesProductHistoryService salesProductHistoryService;
+
+	@Autowired
+	private TrChargeHistoryService chargeHistorySarvice;
 
 	@Autowired
 	private StripeService paymentsService;
@@ -54,7 +58,115 @@ public class ChargeController {
 	private HttpSession session;
 
 	/**
-	 * 購入完了の処理をする
+	 * 販売した商品を商品テーブルから減算処理して
+	 * 販売履歴テーブルに１件の販売履歴を作成するメソッド
+	 *
+	 * @param cart
+	 * @param charge
+	 * @param chargeRequest
+	 * @param checkout
+	 * @return 作成された１件の販売履歴
+	 */
+	private TrSalesHistoryEntity createSalesHistory(
+			Cart cart,
+			ChargeRequest chargeRequest,
+			Checkout checkout) {
+
+		//販売履歴オブジェクトを作成してDBに保存する
+		TrSalesHistoryEntity salesHistoryEntity = new TrSalesHistoryEntity(
+				cart, checkout, new Timestamp(System.currentTimeMillis()));
+
+		salesHistoryService.saveSalesHistory(salesHistoryEntity);
+
+		return salesHistoryEntity;
+	}
+
+	/**
+	 * １件の販売履歴を元に販売商品の種類数分の販売商品履歴を作成する
+	 *
+	 * @param salesHistoryEntity
+	 * @param cart
+	 * @return salesProductHistoryEntity 販売した商品種類数ごとの販売商品履歴List
+	 */
+	private List<TrSalesProductHistoryEntity> createSalesProductHistory(
+			TrSalesHistoryEntity salesHistoryEntity,
+			Cart cart) {
+
+		//販売商品履歴を商品種類ごとに格納するListを作成
+		List<TrSalesProductHistoryEntity> salesProductHistoryEntity = new ArrayList<>();
+
+		//カートから売れた商品を取得
+		Map<String, CartItem> soldItems = new HashMap<>();
+		soldItems = cart.getCartItems();
+
+		//売れた商品ごとに販売商品履歴Listに格納していく処理
+		for (CartItem soldItem : soldItems.values()) {
+
+			//販売商品履歴Listに格納していく
+			final TrSalesProductHistoryEntity salesProductHistory = new TrSalesProductHistoryEntity(
+					salesHistoryEntity.getSalesHistoryId(), soldItem);
+
+			salesProductHistoryEntity.add(salesProductHistory);
+		}
+
+		//販売商品を格納したListをすべて保存する
+		salesProductHistoryService.saveSalesProductHistory(salesProductHistoryEntity);
+
+		return salesProductHistoryEntity;
+	}
+
+	/**
+	 * 1つの販売履歴の全ての販売商品履歴の配送ステータスを『引数１の文字列』に変更するメソッド
+	 * @param tatusParam
+	 * @param salesHistoryEntity
+	 */
+	private void changeSippingStatus(String statusParam, List<TrSalesProductHistoryEntity> salesProductHistoryEntity) {
+
+		for (int i = salesProductHistoryEntity.size() - 1; 0 <= i; i--) {
+
+			salesProductHistoryEntity.get(i).setShippingStatus(statusParam);
+			salesProductHistoryService.saveAndFlush(salesProductHistoryEntity.get(i));
+		}
+	}
+
+	/**
+	 * 商品テーブルの商品を売れた分だけ減算処理していく
+	 * @param salesHistoryEntity
+	 */
+	private void productStockSubtraction(Cart cart) {
+
+		//カートから売れた商品を取得
+		Map<String, CartItem> soldItems = new HashMap<>();
+		soldItems = cart.getCartItems();
+
+		//商品テーブルの商品ごとに減算処理
+		for (CartItem soldItem : soldItems.values()) {
+
+			//商品IDを元にDBの商品を取得
+			TrProductEntity productEntity = productSelectService.getItemInfo(soldItem.getId());
+
+			//商品在庫数を変更してDBに反映させる
+			productEntity.setProductStock(productEntity.getProductStock() - soldItem.getQuantity());
+			productDeleteAndUpdateService.saveAndFlush(productEntity);
+		}
+	}
+
+	@GetMapping("/charge")
+	public String showChargePage() {
+		return "charge";
+	}
+
+	/**
+	 * StripeでChargeの処理をする
+	 *
+	 * @param cart
+	 * @param checkout
+	 * @param chargeRequest
+	 * @param charge
+	 * @param salesHistoryEntity
+	 * @param mav
+	 * @return
+	 * @throws StripeException
 	 */
 	@PostMapping("/charge")
 	public ModelAndView postChargePage(
@@ -62,39 +174,63 @@ public class ChargeController {
 			@SessionAttribute("checkout") Checkout checkout,
 			ChargeRequest chargeRequest,
 			Charge charge,
+			TrSalesHistoryEntity salesHistoryEntity,
 			ModelAndView mav) throws StripeException {
 
-		//viewファイル名をセット
-		mav.setViewName("charge");
+		//決済ステータス『決済待ち』の販売履歴を１件作成
+		salesHistoryEntity = createSalesHistory(cart, chargeRequest, checkout);
+
+		//販売商品履歴Listの作成
+		List<TrSalesProductHistoryEntity> salesProductHistoryEntity = new ArrayList<>();
+		salesProductHistoryEntity = createSalesProductHistory(salesHistoryEntity, cart);
 
 		try {
 
 			//決済処理の準備
-			chargeRequest.setDescription(cart.getCartItems().size() + "商品の販売");
+			chargeRequest.setDescription("販売ID：" + salesHistoryEntity.getSalesHistoryId());
 			chargeRequest.setCurrency(Currency.JPY);
 
-			//決済処理
+			//決済処理try
 			charge = paymentsService.charge(checkout, chargeRequest);
-
-			//決済ステータス
-			mav.addObject("chargeId", charge.getId());
-			mav.addObject("balance__transaction", charge.getBalanceTransaction());
 
 			//販売履歴の作成及び商品テーブルのデータ更新
 			if ("succeeded".equals(charge.getStatus())) {
 
-				//決済ステータス『未決済』の販売履歴を１件作成
-				createSalesHistory(true, cart, charge, chargeRequest, checkout);
+				//商品テーブル減算処理
+				productStockSubtraction(cart);
+
+				//ChargeHistoryテーブルに決済情報を保存
+				TrChargeHistoryEntity chargeHistoryEntity = new TrChargeHistoryEntity(
+						salesHistoryEntity.getSalesHistoryId(), charge, chargeRequest);
+				chargeHistorySarvice.save(chargeHistoryEntity);
+
+				//決済ステータス『決済完了』にUPDATE
+				salesHistoryEntity.setSettlementFlag("決済完了");
+				salesHistoryEntity.setSettlementDate(salesHistoryEntity.getSalesDate());
+				salesHistoryEntity.setSettlementUser(charge.getCalculatedStatementDescriptor()); //String "stripe" が入っている
+
+				//決済ステータス
+				mav.addObject("chargeId", charge.getId());
+				mav.addObject("balance__transaction", charge.getBalanceTransaction());
 
 				//決済成功フラグ
 				mav.addObject("charge_success", true);
 
+			} else {
+
+				//決済失敗フラグ
+				mav.addObject("charge_failed", true);
 			}
 
 		} catch (CardException e) {
 
-			//決済ステータス『決済拒否』の販売履歴を１件作成
-			createSalesHistory(false, cart, charge, chargeRequest, checkout);
+			//全ての販売商品履歴の配送ステータスを『キャンセルに変更』
+			changeSippingStatus("キャンセル", salesProductHistoryEntity);
+
+			//決済ステータス『決済拒否』にUPDATE
+			salesHistoryEntity.setSettlementFlag("決済拒否");
+			salesHistoryEntity.setTransactionCancellationDate(salesHistoryEntity.getSalesDate());
+			salesHistoryEntity.setTransactionCancellationUser("Stripe.CardException");
 
 			//決済失敗フラグ
 			mav.addObject("charge_failed", true);
@@ -102,76 +238,20 @@ public class ChargeController {
 			//エラーメッセージ
 			mav.addObject("error", e.getMessage());
 
-			return mav;
+		} finally {
+
+			//販売履歴テーブルのUPDATE文の実行
+			salesHistoryService.saveAndFlushSalesHistory(salesHistoryEntity);
+
+			// カートの中身を初期化
+			cart = new Cart();
+			session.setAttribute("cart", cart);
+
+			//viewファイル名をセット
+			mav.setViewName("charge");
 		}
-
-		//System.out.println(charge.getStatus());
-
-		// カートの中身に商品があればtrue、なければfalse
-		mav.addObject("check", 0 < cart.getCartItems().size());
 
 		return mav;
-	}
-
-	/**
-	 * 販売した商品を商品テーブルから減算処理して
-	 * 販売履歴テーブルに１件の販売履歴を作成するメソッド
-	 *
-	 */
-	private void createSalesHistory(
-			boolean stripePaymentStatusFlag,
-			Cart cart,
-			Charge charge,
-			ChargeRequest chargeRequest,
-			Checkout checkout) {
-
-		//販売履歴に使用する決済ステータスの準備
-		String stripePaymentStatus = new String();
-
-		if (stripePaymentStatusFlag) {
-			stripePaymentStatus = "未決済";
-		} else {
-			stripePaymentStatus = "決済拒否";
-		}
-
-		//Sessinに保存したカートから売れた商品を取得
-		Map<String, CartItem> soldItems = new HashMap<>();
-		soldItems = cart.getCartItems();
-
-		//販売履歴オブジェクトを作成してDBに保存する
-		TrSalesHistoryEntity salesHistoryEntity = new TrSalesHistoryEntity(
-				stripePaymentStatus, charge, chargeRequest, checkout, new Timestamp(System.currentTimeMillis()));
-		salesHistoryService.saveSalesHistory(salesHistoryEntity);
-
-		//販売商品履歴を商品種類ごとに格納するListを作成
-		List<TrSalesProductHistoryEntity> salesProductHistoryEntity = new ArrayList<>();
-
-		//売れた商品ごとに商品在庫から商品個数を減算し、販売商品履歴Listに格納していく処理
-		for (CartItem soldItem : soldItems.values()) {
-
-			//決済ステータスが『決済拒否』でなければ商品テーブルから在庫数を減算処理
-			if (stripePaymentStatusFlag) {
-
-				//商品IDを元にDBの商品を取得
-				TrProductEntity productEntity = productSelectService.getItemInfo(soldItem.getId());
-
-				//商品在庫数を変更してDBに反映させる
-				productEntity.setProductStock(productEntity.getProductStock() - soldItem.getQuantity());
-				productDeleteAndUpdateService.saveAndFlush(productEntity);
-			}
-
-			//販売商品履歴Listに格納していく
-			final TrSalesProductHistoryEntity salesProductHistory = new TrSalesProductHistoryEntity(
-					salesHistoryEntity.getSalesHistoryId(), soldItem);
-			salesProductHistoryEntity.add(salesProductHistory);
-		}
-
-		//販売商品を格納したListをすべて保存する
-		salesProductHistoryService.saveSalesProductHistory(salesProductHistoryEntity);
-
-		// カートの中身を初期化
-		cart = new Cart();
-		session.setAttribute("cart", cart);
 	}
 
 	/**
@@ -186,9 +266,6 @@ public class ChargeController {
 
 		//決済失敗フラグ
 		mav.addObject("charge_failed", true);
-
-		//エラーメッセージ
-		mav.addObject("error", e.getMessage());
 
 		return mav;
 	}

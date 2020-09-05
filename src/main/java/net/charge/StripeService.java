@@ -12,7 +12,6 @@ import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Charge;
 import com.stripe.model.Refund;
-import com.stripe.net.RequestOptions;
 
 import net.checkout.Checkout;
 
@@ -27,50 +26,84 @@ public class StripeService {
 		Stripe.apiKey = secretKey;
 	}
 
+//	public Map<String, Object> setBillingDetails(Checkout checkout) {
+//
+//		//購入者住所の情報をまとめる
+//		Map<String, Object> billingAddress = new HashMap<>();
+//		billingAddress.put("line1", checkout.getBillingBuildingAddress());
+//		billingAddress.put("city", checkout.getBillingMainAddress());
+//		billingAddress.put("postal_code", checkout.getBillingZipcode());
+//
+//		//購入者情報をまとめる
+//		Map<String, Object> billingDetails = new HashMap<>();
+//		billingDetails.put("name", checkout.getBillingFirstName() + " " + checkout.getBillingLastName());
+//		billingDetails.put("phone", checkout.getBillingTell());
+////		billingDetails.put("email", chargeRequest.getStripeEmail());
+//		billingDetails.put("address", billingAddress);
+//
+//		return billingDetails;
+//	}
+
+	/**
+	 * StripeAPIのChargeオブジェクトを作成するメソッド
+	 * 決済することができる。
+	 *
+	 * @param checkout
+	 * @param chargeRequest
+	 * @return
+	 * @throws StripeException
+	 */
 	public Charge charge(
 			Checkout checkout,
 			ChargeRequest chargeRequest) throws StripeException {
 
-		Map<String, Object> address = new HashMap<>();
-		address.put("line1",checkout.getShippingBuildingAddress());
-		address.put("city", checkout.getShippingMainAddress());
-		address.put("postal_code", checkout.getShippingZipcode());
+		//配送先住所の情報をまとめる
+		Map<String, Object> shippingAddress = new HashMap<>();
+		shippingAddress.put("line1", checkout.getShippingBuildingAddress());
+		shippingAddress.put("city", checkout.getShippingMainAddress());
+		shippingAddress.put("postal_code", checkout.getShippingZipcode());
 
+		//配送先情報をまとめる
 		Map<String, Object> shipping = new HashMap<>();
-		shipping.put("name", checkout.getShippingFirstName() + checkout.getShippingLastName());
+		shipping.put("name", checkout.getShippingFirstName() + " " + checkout.getShippingLastName());
 		shipping.put("phone", checkout.getShippingTell());
-		shipping.put("address", address);
+		shipping.put("address", shippingAddress);
 
+		//Charge.create()の引数に設定するchargeParamsを全てまとめる
 		Map<String, Object> chargeParams = new HashMap<>();
-
 		chargeParams.put("amount", chargeRequest.getAmount());
 		chargeParams.put("currency", chargeRequest.getCurrency());
 		chargeParams.put("description", chargeRequest.getDescription());
 		chargeParams.put("source", chargeRequest.getStripeToken());
 		chargeParams.put("shipping", shipping);
 
-		RequestOptions request = RequestOptions
-				.builder()
-				.setApiKey(secretKey)
-				.build();
-
-		return Charge.create(chargeParams, request);
+		return Charge.create(chargeParams);
 	}
 
+	/**
+	 * StripeAPIのRefundオブジェクトを作成するメソッド
+	 * 返金することができる。
+	 *
+	 * @param stripeChargeId
+	 * @param salesPrice
+	 * @return
+	 * @throws StripeException
+	 */
 	public Refund refund(
 			String stripeChargeId,
-			long salesPrice) throws StripeException {
+			long refundPrice) throws StripeException {
 
+		//チャージIDとバランストランザクションIDをセット
 		Map<String, Object> params = new HashMap<>();
-
 		params.put("charge", stripeChargeId);
-		params.put("amount", salesPrice);
+		params.put("amount", refundPrice);
 
-		RequestOptions request = RequestOptions
-				.builder()
-				.setApiKey(secretKey)
-				.build();
+//		//リクエスト情報にシークレットキーをセットする
+//		RequestOptions request = RequestOptions
+//				.builder()
+//				.setApiKey(secretKey)
+//				.build();
 
-		return Refund.create(params, request);
+		return Refund.create(params);
 	}
 }

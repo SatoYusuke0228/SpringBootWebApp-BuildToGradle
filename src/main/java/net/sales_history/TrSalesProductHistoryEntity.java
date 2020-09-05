@@ -3,6 +3,7 @@ package net.sales_history;
 import java.sql.Timestamp;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -26,12 +27,16 @@ public class TrSalesProductHistoryEntity {
 	@Column(name = "SALES_PRODUCT_HISTORY_ID")
 	private String salesProductHistoryId;
 
+	@Column(name = "SALES_HISTORY_ID")
+	private long salesHistoryId;
+
+	@Column(name = "SHIPPING_STATUS")
+	@Convert(converter = ShippingStatusConverter.class)
+	private String shippingStatus;
+
 	/*
 	 * 商品関係
 	 */
-
-	@Column(name = "SALES_HISTORY_ID")
-	private long salesHistoryId;
 
 	@Column(name = "SALES_PRODUCT_ID", unique = true, nullable = false)
 	private String salesProductId;
@@ -73,7 +78,8 @@ public class TrSalesProductHistoryEntity {
 	/**
 	 * コンストラクタ
 	 */
-	public TrSalesProductHistoryEntity() {};
+	public TrSalesProductHistoryEntity() {
+	};
 
 	/**
 	 * コンストラクタ
@@ -84,9 +90,10 @@ public class TrSalesProductHistoryEntity {
 	public TrSalesProductHistoryEntity(long salesHistoryId, CartItem cartItem) {
 
 		//コンストラクタの引数を元に商品の種類ごとに一意のIDを生成
-		this.salesProductHistoryId = salesHistoryId + "(" + cartItem.getId() + ")" ;
+		this.salesProductHistoryId = salesHistoryId + "(" + cartItem.getId() + ")";
 
 		this.salesHistoryId = salesHistoryId;
+		this.shippingStatus = "発送待ち";
 
 		this.salesProductId = cartItem.getId();
 		this.salesProductName = cartItem.getName();

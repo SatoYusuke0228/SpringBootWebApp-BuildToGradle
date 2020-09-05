@@ -2,7 +2,10 @@ package net.sales_history;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -11,21 +14,22 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.stripe.model.Charge;
 
 import lombok.Data;
-import net.charge.ChargeRequest;
+import net.cart.Cart;
+import net.charge.TrChargeHistoryEntity;
 import net.checkout.Checkout;
 import net.common.FormatTimestamp;
 
 /***************************
  * 販売履歴テーブルのEntity *
  ***************************
- * @see src/main/resources/TrSalesHistory.sql
  * @author SatoYusuke0228
  */
 @Table(name = "TR_SALES_HISTORY")
@@ -39,21 +43,25 @@ public class TrSalesHistoryEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY) //主キーを自動生成する
 	private long salesHistoryId;
 
-	@Column(name = "TOTAL_SALES_AMOUNT")
-	private long totalSalesAmount;
+	@Column(name = "SALES_AMOUNT")
+	private long salesAmount;
+
+	@Column(name = "REFUND_AMOUNT")
+	private long refundAmount;
 
 	/**
 	 * 販売履歴テーブルの決済Flag
 	 *
 	 * @see SettlementFlagConverter
 	 */
-	@Column(name = "SETTLEMENT_FLAG")
+	@Column(name = "SETTLEMENT_FLAG", nullable = false)
 	@Convert(converter = SettlementFlagConverter.class)
 	private String settlementFlag;
 
-	/**
+	/*
 	 * 購入者情報
 	 */
+
 	@Column(name = "CUSTOMER_NAME", nullable = false)
 	private String customerName;
 
@@ -66,9 +74,13 @@ public class TrSalesHistoryEntity {
 	@Column(name = "CUSTOMER_E_MAIL", nullable = false)
 	private String customerEmail;
 
-	/**
+	@Column(name = "CUSTOMER_TELL", nullable = false)
+	private String customerTell;
+
+	/*
 	 * 配送先情報
 	 */
+
 	@Column(name = "SHIPPING_NAME", nullable = false)
 	private String shippingName;
 
@@ -78,22 +90,16 @@ public class TrSalesHistoryEntity {
 	@Column(name = "SHIPPING_ADDRESS", nullable = false)
 	private String shippingAddress;
 
-	@Column(name = "SHIPPING_TELL", nullable = false)
+	@Column(name = "SHIPPING_E_MAIL", nullable = true)
+	private String shippingEmail;
+
+	@Column(name = "SHIPPING_TELL", nullable = true)
 	private String shippingTell;
 
-	/**
-	 * 決済情報
+	/*
+	 * 販売日と決済日とキャンセル日と返金日と、その処理者名
 	 */
 
-	@Column(name = "STRIPE_CHARGE_ID", nullable = true)
-	private String stripeChargeId;
-
-	@Column(name = "STRIPE_BALANCE_TRANSACTION_ID", nullable = true)
-	private String stripeBalanceTransactionId;
-
-	/**
-	 * 販売日と決済日とキャンセル日と、その処理者名
-	 */
 	@Column(name = "SALES_DATE", nullable = false)
 	private Timestamp salesDate;
 
@@ -109,6 +115,21 @@ public class TrSalesHistoryEntity {
 	@Column(name = "CANCELLETION_USER", nullable = true)
 	private String transactionCancellationUser;
 
+	@Column(name = "REFUND_DATE", nullable = true)
+	private Timestamp refundDate;
+
+	@Column(name = "REFUND_USER", nullable = true)
+	private String refundUser;
+
+	/**
+	 * 決済者情報
+	 */
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinTable(name = "TR_CHARGE_HISTORY", joinColumns = {
+			@JoinColumn(name = "SALES_HISTORY_ID", referencedColumnName = "SALES_HISTORY_ID") }, inverseJoinColumns = {
+					@JoinColumn(name = "SALES_HISTORY_ID", referencedColumnName = "SALES_HISTORY_ID") })
+	private TrChargeHistoryEntity chargeHistoryEntity;
+
 	/**
 	 * 販売した商品
 	 */
@@ -121,8 +142,7 @@ public class TrSalesHistoryEntity {
 	 * ※ Timestamp → String に変換
 	 */
 	public String getFormatSalesDate() {
-		FormatTimestamp ft = new FormatTimestamp();
-		return ft.formatTimestamp(this.salesDate);
+		return new FormatTimestamp().formatTimestamp(this.salesDate);
 	}
 
 	/**
@@ -130,8 +150,7 @@ public class TrSalesHistoryEntity {
 	 * ※ Timestamp → String に変換
 	 */
 	public String getFormatSettlementDate() {
-		FormatTimestamp ft = new FormatTimestamp();
-		return ft.formatTimestamp(this.settlementDate);
+		return new FormatTimestamp().formatTimestamp(this.settlementDate);
 	}
 
 	/**
@@ -139,20 +158,27 @@ public class TrSalesHistoryEntity {
 	 * ※ Timestamp → String に変換
 	 */
 	public String getFormatTransactionCancellationDate() {
-		FormatTimestamp ft = new FormatTimestamp();
-		return ft.formatTimestamp(this.transactionCancellationDate);
+		return new FormatTimestamp().formatTimestamp(this.transactionCancellationDate);
+	}
+
+	/**
+	 * 返金処理日時を取得
+	 * ※ Timestamp → String に変換
+	 */
+	public String getFormatRefundDate() {
+		return new FormatTimestamp().formatTimestamp(this.refundDate);
 	}
 
 	/**
 	 * コンストラクタ
 	 */
 	public TrSalesHistoryEntity() {
-	};
+	}
 
 	/**
 	 * コンストラクタ
 	 *
-	 * @param totalSalesAmount １つの取引の合計金額
+	 * @param salesAmount １つの取引の合計金額
 	 * @param checkout 購入時の入力FORM
 	 * @param chargeRequest 決済準備の情報
 	 * @param charge 決済完了の情報
@@ -161,28 +187,34 @@ public class TrSalesHistoryEntity {
 	 * @param settlementDate & User キャンセル日とその処理者
 	 */
 	public TrSalesHistoryEntity(
-			String stripePaymentStatus,
-			Charge charge,
-			ChargeRequest chargeRequest,
+			Cart cart,
 			Checkout checkout,
 			Timestamp salesDate) {
 
-		this.totalSalesAmount = charge.getAmount();
-		this.settlementFlag = stripePaymentStatus;
+		this.salesAmount = cart.getGrandTotal();
+		this.settlementFlag = "決済待ち";
 
-		this.customerName = charge.getBillingDetails().getName();
-		this.customerZipcode = charge.getBillingDetails().getAddress().getPostalCode();
-		this.customerAddress = charge.getBillingDetails().getAddress().getCity() + " "
-									+ charge.getBillingDetails().getAddress().getLine1();
-		this.customerEmail = chargeRequest.getStripeEmail();
+		//購入者住所ビル名のnullを排除
+		String custamerAddress = Stream.of(checkout.getCustomerMainAddress(), checkout.getCustomerBuildingAddress())
+				.filter(s -> s != null)
+				.collect(Collectors.joining());
 
-		this.shippingName = checkout.getShippingFirstName() + checkout.getShippingLastName();
+		this.customerName = checkout.getCustomerFirstName() + " " + checkout.getCustomerLastName();
+		this.customerZipcode = checkout.getCustomerZipcode();
+		this.customerAddress = custamerAddress;
+		this.customerTell = checkout.getCustomerTell();
+		this.customerEmail = checkout.getCustomerEmail();
+
+		//配送先住所ビル名のnullを排除
+		String shippingAddress = Stream.of(checkout.getShippingMainAddress(), checkout.getShippingBuildingAddress())
+				.filter(s -> s != null)
+				.collect(Collectors.joining());
+
+		this.shippingName = checkout.getShippingFirstName() + " " + checkout.getShippingLastName();
 		this.shippingZipcode = checkout.getShippingZipcode();
-		this.shippingAddress = checkout.getShippingMainAddress() + " " + checkout.getShippingBuildingAddress();
+		this.shippingAddress = shippingAddress;
 		this.shippingTell = checkout.getShippingTell();
-
-		this.stripeChargeId = charge.getId();
-		this.stripeBalanceTransactionId = charge.getBalanceTransaction();
+		this.shippingEmail = checkout.getShippingEmail();
 
 		this.salesDate = salesDate;
 		this.settlementDate = null;

@@ -47,21 +47,41 @@
 				</tbody>
 			</table>
 
-			<div class="shipping">
+			<!--/* form画面でカスタマーに入力された情報の確認画面 */-->
+			<div class="info" th:object="${checkout}">
 
-				<div class="_shipping_title">
-					<h2>配送先様の情報をご確認ください。</h2>
+				<div class="info_title">
+					<h2>入力情報をご確認ください。</h2>
 				</div>
 
-				<div class="shipping_info" th:object="${checkout}">
+				<!--/* 購入者情報の確認 */-->
+				<div class="billing_info">
 
-					<p><strong>配送先様：</strong><span
-						th:text="*{shippingFirstName} + *{shippingLastName}">配送先様</span></p>
+					<h2>購入者様の情報</h2>
+
+					<p><strong>お名前：</strong><span
+						th:text="*{customerFirstName} + *{customerLastName} + ' 様'">配送先様</span></p>
+					<p><strong>郵便番号：</strong><span th:text="*{customerZipcode}">郵便番号</span></p>
+					<p><strong>住所：</strong><span th:text="*{customerMainAddress}">mainAddress</span>
+						<span th:if="*{customerBuildingAddress != null}"
+						th:text="*{customerBuildingAddress}">buildingAddress</span></p>
+					<p><strong>メールアドレス：</strong><span th:text="*{customerEmail}">Email</span></p>
+					<p><strong>電話番号：</strong><span th:text="*{customerTell}">電話番号</span></p>
+
+				</div>
+
+				<!--/* 配送先情報の確認 */-->
+				<div class="shipping_info">
+
+					<h2>配送先様の情報</h2>
+
+					<p><strong>お名前：</strong><span
+						th:text="*{shippingFirstName} + *{shippingLastName + ' 様'}">配送先様</span></p>
 					<p><strong>郵便番号：</strong><span th:text="*{shippingZipcode}">郵便番号</span></p>
-					<p><strong>住所：</strong><span
-						th:text="*{shippingMainAddress}">mainAddress</span>
+					<p><strong>住所：</strong><span th:text="*{shippingMainAddress}">mainAddress</span>
 						<span th:if="*{shippingBuildingAddress != null}"
 						th:text="*{shippingBuildingAddress}">buildingAddress</span></p>
+					<p><strong>メールアドレス：</strong><span th:text="*{shippingEmail}">Email</span></p>
 					<p><strong>電話番号：</strong><span th:text="*{shippingTell}">電話番号</span></p>
 
 				</div>
@@ -81,11 +101,10 @@
 						th:attr='data-key=${stripePublicKey},
 							data-amount=${amount},
 							data-currency=${currency}'
-						data-name='お支払い' data-description='テスト'
-						data-billingAddress='true'
+						data-name='お支払い' data-description='テスト' data-billingAddress='true'
 						data-shippingAddress='false'
 						data-image='http://www.baeldung.com/uploads/android-chrome-192x192.png'
-						data-locale='auto' data-zip-code='false'>
+						data-locale='ja' data-zip-code='false'>
 
 					</script>
 				</form>

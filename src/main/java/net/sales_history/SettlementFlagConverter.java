@@ -8,46 +8,59 @@ public class SettlementFlagConverter
 		implements AttributeConverter<String, Integer> {
 
 	@Override
-	public Integer convertToDatabaseColumn(String settlementFlag) {
+	public Integer convertToDatabaseColumn(String convertedSettlementFlag) {
 
-		if (settlementFlag == null || settlementFlag.isEmpty()) {
+		if (convertedSettlementFlag == null || convertedSettlementFlag.isEmpty()) {
 			return null;
 		}
 
-		int flag = 0;
+		int settlementFlagInDB = 0;
 
-		if ("決済完了".equals(settlementFlag)) {
-			flag = 1;
-		} else if ("キャンセル".equals(settlementFlag)) {
-			flag = -1;
-		} else if ("決済拒否".equals(settlementFlag)) {
-			flag = -2;
+		if ("決済完了".equals(convertedSettlementFlag)) {
+			settlementFlagInDB = 1;
+		} else if ("返金済み".equals(convertedSettlementFlag)) {
+			settlementFlagInDB = 2;
+		} else if ("キャンセル".equals(convertedSettlementFlag)) {
+			settlementFlagInDB = -1;
+		} else if ("決済拒否".equals(convertedSettlementFlag)) {
+			settlementFlagInDB = -2;
 		}
 
-		return flag;
+		return settlementFlagInDB;
 	}
 
 	@Override
 	public String convertToEntityAttribute(Integer settlementFlagInDB) {
 
-		String str = new String();
+		String convertedSettlementFlag = new String();
 
 		switch (settlementFlagInDB) {
 
 		case (0):
-			str = "未決済";
+			convertedSettlementFlag = "決済待ち";
 			break;
+
 		case (1):
-			str = "決済完了";
+			convertedSettlementFlag = "決済完了";
 			break;
+
+		case (2):
+			convertedSettlementFlag = "返金済み";
+			break;
+
 		case (-1):
-			str = "キャンセル";
+			convertedSettlementFlag = "キャンセル";
 			break;
+
 		case (-2):
-			str = "決済拒否";
+			convertedSettlementFlag = "決済拒否";
 			break;
 		}
 
-		return str;
+		if (convertedSettlementFlag.isEmpty()) {
+			convertedSettlementFlag = "不明";
+		}
+
+		return convertedSettlementFlag;
 	}
 }

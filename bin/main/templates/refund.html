@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -8,20 +9,17 @@
 
 	<div class="page_title">
 
-		<div th:if="${settlement}">
-			<h2>決済ステータスを『決済完了』に変更しますか？</h2>
-		</div>
-		<div th:if="${cancel}">
-			<h2>決済ステータスを『キャンセル』に変更しますか?</h2>
+		<div th:if="${refund_preparation}">
+			<h2>取引の返金を実行しますか?</h2>
 		</div>
 
-		<div th:if="${productCancel}">
-			<h2>決済ステータスを『キャンセル』に変更しますか?</h2>
+		<div th:if="${productRefund_preparation}">
+			<h2>商品の返金を実行しますか?</h2>
 		</div>
 
 	</div>
 
-	<ul>
+	<ul >
 		<li class="customer_info">
 			<h2>販売履歴情報</h2>
 			<table class="table">
@@ -38,7 +36,7 @@
 
 				<tr>
 					<th scope="row">購入金額</th>
-					<td th:text="*{totalSalesAmount + '円'}">購入金額</td>
+					<td th:text="*{salesAmount + '円'}">購入金額</td>
 				</tr>
 
 				<tr>
@@ -49,8 +47,8 @@
 			</table>
 		</li>
 
-		<li class="product_info" th:if="${productCancel}"
-			th:object="${cancelProduct}">
+		<li class="product_info" th:if="${productRefund_preparation}"
+			th:object="${refundProduct}">
 
 		<h2>商品情報</h2>
 
@@ -82,21 +80,15 @@
 
 	<div class="submit_button">
 
-		<div th:if="${settlement}">
+		<div th:if="${refund_preparation}">
 			<button
-				th:onclick="|location.href='@{'/admin/history/' + *{salesHistoryId} + '/settlement/result'}'|">変更</button>
+				th:onclick="|location.href='@{'/admin/history/' + *{salesHistoryId} + '/cancel/result'}'|">返金</button>
 			<button th:onclick="|location.href='@{/admin}'|">管理者画面に戻る</button>
 		</div>
 
-		<div th:if="${cancel}">
+		<div th:if="${productRefund_preparation}" th:object="${refundProduct}">
 			<button
-				th:onclick="|location.href='@{'/admin/history/' + *{salesHistoryId} + '/cancel/result'}'|">変更</button>
-			<button th:onclick="|location.href='@{/admin}'|">管理者画面に戻る</button>
-		</div>
-
-		<div th:if="${productCancel}" th:object="${cancelProduct}">
-			<button
-				th:onclick="|location.href='@{'/admin/history/' + *{salesHistoryId} + '/cancel/' + *{salesProductId} + '/result'}'|">変更</button>
+				th:onclick="|location.href='@{'/admin/history/' + *{salesHistoryId} + '/cancel/' + *{salesProductId} + '/result'}'|">返金</button>
 			<button th:onclick="|location.href='@{/admin}'|">管理者画面に戻る</button>
 		</div>
 

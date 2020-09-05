@@ -23,9 +23,25 @@
 
 				<tr>
 					<th scope="row">合計購入金額</th>
-					<td th:text="*{totalSalesAmount} + 円">合計購入金額</td>
+					<td th:text="*{salesAmount} + 円">合計購入金額</td>
 					<td></td>
 					<td></td>
+				</tr>
+
+				<tr>
+					<th th:if="*{0 < refundAmount}" scope="row">返金額</th>
+					<td th:text="*{refundAmount} + 円">返金額</td>
+					<td></td>
+					<td></td>
+				</tr>
+
+				<tr>
+					<th scope="row">決済ステータス</th>
+					<td th:text="*{settlementFlag}">決済ステータス</td>
+					<td>
+						<button th:if="*{'決済完了'.equals(settlementFlag)}"
+							th:onclick="|location.href='@{'/admin/history/' + *{salesHistoryId} + '/cancel'}'|">返金する</button>
+					</td>
 				</tr>
 
 				<tr>
@@ -36,7 +52,7 @@
 				</tr>
 
 				<tr
-					th:if="*{settlementDate != null && transactionCancellationDate == null}">
+					th:if="*{settlementDate != null}">
 					<th scope="row">決済完了日</th>
 					<td th:text="*{getFormatSettlementDate()}">決済完了日</td>
 					<td></td>
@@ -44,15 +60,31 @@
 				</tr>
 
 				<tr
-					th:if="*{settlementUser != null && transactionCancellationUser == null}">
-					<th scope="row">決済処理担当者</th>
+					th:if="*{settlementUser != null}">
+					<th scope="row">更新者</th>
 					<td th:text="*{settlementUser}">決済処理担当者</td>
 					<td></td>
 					<td></td>
 				</tr>
 
 				<tr
-					th:if="*{settlementDate == null && transactionCancellationDate != null}">
+					th:if="*{refundDate != null}">
+					<th scope="row">返金日</th>
+					<td th:text="*{getFormatRefundDate()}">返金日</td>
+					<td></td>
+					<td></td>
+				</tr>
+
+				<tr
+					th:if="*{refundUser != null}">
+					<th scope="row">更新者</th>
+					<td th:text="*{refundUser}">返金処理担当者</td>
+					<td></td>
+					<td></td>
+				</tr>
+
+				<tr
+					th:if="*{transactionCancellationDate != null}">
 					<th scope="row">キャンセル日</th>
 					<td th:text="*{getFormatTransactionCancellationDate()}">キャンセル日</td>
 					<td></td>
@@ -60,8 +92,8 @@
 				</tr>
 
 				<tr
-					th:if="*{settlementUser == null && transactionCancellationUser != null}">
-					<th scope="row">キャンセル処理担当者</th>
+					th:if="*{transactionCancellationUser != null}">
+					<th scope="row">更新者</th>
 					<td th:text="*{transactionCancellationUser}">キャンセル処理担当者</td>
 					<td></td>
 					<td></td>
@@ -69,6 +101,8 @@
 
 			</table>
 		</li>
+
+
 
 		<li>
 			<h3>購入者情報</h3>
@@ -94,8 +128,15 @@
 					<td th:text="*{customerEmail}">メール</td>
 				</tr>
 
+				<tr>
+					<th scope="row">電話番号</th>
+					<td th:text="*{customerTell}">電話番号</td>
+				</tr>
+
 			</table>
 		</li>
+
+
 
 		<li>
 			<h3>配送先情報</h3>
@@ -117,6 +158,11 @@
 				</tr>
 
 				<tr>
+					<th scope="row">メール</th>
+					<td th:text="*{shippingEmail}">メール</td>
+				</tr>
+
+				<tr>
 					<th scope="row">電話番号</th>
 					<td th:text="*{shippingTell}">電話番号</td>
 				</tr>
@@ -124,22 +170,12 @@
 			</table>
 		</li>
 
-		<li>
+
+
+		<li th:if="${trSalesHistoryEntity.getChargeHistoryEntity() != null}"
+			th:object="${trSalesHistoryEntity.getChargeHistoryEntity()}">
 			<h3>決済情報</h3>
 			<table class="table">
-
-				<tr>
-					<th scope="row">決済ステータス</th>
-					<td th:text="*{settlementFlag}">決済ステータス</td>
-					<td>
-						<button th:if="*{'未決済'.equals(settlementFlag)}"
-							th:onclick="|location.href='@{'/admin/history/' + *{salesHistoryId} + '/settlement'}'|">『決済完了』に変更</button>
-					</td>
-					<td>
-						<button th:if="*{'未決済'.equals(settlementFlag)}"
-							th:onclick="|location.href='@{'/admin/history/' + *{salesHistoryId} + '/cancel'}'|">『キャンセル』に変更</button>
-					</td>
-				</tr>
 
 				<tr>
 					<th scope="row">決済ID</th>
@@ -155,6 +191,13 @@
 				</tr>
 
 				<tr>
+					<th scope="row">カードID</th>
+					<td th:if="*{stripeCardId != null}"
+						th:text="*{stripeCardId}">取引ID</td>
+					<td th:if="*{stripeCardId == null}">-</td>
+				</tr>
+
+				<tr>
 					<th scope="row">詳細</th>
 					<td th:if="*{stripeChargeId != null}"><button
 							th:onclick="|href=window.open('@{'https://dashboard.stripe.com/test/payments/' + *{stripeChargeId} }')|">詳細</button></td>
@@ -163,6 +206,8 @@
 
 			</table>
 		</li>
+
+
 
 		<li>
 			<h3>購入商品情報</h3>
@@ -174,10 +219,11 @@
 						<th>商品名</th>
 						<th>個数</th>
 						<th>小計</th>
+						<th>発送状況</th>
 						<th>詳細</th>
-						<th>キャンセル</th>
-						<th>キャンセル日</th>
-						<th>キャンセル処理者</th>
+						<th>返金</th>
+						<th>返金日</th>
+						<th>返金者</th>
 					</tr>
 
 				</thead>
@@ -190,15 +236,16 @@
 						<td scope="row" th:text="*{salesProductName}">商品名</td>
 						<td scope="row" th:text="*{salesProductQuantity}">個数</td>
 						<td scope="row" th:text="*{salesProductPrice} + 円">小計</td>
+						<td scope="row" th:text="*{shippingStatus}">配送状況</td>
 						<td>
 							<button
 								th:onclick="|location.href='@{'/admin/management/details/' + *{salesProductId} }'|">詳細</button>
 						</td>
 						<td><button
-								th:if="${'未決済'.equals(trSalesHistoryEntity.settlementFlag) && salesProductHistory.productCancellationDate == null && salesProductHistory.productCancellationUser == null}"
-								th:onclick="|location.href='@{'/admin/history/' + *{salesHistoryId} + '/cancel/' + *{salesProductId}} '|">商品キャンセル</button>
+								th:if="${'決済完了'.equals(trSalesHistoryEntity.settlementFlag)}"
+								th:onclick="|location.href='@{'/admin/history/' + *{salesHistoryId} + '/cancel/' + *{salesProductId}} '|">返金</button>
 							<p
-							th:if="${!'未決済'.equals(trSalesHistoryEntity.settlementFlag) || salesProductHistory.productCancellationDate != null && salesProductHistory.productCancellationUser != null}">
+							th:if="${!'決済完了'.equals(trSalesHistoryEntity.settlementFlag)}">
 								-</p></td>
 						<td scope="row">
 							<p th:if="*{productCancellationDate != null}"
@@ -207,7 +254,7 @@
 						</td>
 						<td scope="row">
 							<p th:if="*{productCancellationUser != null}"
-							th:text="*{productCancellationUser}">キャンセル処理者</p>
+							th:text="*{productCancellationUser}">キャンセル処理担当者名</p>
 							<p th:if="*{productCancellationUser == null}">-</p>
 						</td>
 					</tr>
