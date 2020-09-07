@@ -77,6 +77,7 @@ public class ProductManagementAdminController {
 
 		return mav;
 	}
+
 	/**
 	 * 管理者用の商品管理画面で商品をキーワード検索したときの画面に遷移するメソッド
 	 *
@@ -156,9 +157,17 @@ public class ProductManagementAdminController {
 		return mav;
 	}
 
+	/**
+	 * 商品変更入力画面から商品変更確認画面に遷移するメソッド
+	 * 入力Formに不備がある場合は、元の商品変更入力画面に戻る。
+	 *
+	 * @param productEntity
+	 * @param result
+	 * @param mav
+	 * @return
+	 */
 	@PostMapping("/admin/management/update/confirmation")
 	public ModelAndView showItemUpdate(
-			//@ModelAttribute(OBJECT_NAME)
 			@Validated TrProductEntity productEntity,
 			BindingResult result,
 			ModelAndView mav) {
@@ -167,9 +176,6 @@ public class ProductManagementAdminController {
 		//System.out.println(result.getObjectName());
 
 		if (result.hasErrors()) { //FORMに不備がある場合
-
-			//error詳細をコンソールに表示
-			//System.out.println(result.getFieldError());
 
 			//元のページに戻る
 			mav.setViewName("product-update");
@@ -218,9 +224,9 @@ public class ProductManagementAdminController {
 		try {
 			//商品情報変更を実行
 			productDeleteAndUpdateService.saveAndFlush(productEntity);
-			mav.addObject("Result", "商品情報変更成功");
+			mav.addObject("result_message", "商品情報変更成功");
 		} catch (Exception e) {
-			mav.addObject("Result", "商品情報変更失敗");
+			mav.addObject("result_message", "商品情報変更失敗");
 		}
 
 		return mav;
@@ -301,12 +307,12 @@ public class ProductManagementAdminController {
 			productDeleteAndUpdateService.delete(productEntity);
 
 			//View側で使用する商品削除クエリ実行のflag
-			mav.addObject("Result", "商品削除成功");
+			mav.addObject("result_message", "商品削除成功");
 
 		} else {
 
 			//View側で使用する商品削除クエリ実行のflag
-			mav.addObject("Result", "商品削除失敗");
+			mav.addObject("result_message", "商品削除失敗");
 		}
 
 		//Viewファイル名セット

@@ -1,10 +1,12 @@
 package net.sales_history;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -15,7 +17,9 @@ import com.stripe.model.Refund;
 import net.charge.StripeService;
 import net.charge.TrChargeHistoryEntity;
 import net.charge.TrChargeHistoryService;
+import net.common.ChangeProductHistoryStatus;
 
+@Controller
 public class RefundAdminController {
 
 	@Autowired
@@ -30,6 +34,14 @@ public class RefundAdminController {
 	@Autowired
 	private StripeService stripeService;
 
+	@Autowired
+	private ChangeProductHistoryStatus changeProductHistoryStatus;
+
+//	@Autowired
+//	public void setMovieFinder(ChangeProductHistoryStatus changeProductHistoryStatus) {
+//		this.changeProductHistoryStatus = changeProductHistoryStatus;
+//	}
+
 	//Viewに渡すObjectの命名
 	private final String SALES_HISTORY = "trSalesHistoryEntity";
 
@@ -37,13 +49,13 @@ public class RefundAdminController {
 	 * １件の販売履歴の決済ステータスを『返金済』に変更し
 	 * 返金処理を実行するかどうか確認するページを表示するメソッド
 	 */
-	@RequestMapping("/admin/history/{id}/cancel")
+	@RequestMapping("/admin/history/{salesHistoryId}/cancel")
 	public ModelAndView showRefundPage(
-			@PathVariable long id,
+			@PathVariable long salesHistoryId,
 			ModelAndView mav) {
 
 		//URLの販売履歴IDを元に１件の販売履歴を取得
-		TrSalesHistoryEntity salesHistoryEntity = salesHistoryService.getOne(id);
+		TrSalesHistoryEntity salesHistoryEntity = salesHistoryService.getOne(salesHistoryId);
 
 		//決済フラグをキャンセルに変更する準備
 		if ("決済完了".equals(salesHistoryEntity.getSettlementFlag())) {
@@ -53,10 +65,11 @@ public class RefundAdminController {
 
 			//表示Flagをキャンセル準備成功に設定
 			mav.addObject("refund_preparation", true);
-		}
+		} else {
 
-		//表示Flagをキャンセル準備成功に設定
-		mav.addObject("refund_preparation", false);
+			//表示Flagをキャンセル準備成功に設定
+			mav.addObject("refund_preparation", false);
+		}
 
 		//Viewファイル名セット
 		mav.setViewName("refund");
@@ -68,9 +81,9 @@ public class RefundAdminController {
 	 * １件の販売履歴の決済ステータスを『返金済』に変更し
 	 * 返金処理を実行した結果を表示するページを遷移するメソッド
 	 */
-	@RequestMapping("/admin/history/{id}/cancel/result")
+	@RequestMapping("/admin/history/{salesHistoryId}/cancel/result")
 	public ModelAndView showRefundResultPage(
-			@PathVariable long id,
+			@PathVariable long salesHistoryId,
 			TrSalesHistoryEntity salesHistoryEntity,
 			TrChargeHistoryEntity chargeHistoryEntity,
 			Refund refund,
@@ -82,7 +95,7 @@ public class RefundAdminController {
 		try {
 
 			//URLの販売履歴IDを元に１件の販売履歴を取得
-			salesHistoryEntity = salesHistoryService.getOne(id);
+			salesHistoryEntity = salesHistoryService.getOne(salesHistoryId);
 
 			//販売履歴IDを元にCharge履歴を取得
 			chargeHistoryEntity = salesHistoryEntity.getChargeHistoryEntity();
@@ -99,12 +112,12 @@ public class RefundAdminController {
 
 			try {
 
-				//Stripeの返金処理の実行
+				//(合計購入金額 - 返金済み金額)を算出してStripeの返金処理の実行
 				refund = stripeService.refund(chargeHistoryEntity.getStripeChargeId(),
-						salesHistoryEntity.getSalesAmount());
+						salesHistoryEntity.getSalesAmount() - salesHistoryEntity.getRefundAmount());
 
 				//販売履歴のrefundAmountをセット
-				salesHistoryEntity.setRefundAmount(refund.getAmount());
+				salesHistoryEntity.setRefundAmount(salesHistoryEntity.getRefundAmount() + refund.getAmount());
 
 				//ログイン中のユーザー名を取得してrefundUserに設定
 				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -118,7 +131,15 @@ public class RefundAdminController {
 				//決済ステータスを『返金済み』に変更
 				salesHistoryEntity.setSettlementFlag("返金済み");
 
+				//販売商品履歴の配送ステータスを全て『キャンセル』に変更
+				List<TrSalesProductHistoryEntity> salesProductHistoryEntity = salesHistoryEntity
+						.getSalesProductHistoryEntity();
+				salesProductHistoryEntity = changeProductHistoryStatus.changeSippingStatus("キャンセル",
+						salesProductHistoryEntity);
+
+				//UPDATE分の実行
 				salesHistoryService.saveAndFlushSalesHistory(salesHistoryEntity);
+				salesProductHistoryService.saveAndFlusheSalesProductHistoryList(salesProductHistoryEntity);
 
 				//表示Flagをキャンセル成功に設定
 				mav.addObject("result_message", "取引の返金処理を完了しました");
@@ -139,7 +160,7 @@ public class RefundAdminController {
 	}
 
 	/**
-	 * 指定した販売済の商品の配送ステータスを『キャンセル』に変更し
+	 * 指定した商品の配送ステータスを『キャンセル』に変更し
 	 * 返金処理を実行するかどうか確認するページを表示するメソッド
 	 */
 	@RequestMapping("/admin/history/{salesHistoryId}/cancel/{salesProductId}")
@@ -177,7 +198,7 @@ public class RefundAdminController {
 	}
 
 	/**
-	 * 指定した販売済の商品の配送ステータスを『キャンセル』に変更し
+	 * 指定した商品の配送ステータスを『キャンセル』に変更し
 	 * 返金処理を実行した結果を表示するページを遷移するメソッド
 	 */
 	@RequestMapping("/admin/history/{salesHistoryId}/cancel/{salesProductId}/result")
@@ -226,7 +247,7 @@ public class RefundAdminController {
 				System.out.println("払い戻し金額：" + refund.getAmount());
 
 				//販売履歴の返金額を更新
-				salesHistoryEntity.setRefundAmount(refund.getAmount());
+				salesHistoryEntity.setRefundAmount(salesHistoryEntity.getRefundAmount() + refund.getAmount());
 
 				//販売商品履歴の配送ステータスを『キャンセル』に変更
 				cancelProduct.setShippingStatus("キャンセル");

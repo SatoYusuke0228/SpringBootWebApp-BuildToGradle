@@ -17,7 +17,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import net.cart.Cart;
 import net.charge.ChargeRequest;
-import net.charge.StripeService;
 
 /**
  * 商品購入手続き関係のコントローラー
@@ -26,8 +25,6 @@ import net.charge.StripeService;
 @Controller
 public class CheckoutController {
 
-	@Autowired
-	private StripeService stripeService;
 
 	//StripeAPIパブリックキー
 	@Value("${STRIPE__PUBLIC__KEY}")

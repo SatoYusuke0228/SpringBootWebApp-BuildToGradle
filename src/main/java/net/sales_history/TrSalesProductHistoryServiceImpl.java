@@ -30,10 +30,23 @@ public class TrSalesProductHistoryServiceImpl implements TrSalesProductHistorySe
 	}
 
 	@Override
-	public void saveSalesProductHistory(List<TrSalesProductHistoryEntity> salesProductHistoryEntity) {
+	public void saveAndFlusheSalesProductHistoryList(List<TrSalesProductHistoryEntity> salesProductHistoryEntity) {
 
-			for (TrSalesProductHistoryEntity salesProductHistory : salesProductHistoryEntity) {
-				salesProductHistoryRepository.save(salesProductHistory);
-			}
+		for (TrSalesProductHistoryEntity salesProductHistory : salesProductHistoryEntity) {
+			salesProductHistoryRepository.saveAndFlush(salesProductHistory);
+		}
+	}
+
+	@Override
+	public void save(TrSalesProductHistoryEntity salesProductHistory) {
+		salesProductHistoryRepository.save(salesProductHistory);
+	}
+
+	@Override
+	public void saveSalesProductHistoryList(List<TrSalesProductHistoryEntity> salesProductHistoryEntity) {
+
+		for (TrSalesProductHistoryEntity salesProductHistory : salesProductHistoryEntity) {
+			salesProductHistoryRepository.save(salesProductHistory);
+		}
 	}
 }

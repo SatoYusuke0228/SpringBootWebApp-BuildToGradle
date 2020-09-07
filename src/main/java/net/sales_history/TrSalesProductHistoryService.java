@@ -25,8 +25,18 @@ public abstract interface TrSalesProductHistoryService {
 	public abstract void saveAndFlush(TrSalesProductHistoryEntity salesProductHistory);
 
 	/**
+	 *販売商品履歴ListのUPDATEクエリ実行
+	 */
+	public abstract void saveAndFlusheSalesProductHistoryList(List<TrSalesProductHistoryEntity> salesProductHistoryEntity);
+
+	/**
+	 * １件の販売商品履歴をDBに新規登録する
+	 */
+	public abstract void save(TrSalesProductHistoryEntity salesProductHistory);
+
+	/**
 	 * 販売商品履歴ListをDBに新規登録する
 	 */
-	public abstract void saveSalesProductHistory(List<TrSalesProductHistoryEntity> salesProductHistoryEntity);
+	public abstract void saveSalesProductHistoryList(List<TrSalesProductHistoryEntity> salesProductHistoryEntity);
 
 }

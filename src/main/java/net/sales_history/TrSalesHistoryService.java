@@ -10,14 +10,14 @@ public abstract interface TrSalesHistoryService {
 	 *
 	 * @return List型の販売履歴一覧
 	 */
-	public List<TrSalesHistoryEntity> findAll();
+	public abstract List<TrSalesHistoryEntity> findAll();
 
 	/**
 	 * 販売履歴テーブルから販売履歴IDを元に１件の販売履歴を取得
 	 *
 	 * @return
 	 */
-	TrSalesHistoryEntity getOne(long id);
+	public abstract TrSalesHistoryEntity getOne(long id);
 
 	/**
 	 * 販売履歴テーブルに１件の履歴を追加するメソッド
@@ -31,7 +31,7 @@ public abstract interface TrSalesHistoryService {
 	 *
 	 * @param salesHistoryEntity
 	 */
-	public void saveAndFlushSalesHistory(TrSalesHistoryEntity salesHistoryEntity);
+	public abstract void saveAndFlushSalesHistory(TrSalesHistoryEntity salesHistoryEntity);
 
 	/**
 	 * 『検索ワード』を元に売履歴一覧をDBから取得

@@ -24,6 +24,7 @@ import net.cart.Cart;
 import net.cart.CartItem;
 import net.charge.ChargeRequest.Currency;
 import net.checkout.Checkout;
+import net.common.ChangeProductHistoryStatus;
 import net.product.TrProductDeleteAndUpdateService;
 import net.product.TrProductEntity;
 import net.product.TrProductSelectService;
@@ -56,6 +57,9 @@ public class ChargeController {
 	//セッションスコープのインスタンス
 	@Autowired
 	private HttpSession session;
+
+	@Autowired
+	private ChangeProductHistoryStatus changeProductHistoryStatus;
 
 	/**
 	 * 販売した商品を商品テーブルから減算処理して
@@ -110,23 +114,9 @@ public class ChargeController {
 		}
 
 		//販売商品を格納したListをすべて保存する
-		salesProductHistoryService.saveSalesProductHistory(salesProductHistoryEntity);
+		salesProductHistoryService.saveSalesProductHistoryList(salesProductHistoryEntity);
 
 		return salesProductHistoryEntity;
-	}
-
-	/**
-	 * 1つの販売履歴の全ての販売商品履歴の配送ステータスを『引数１の文字列』に変更するメソッド
-	 * @param tatusParam
-	 * @param salesHistoryEntity
-	 */
-	private void changeSippingStatus(String statusParam, List<TrSalesProductHistoryEntity> salesProductHistoryEntity) {
-
-		for (int i = salesProductHistoryEntity.size() - 1; 0 <= i; i--) {
-
-			salesProductHistoryEntity.get(i).setShippingStatus(statusParam);
-			salesProductHistoryService.saveAndFlush(salesProductHistoryEntity.get(i));
-		}
 	}
 
 	/**
@@ -224,10 +214,11 @@ public class ChargeController {
 
 		} catch (CardException e) {
 
-			//全ての販売商品履歴の配送ステータスを『キャンセルに変更』
-			changeSippingStatus("キャンセル", salesProductHistoryEntity);
+			//全ての販売商品履歴の配送ステータスを『キャンセル』に変更してDBに保存
+			salesProductHistoryEntity = changeProductHistoryStatus.changeSippingStatus("キャンセル", salesProductHistoryEntity);
+			salesProductHistoryService.saveAndFlusheSalesProductHistoryList(salesProductHistoryEntity);
 
-			//決済ステータス『決済拒否』にUPDATE
+			//販売履歴の決済ステータス『決済拒否』にUPDATE
 			salesHistoryEntity.setSettlementFlag("決済拒否");
 			salesHistoryEntity.setTransactionCancellationDate(salesHistoryEntity.getSalesDate());
 			salesHistoryEntity.setTransactionCancellationUser("Stripe.CardException");

@@ -93,9 +93,6 @@ public class Checkout {
 	@Email
 	private String shippingEmail;
 
-	@NotBlank(
-//			groups = { BuyerInfo.class },
-			message = "※入力してください")
 	@Size(max = 11, message = "※入力が長すぎます")
 	@Pattern(regexp = "[0-9]*", message = "※数字のみ入力してください")
 	private String shippingTell;

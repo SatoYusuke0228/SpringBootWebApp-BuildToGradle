@@ -184,7 +184,7 @@ public class ProductRegistrationAdminController {
 					productListInDB.get(i - 1).getProductName().equals(productEntity.getProductName())) {
 
 				//View側で使用する商品登録クエリ実行のflag
-				mav.addObject("Result", "商品登録失敗");
+				mav.addObject("result_message", "商品登録失敗");
 
 				//商品登録失敗のresult画面に遷移
 				mav.setViewName("admin_result");
@@ -208,7 +208,7 @@ public class ProductRegistrationAdminController {
 		productInsertService.insert(productEntity);
 
 		//View側で使用する商品登録クエリ実行のflag
-		mav.addObject("Result", "商品登録成功");
+		mav.addObject("result_message", "商品登録成功");
 
 		//Viewファイル名をセット
 		mav.setViewName("admin-result");

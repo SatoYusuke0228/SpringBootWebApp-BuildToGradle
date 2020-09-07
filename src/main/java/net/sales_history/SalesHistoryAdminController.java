@@ -5,11 +5,18 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.ModelAndView;
 
 import net.charge.TrChargeHistoryService;
@@ -25,6 +32,9 @@ public class SalesHistoryAdminController {
 
 	@Autowired
 	TrChargeHistoryService chargeHistoryService;
+
+	@Autowired
+	HttpSession session;
 
 	//Viewに渡すObjectの命名
 	private final String SALES_HISTORY = "trSalesHistoryEntity";
@@ -104,18 +114,150 @@ public class SalesHistoryAdminController {
 	/**
 	 * 販売履歴詳細ページを表示するメソッド
 	 */
-	@RequestMapping("/admin/history/{id}")
+	@GetMapping("/admin/history/{salesHistoryId}")
 	public ModelAndView showSalesHistoryDetailsPage(
-			@PathVariable long id,
+			@PathVariable long salesHistoryId,
+			TrSalesHistoryEntity salesHistoryEntity,
 			ModelAndView mav) {
 
 		//URLの販売履歴IDを元に１件の販売履歴を取得
-		TrSalesHistoryEntity salesHistoryEntity = salesHistoryService.getOne(id);
+		salesHistoryEntity = salesHistoryService.getOne(salesHistoryId);
 		mav.addObject(SALES_HISTORY, salesHistoryEntity);
 
+		//取得した販売履歴を元にCustomerオブジェクトとShippingオブジェクトを作成
+		mav.addObject("customer", new Customer(salesHistoryEntity));
+		mav.addObject("shipping", new Shipping(salesHistoryEntity));
+
 		//Viewファイル名セット
-		mav.setViewName("sales-product-history");
+		mav.setViewName("sales-history-details");
 
 		return mav;
 	}
+
+	@PostMapping("/admin/history/{salesHistoryId}/change/customer")
+	public ModelAndView postChangeCustamerInfoPage(
+			@PathVariable long salesHistoryId,
+			@Validated Customer customer,
+			BindingResult result,
+			TrSalesHistoryEntity salesHistoryEntity,
+			ModelAndView mav) {
+
+		//URLの販売履歴IDを元に１件の販売履歴を取得
+		salesHistoryEntity = salesHistoryService.getOne(salesHistoryId);
+		mav.addObject(SALES_HISTORY, salesHistoryEntity);
+
+		if (result.hasErrors()) { //もし入力情報に不備がある場合
+
+			mav.addObject("customer", customer);
+			mav.addObject("shipping", new Shipping(salesHistoryEntity));
+
+			//Viewファイル名セット
+			mav.setViewName("sales-history-details");
+
+		} else {
+
+			session.setAttribute("customer", customer);
+
+			//確認ページに進む
+			mav.setViewName("sales-history-change");
+		}
+
+		return mav;
+	}
+
+	@PostMapping("/admin/history/{salesHistoryId}/change/shipping")
+	public ModelAndView postChangeShippingInfoPage(
+			@PathVariable long salesHistoryId,
+			@Validated Shipping shipping,
+			BindingResult result,
+			TrSalesHistoryEntity salesHistoryEntity,
+			ModelAndView mav) {
+
+		//URLの販売履歴IDを元に１件の販売履歴を取得
+		salesHistoryEntity = salesHistoryService.getOne(salesHistoryId);
+		mav.addObject(SALES_HISTORY, salesHistoryEntity);
+
+		if (result.hasErrors()) { //もし入力情報に不備がある場合
+
+			mav.addObject("shipping", shipping);
+			mav.addObject("customer", new Customer(salesHistoryEntity));
+
+			//Viewファイル名セット
+			mav.setViewName("sales-history-details");
+
+		} else {
+
+			session.setAttribute("shipping", shipping);
+
+			//確認ページに進む
+			mav.setViewName("sales-history-change");
+		}
+
+		return mav;
+	}
+
+	@RequestMapping("/admin/history/{salesHistoryId}/change/customer/result")
+	public ModelAndView showChangeCustomerInfoResultPage(
+			@PathVariable long salesHistoryId,
+			@SessionAttribute(name = "customer") Customer customer,
+			TrSalesHistoryEntity salesHistoryEntity,
+			String resultMessage,
+			ModelAndView mav) {
+
+		//URLの販売履歴IDを元に１件の販売履歴を取得
+		salesHistoryEntity = salesHistoryService.getOne(salesHistoryId);
+		resultMessage = "購入者情報の変更を失敗しました";
+
+		if (customer != null) {
+
+			salesHistoryEntity.setCustomerName(customer.getName());
+			salesHistoryEntity.setCustomerZipcode(customer.getZipcode());
+			salesHistoryEntity.setCustomerAddress(customer.getAddress());
+			salesHistoryEntity.setCustomerEmail(customer.getEmail());
+			salesHistoryEntity.setCustomerTell(customer.getTell());
+
+			//DBの販売履歴テーブルにUPDATEクエリを実行
+			salesHistoryService.saveAndFlushSalesHistory(salesHistoryEntity);
+
+			resultMessage = "購入者情報の変更を完了しました";
+		}
+
+		mav.addObject("result_message", resultMessage);
+		mav.setViewName("admin-result");
+
+		return mav;
+	}
+
+	@RequestMapping("/admin/history/{salesHistoryId}/change/shipping/result")
+	public ModelAndView showChangeShippingInfoResultPage(
+			@PathVariable long salesHistoryId,
+			@SessionAttribute(name = "shipping") Shipping shipping,
+			TrSalesHistoryEntity salesHistoryEntity,
+			String resultMessage,
+			ModelAndView mav) {
+
+		//URLの販売履歴IDを元に１件の販売履歴を取得
+		salesHistoryEntity = salesHistoryService.getOne(salesHistoryId);
+		resultMessage = "配送先情報の変更を失敗しました";
+
+		if (shipping != null) {
+
+			salesHistoryEntity.setShippingName(shipping.getName());
+			salesHistoryEntity.setShippingZipcode(shipping.getZipcode());
+			salesHistoryEntity.setShippingAddress(shipping.getAddress());
+			salesHistoryEntity.setShippingEmail(shipping.getEmail());
+			salesHistoryEntity.setShippingTell(shipping.getTell());
+
+			//DBの販売履歴テーブルにUPDATEクエリを実行
+			salesHistoryService.saveAndFlushSalesHistory(salesHistoryEntity);
+
+			resultMessage = "配送先情報の変更を完了しました";
+		}
+
+		mav.addObject("result_message", resultMessage);
+		mav.setViewName("admin-result");
+
+		return mav;
+	}
+
 }
