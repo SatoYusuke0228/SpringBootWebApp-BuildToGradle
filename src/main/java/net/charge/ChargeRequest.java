@@ -16,12 +16,13 @@ public class ChargeRequest {
 	//通貨
 	private Currency currency;
 
-	//解説(?)
+	//Stripeの取引ごとの説明文のようなモノ
 	private String description;
 
 	//Stripe アクセストークン
 	private String stripeToken;
 
-	//Stripe Email
+	//Stripe 請求先のEmail
+	//こちら側で処理しなければ"receipt_email"には設定されないことに注意
 	private String stripeEmail;
 }

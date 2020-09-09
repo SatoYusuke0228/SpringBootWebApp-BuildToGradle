@@ -1,11 +1,9 @@
-package net.common;
+package net.sales_history;
 
 import java.sql.Timestamp;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-
-import net.sales_history.TrSalesProductHistoryEntity;
 
 @Service
 public class ChangeProductHistoryStatus {

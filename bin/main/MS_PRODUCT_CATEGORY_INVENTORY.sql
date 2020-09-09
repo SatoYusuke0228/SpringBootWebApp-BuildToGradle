@@ -14,10 +14,10 @@ DELETE_USER VARCHAR(64)
 INSERT INTO MS_PRODUCT_CATEGORY_INVENTORY VALUES(
 '0',
 'beans',
-,
-'嵅摗桼桟',
-,
-'嵅摗桼桟',
+now(),
+'浣愯棨鐢变綉',
+now(),
+'浣愯棨鐢变綉',
 NULL,
 NULL
 );
@@ -26,9 +26,9 @@ INSERT INTO MS_PRODUCT_CATEGORY_INVENTORY VALUES(
 '1',
 'extractor',
 now(),
-'嵅摗桼桟',
+'浣愯棨鐢变綉',
 now(),
-'嵅摗桼桟',
+'浣愯棨鐢变綉',
 NULL,
 NULL
 );
@@ -37,9 +37,9 @@ INSERT INTO MS_PRODUCT_CATEGORY_INVENTORY VALUES(
 '2',
 'other',
 now(),
-'嵅摗桼桟',
+'浣愯棨鐢变綉',
 now(),
-'嵅摗桼桟',
+'浣愯棨鐢变綉',
 NULL,
 NULL
 );

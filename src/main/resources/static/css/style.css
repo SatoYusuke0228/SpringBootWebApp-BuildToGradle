@@ -102,7 +102,7 @@ header {
 .search_container input[type="text"]{
     border: none;
     position: absolute;
-    font-size: 0.75em;
+    font-size: 0.8em;
     margin: 0 0 0 0;
     vertical-align: middle;
     left: 2vw;
@@ -110,7 +110,7 @@ header {
 
 .search_container input[type="text"]:focus {
     outline: 0;
-    font-size: 0.75em;
+    font-size: 0.8em;
 }
 .search_container input[type="submit"]{
     cursor: pointer;
@@ -125,8 +125,8 @@ header {
     position: absolute;
     width: 2.5em;
     height: 2.5em;
-    right: -9px;
-    bottom: -12px;
+    right: -10px;
+    bottom: -10px;
 }
 
 /*******************
@@ -619,7 +619,7 @@ main > .maincol > table > thead{
 }
 
 main > .maincol > table {
-     
+
      margin-left: 50%;
      transform: translateX(-50%);
      width: 80vw;
