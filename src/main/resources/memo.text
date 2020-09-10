@@ -106,4 +106,4 @@ Timestamp →String型に変換するゲッターを使用しているためview遷移ごとにhidden経由
 HerokuでBuildPackageにGradleとJAVAの両方を指定していたことに起因する『pom.xmlファイルがない』というエラーが発生したことで、herokuへのBuildが正常に行われていなかった
 
 ・原因②
-
+「index.html」ファイルの「main」タグの中の何か
