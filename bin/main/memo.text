@@ -102,3 +102,8 @@ Timestamp →String型に変換するゲッターを使用しているためview遷移ごとにhidden経由
 ・発生した問題
 デプロイしたapplicationのTOPページをRequestMapping("/") {return "TOPページファイル名";}のControllerで表示しようとするとWhite Label Errorが発生して表示できない
 
+・原因①
+HerokuでBuildPackageにGradleとJAVAの両方を指定していたことに起因する『pom.xmlファイルがない』というエラーが発生したことで、herokuへのBuildが正常に行われていなかった
+
+・原因②
+

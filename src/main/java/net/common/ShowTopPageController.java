@@ -7,7 +7,7 @@ import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import net.product.MsProductCategoryInventoryService;
 import net.product.TrProductEntity;
@@ -27,7 +27,7 @@ public class ShowTopPageController {
 	 *
 	 * @author SatoYusuke0228
 	 */
-	@RequestMapping("/")
+	@GetMapping("/")
 	public String showTopPage(Model model) {
 
 		//カテゴリーIDが0の商品のみを取得
