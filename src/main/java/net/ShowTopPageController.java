@@ -27,7 +27,7 @@ public class ShowTopPageController {
 	 *
 	 * @author SatoYusuke0228
 	 */
-	@RequestMapping("/index")
+	@RequestMapping("/")
 	public ModelAndView showRecommendedItems(ModelAndView mav) {
 
 		//カテゴリーIDが0の商品のみを取得
