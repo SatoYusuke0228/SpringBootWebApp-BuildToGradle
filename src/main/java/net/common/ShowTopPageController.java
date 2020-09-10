@@ -1,4 +1,4 @@
-package net;
+package net.common;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public class ShowTopPageController {
 	 * @author SatoYusuke0228
 	 */
 	@RequestMapping("/")
-	public ModelAndView showRecommendedItems(ModelAndView mav) {
+	public ModelAndView showTopPage(ModelAndView mav) {
 
 		//カテゴリーIDが0の商品のみを取得
 		List<TrProductEntity> items = categoryService.findById(0).get().getTrProductEntity();

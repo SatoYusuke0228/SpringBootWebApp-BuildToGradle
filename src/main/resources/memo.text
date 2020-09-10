@@ -42,6 +42,8 @@ test
 
 ■発生した問題の記録
 
+
+
 ◆2020/07/10
 
 ・発生した問題
@@ -54,6 +56,7 @@ gitでpushを実行しようすると[non-fast-forward]が発生してrejectできなくなった。
 $ git push -f origin master
 
 
+
 ◆2020/07/14
 
 ・発生した問題
@@ -63,9 +66,12 @@ $ git push -f origin master
 BindingResultで自動生成されていたスコープ名
 VIEW側で使用していた自作のスコープ名を統一させることで解決
 
+
+
 ◆2020/7/18
 
 ・Twitter社にAPI申請
+
 
 
 ◆2020/7/22
@@ -75,6 +81,8 @@ VIEW側で使用していた自作のスコープ名を統一させることで解決
 
 ・解決方法
 商品IDを変更不可能にしてhiddenで渡す
+
+
 
 ◆2020/8/19
 
@@ -86,3 +94,11 @@ Timestamp →String型に変換するゲッターを使用しているためview遷移ごとにhidden経由
 
 ・解決方法
 スタンダードゲッターを維持したまま別のゲッターメソッドを作成し、VIEW側でそのメソッド名を指定して取得することで解決
+
+
+
+◆2020/9/10
+
+・発生した問題
+デプロイしたapplicationのTOPページをRequestMapping("/") {return "TOPページファイル名";}のControllerで表示しようとするとWhite Label Errorが発生して表示できない
+
