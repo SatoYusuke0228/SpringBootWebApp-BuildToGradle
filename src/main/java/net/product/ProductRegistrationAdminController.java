@@ -187,7 +187,7 @@ public class ProductRegistrationAdminController {
 				mav.addObject("result_message", "商品登録失敗");
 
 				//商品登録失敗のresult画面に遷移
-				mav.setViewName("admin_result");
+				mav.setViewName("admin-result");
 
 				return mav;
 			}

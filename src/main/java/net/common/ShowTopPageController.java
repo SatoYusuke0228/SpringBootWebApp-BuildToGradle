@@ -6,6 +6,7 @@ import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Indexed;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -13,6 +14,7 @@ import net.product.MsProductCategoryInventoryService;
 import net.product.TrProductEntity;
 
 @Controller
+@Indexed
 public class ShowTopPageController {
 
 	@Autowired
