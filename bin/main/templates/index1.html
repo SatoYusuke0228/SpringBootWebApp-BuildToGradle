@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<!-- meta_header読み込み -->
+<head th:replace="common :: meta_header('HOME',~{::link},~{::script})"></head>
+<body>
+<!-- header読み込み -->
+<header th:replace="common :: header"></header>
+<!-- メイン -->
+<main>
+	<div class="container">
+		<section class="area">
+			<div class="area1">
+				<img th:src="@{/image/coffee-beens.jpg}" alt="画像が見つかりません" class="coffee-beens">
+				<h1 data-splitting="" class="words chars splitting" style="--word-total:1; --char-total:6;">
+					<span class="word" data-word="Breathing" style="--word-index:0;">
+						<span class="char" data-char="C" style="--char-index:0;">C</span>
+						<span class="char" data-char="O" style="--char-index:1;">O</span>
+						<span class="char" data-char="F" style="--char-index:2;">F</span>
+						<span class="char" data-char="F" style="--char-index:3;">F</span>
+						<span class="char" data-char="E" style="--char-index:4;">E</span>
+						<span class="char" data-char="E" style="--char-index:5;">E</span>
+					</span>
+				</h1>
+			</div>
+		</section>
+		<section class="area">
+			<div class="area2">
+				<img th:src="@{/image/coffee-map.jpg}" alt="画像が見つかりません" class="coffee-map">
+			</div>
+		</section>
+		<section class="area">
+			<div class="area3">
+				<div th:object="${recommendedItems}" id="slidewrap">
+					<div id="slidemask">
+						<ul id="photo">
+							<li id="slide01">
+								<img  th:src="@{ '/image/' + ${recommendedItems[0].productPhotoFileName1} }" height="350px" width="275px" alt="[[${recommendedItems[0].productName}]]">
+								<span> [[${recommendedItems[0].productName}]] </span>
+							</li>
+							<li id="slide02">
+								<img  th:src="@{ '/image/' + ${recommendedItems[1].productPhotoFileName1} }" height="350px" width="275px" alt="[[${recommendedItems[1].productName}]]">
+								<span> [[${recommendedItems[1].productName}]] </span>
+							</li>
+							<li id="slide03">
+								<img  th:src="@{ '/image/' + ${recommendedItems[2].productPhotoFileName1} }" height="350px" width="275px" alt="[[${recommendedItems[2].productName}]]">
+								<span> [[${recommendedItems[2].productName}]] </span>
+							</li>
+							<li id="slide04">
+								<img  th:src="@{ '/image/' + ${recommendedItems[3].productPhotoFileName1} }" height="350px" width="275px" alt="[[${recommendedItems[3].productName}]]">
+								<span> [[${recommendedItems[3].productName}]] </span>
+							</li>
+						</ul>
+					</div>
+					<!-- /* #slidemask */ -->
+					<ul id="thumb">
+						<li id="thumb01">
+							<a th:href="@{ '/item/' + ${recommendedItems[0].productId} }">
+								<img th:src="@{ '/image/' + ${recommendedItems[0].productPhotoFileName1} }" alt="${recommendedItems[0].productName}">
+							</a>
+						</li>
+						<li id="thumb02">
+							<a th:href="@{ '/item/' + ${recommendedItems[1].productId} }">
+								<img th:src="@{ '/image/' + ${recommendedItems[1].productPhotoFileName1} }" alt="${recommendedItems[1].productName}">
+							</a>
+						</li>
+						<li id="thumb03">
+							<a th:href="@{ '/item/' + ${recommendedItems[2].productId} }">
+								<img th:src="@{ '/image/' + ${recommendedItems[2].productPhotoFileName1} }" alt="${recommendedItems[2].productName}">
+							</a>
+						</li>
+						<li id="thumb04">
+							<a th:href="@{ '/item/' + ${recommendedItems[3].productId} }">
+								<img th:src="@{ '/image/' + ${recommendedItems[3].productPhotoFileName1} }" alt="${recommendedItems[3].productName}">
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</section>
+	</div>
+</main>
+<!-- メイン終了 -->
+<!-- footer読み込み -->
+<footer th:replace="common :: footer"></footer>
+</body>
+</html>
