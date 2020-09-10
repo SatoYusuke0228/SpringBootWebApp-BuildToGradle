@@ -8,7 +8,6 @@
 <!-- メイン -->
 <main>
 	<div class="container">
-		<!--
 		<section class="area">
 			<div class="area1">
 				<img th:src="@{/image/coffee-beens.jpg}" alt="画像が見つかりません" class="coffee-beens">
@@ -24,13 +23,12 @@
 				</h1>
 			</div>
 		</section>
-		 -->
 		<section class="area">
 			<div class="area2">
 				<img th:src="@{/image/coffee-map.jpg}" alt="画像が見つかりません" class="coffee-map">
 			</div>
 		</section>
-		<section class="area">
+		<section th:if="${reccomendedFlag}" class="area">
 			<div class="area3">
 				<div th:object="${recommendedItems}" id="slidewrap">
 					<div id="slidemask">

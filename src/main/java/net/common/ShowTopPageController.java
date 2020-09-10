@@ -7,7 +7,7 @@ import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import net.product.MsProductCategoryInventoryService;
 import net.product.TrProductEntity;
@@ -27,7 +27,7 @@ public class ShowTopPageController {
 	 *
 	 * @author SatoYusuke0228
 	 */
-	@GetMapping("/")
+	@RequestMapping("/")
 	public String index(Model model) {
 
 		//カテゴリーIDが0の商品のみを取得
@@ -43,7 +43,9 @@ public class ShowTopPageController {
 			}
 		}
 
+		//表示商品数が４の場合は
 		if (4 <= showFlag) {
+			model.addAttribute("reccomendedFlag", true);
 			model.addAttribute("recommendedItems", randomPickupRecommendedItems(items));
 		}
 
