@@ -8,6 +8,8 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -38,6 +40,7 @@ public class SalesHistoryAdminController {
 
 	//Viewに渡すObjectの命名
 	private final String SALES_HISTORY = "trSalesHistoryEntity";
+	private final String SALES_PRODUCT_HISTORY = "trSalesProductHistoryEntity";
 
 	/**
 	 * 販売履歴一覧ページを表示するメソッド
@@ -134,6 +137,19 @@ public class SalesHistoryAdminController {
 		return mav;
 	}
 
+	/**
+	 * 販売履歴の購入者情報を変更する確認画面を表示するメソッド。
+	 * 販売履歴の取得・表示段階で購入者情報を１度Customerクラスに渡しているため、
+	 * そのCustomerクラスのフィールドを変更し、再度salesHistoryEntityにsetするための準備をする。
+	 * またvalidationErrorが発生した場合は、元のページに戻りエラーメッセージを表示する。
+	 *
+	 * @see Customer
+	 * @param salesHistoryId
+	 * @param customer
+	 * @param result
+	 * @param salesHistoryEntity
+	 * @param mav
+	 */
 	@PostMapping("/admin/history/{salesHistoryId}/change/customer")
 	public ModelAndView postChangeCustamerInfoPage(
 			@PathVariable long salesHistoryId,
@@ -165,6 +181,19 @@ public class SalesHistoryAdminController {
 		return mav;
 	}
 
+	/**
+	 * 販売履歴の配送先情報を変更する確認画面を表示メソッド。
+	 * 販売履歴の取得・表示段階で配送先情報を１度Shippingクラスに渡しているため、
+	 * そのShippingクラスのフィールドを変更し、再度salesHistoryEntityにsetための準備をする。
+	 * またvalidationErrorが発生した場合は、元のページに戻りエラーメッセージを表示する。
+	 *
+	 * @see Shipping
+	 * @param salesHistoryId
+	 * @param customer
+	 * @param result
+	 * @param salesHistoryEntity
+	 * @param mav
+	 */
 	@PostMapping("/admin/history/{salesHistoryId}/change/shipping")
 	public ModelAndView postChangeShippingInfoPage(
 			@PathVariable long salesHistoryId,
@@ -196,6 +225,17 @@ public class SalesHistoryAdminController {
 		return mav;
 	}
 
+	/**
+	 * 販売履歴の購入者情報を変更しリザルト画面に遷移するメソッド
+	 *
+	 * @see Customer
+	 * @param salesHistoryId
+	 * @param customer
+	 * @param salesHistoryEntity
+	 * @param resultMessage
+	 * @param mav
+	 * @return
+	 */
 	@RequestMapping("/admin/history/{salesHistoryId}/change/customer/result")
 	public ModelAndView showChangeCustomerInfoResultPage(
 			@PathVariable long salesHistoryId,
@@ -228,6 +268,17 @@ public class SalesHistoryAdminController {
 		return mav;
 	}
 
+	/**
+	 * 販売履歴の配送先情報を変更しリザルト画面に遷移するメソッド
+	 *
+	 * @see Shipping
+	 * @param salesHistoryId
+	 * @param customer
+	 * @param salesHistoryEntity
+	 * @param resultMessage
+	 * @param mav
+	 * @return
+	 */
 	@RequestMapping("/admin/history/{salesHistoryId}/change/shipping/result")
 	public ModelAndView showChangeShippingInfoResultPage(
 			@PathVariable long salesHistoryId,
@@ -260,4 +311,51 @@ public class SalesHistoryAdminController {
 		return mav;
 	}
 
+	@RequestMapping("/admin/history/product/{salesProductHistoryId}/change/shipping")
+	public ModelAndView changeSalsProductShippingStatusConfig(
+			@PathVariable String salesProductHistoryId,
+			TrSalesProductHistoryEntity salesProductHistoryEntity,
+			ModelAndView mav) {
+
+		//１件の販売商品履歴を取得
+		salesProductHistoryEntity = salesProductHistoryService.getOne(salesProductHistoryId);
+
+		mav.addObject("changeShippingStatus", true);
+		mav.addObject(SALES_PRODUCT_HISTORY, salesProductHistoryEntity);
+		mav.setViewName("sales-history-change");
+
+		session.setAttribute(SALES_PRODUCT_HISTORY, salesProductHistoryEntity);
+
+		return mav;
+	}
+
+	@RequestMapping("/admin/history/product/{salesProductHistoryId}/change/shipping/result")
+	public ModelAndView changeSalsProductShippingStatus(
+			@PathVariable String salesProductHistoryId,
+			TrSalesProductHistoryEntity salesProductHistoryEntity,
+			ModelAndView mav) {
+
+		//１件の販売商品履歴を取得
+		salesProductHistoryEntity = salesProductHistoryService.getOne(salesProductHistoryId);
+
+		//配送ステータスの変更
+		salesProductHistoryEntity.setShippingStatus("発送済み");
+
+		//Systemのログインユーザーを取得して配送ステータス変更処理者にセット
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		final String loginUserName = auth.getName();
+		salesProductHistoryEntity.setProductShippingUser(loginUserName);
+
+		//配送日の取得を取得してEntityにセット
+		final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+		salesProductHistoryEntity.setProductShippingDate(timestamp);
+
+		//DBにUPDATEクエリを実行
+		salesProductHistoryService.saveAndFlush(salesProductHistoryEntity);
+
+		mav.addObject("result_message", "商品の配送ステータスを「発送済み」に変更しました。");
+		mav.setViewName("admin-result");
+
+		return mav;
+	}
 }

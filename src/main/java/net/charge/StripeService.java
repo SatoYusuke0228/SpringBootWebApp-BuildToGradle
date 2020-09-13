@@ -93,7 +93,7 @@ public class StripeService {
 			String stripeChargeId,
 			long refundPrice) throws StripeException {
 
-		//チャージIDとバランストランザクションIDをセット
+		//チャージIDと返金額セット
 		Map<String, Object> params = new HashMap<>();
 		params.put("charge", stripeChargeId);
 		params.put("amount", refundPrice);

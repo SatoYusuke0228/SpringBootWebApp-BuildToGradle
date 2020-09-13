@@ -20,7 +20,7 @@ public class ShowTopPageController {
 
 	/**
 	 * TOPページでオススメ商品を「productCategoryId == 0」から４種取得するためのメソッド。
-	 *
+	 **
 	 * 「商品の表示設定がON」になっている商品の数を算定し、
 	 * その数が４以上の場合のみ、４種類のオススメ商品をピックアップして、
 	 * TOPページのスライド写真として掲載する。
@@ -43,7 +43,7 @@ public class ShowTopPageController {
 			}
 		}
 
-		//表示商品数が４の場合は
+		//表示商品数が４の場合はオススメ商品表示フラグとオススメ商品リストを渡す
 		if (4 <= showFlag) {
 			model.addAttribute("reccomendedFlag", true);
 			model.addAttribute("recommendedItems", randomPickupRecommendedItems(items));
@@ -87,7 +87,7 @@ public class ShowTopPageController {
 				}
 			}
 
-			//重複していない場合のみ、オススメ商品Listに格納する
+			//重複していない場合と表示フラグがONの場合のみ、オススメ商品Listに格納する
 			if (duplication == 0 && randomPickupItem.getProductShowFlag() == 0) {
 				recommendedItems.add(randomPickupItem);
 			}

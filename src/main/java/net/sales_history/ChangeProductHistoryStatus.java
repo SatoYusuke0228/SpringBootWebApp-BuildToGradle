@@ -13,7 +13,8 @@ public class ChangeProductHistoryStatus {
 	 * @param tatusParam
 	 * @param salesHistoryEntity
 	 */
-	public List<TrSalesProductHistoryEntity> changeSippingStatus(String statusParam, List<TrSalesProductHistoryEntity> salesProductHistoryEntity) {
+	public List<TrSalesProductHistoryEntity> changeSippingStatus(String statusParam,
+			List<TrSalesProductHistoryEntity> salesProductHistoryEntity) {
 
 		for (int i = salesProductHistoryEntity.size() - 1; 0 <= i; i--) {
 
@@ -29,7 +30,8 @@ public class ChangeProductHistoryStatus {
 	 * @param timestamp
 	 * @param salesProductHistoryEntity
 	 */
-	public List<TrSalesProductHistoryEntity> updateProductRefundData(String loginUserName, Timestamp timestamp, List<TrSalesProductHistoryEntity> salesProductHistoryEntity) {
+	public List<TrSalesProductHistoryEntity> updateProductRefundData(String loginUserName, Timestamp timestamp,
+			List<TrSalesProductHistoryEntity> salesProductHistoryEntity) {
 
 		for (int i = salesProductHistoryEntity.size() - 1; 0 <= i; i--) {
 

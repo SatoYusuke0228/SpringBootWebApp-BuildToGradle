@@ -49,5 +49,4 @@ public class Shipping {
 		this.email = salesHistoryEntity.getShippingEmail();
 		this.tell = salesHistoryEntity.getShippingTell();
 	}
-
 }

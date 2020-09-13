@@ -67,6 +67,15 @@ public class TrSalesProductHistoryEntity {
 	private String productCancellationUser;
 
 	/**
+	 * 販売商品の発送日時を取得
+	 * ※ Timestamp → String に変換
+	 */
+	public String getFormatProductShippingDate() {
+		FormatTimestamp ft = new FormatTimestamp();
+		return ft.formatTimestamp(this.productShippingDate);
+	}
+
+	/**
 	 * 販売商品のキャンセル日時を取得
 	 * ※ Timestamp → String に変換
 	 */

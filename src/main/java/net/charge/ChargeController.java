@@ -255,6 +255,9 @@ public class ChargeController {
 		//viewファイル名をセット
 		mav.setViewName("charge");
 
+		//エラーメッセージ
+		mav.addObject("error", e.getMessage());
+
 		//決済失敗フラグ
 		mav.addObject("charge_failed", true);
 

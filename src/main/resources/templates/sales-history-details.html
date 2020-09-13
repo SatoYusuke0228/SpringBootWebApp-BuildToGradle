@@ -30,8 +30,8 @@
 					<td></td>
 				</tr>
 
-				<tr>
-					<th th:if="*{0 < refundAmount}" scope="row">返金額</th>
+				<tr th:if="*{0 < refundAmount}">
+					<th scope="row">返金額</th>
 					<td th:text="*{refundAmount} + 円">返金額</td>
 					<td></td>
 					<td></td>
@@ -40,10 +40,13 @@
 				<tr>
 					<th scope="row">決済ステータス</th>
 					<td th:text="*{settlementFlag}">決済ステータス</td>
+					<!--/*
 					<td>
 						<button th:if="*{'決済完了'.equals(settlementFlag)}"
 							th:onclick="|location.href='@{'/admin/history/' + *{salesHistoryId} + '/cancel'}'|">返金</button>
 					</td>
+					*/-->
+					<td></td>
 				</tr>
 
 				<tr>
@@ -111,8 +114,8 @@
 					<button type="submit">変更</button>
 				</h3>
 
-				<input type="hidden" th:object="${customer}" />
-				<input type="hidden" th:object="${shipping}" />
+				<input type="hidden" th:object="${customer}" /> <input
+					type="hidden" th:object="${shipping}" />
 
 				<table class="table" th:object="${customer}">
 
@@ -160,7 +163,8 @@
 
 		<li>
 
-			<form th:action="|@{'/admin/history/' + *{salesHistoryId} + '/change/shipping'}|"
+			<form
+				th:action="|@{'/admin/history/' + *{salesHistoryId} + '/change/shipping'}|"
 				method="POST" class="change_shipping_info">
 
 				<h3>
@@ -176,40 +180,35 @@
 						<th><label for="name"> 配送先 </label></th>
 						<td><input type="text" th:field="*{name}"
 							class="form-control" /> <span
-							th:if="${#fields.hasErrors('name')}"
-							th:errors="*{name}">ErrorMessage</span></td>
+							th:if="${#fields.hasErrors('name')}" th:errors="*{name}">ErrorMessage</span></td>
 					</tr>
 
 					<tr>
 						<th><label for="zipcode"> 郵便番号 </label></th>
 						<td><input type="text" th:field="*{zipcode}"
 							class="form-control" /> <span
-							th:if="${#fields.hasErrors('zipcode')}"
-							th:errors="*{zipcode}">ErrorMessage</span></td>
+							th:if="${#fields.hasErrors('zipcode')}" th:errors="*{zipcode}">ErrorMessage</span></td>
 					</tr>
 
 					<tr>
 						<th><label for="address"> 住所 </label></th>
 						<td><input type="text" th:field="*{address}"
 							class="form-control" /> <span
-							th:if="${#fields.hasErrors('address')}"
-							th:errors="*{address}">ErrorMessage</span></td>
+							th:if="${#fields.hasErrors('address')}" th:errors="*{address}">ErrorMessage</span></td>
 					</tr>
 
 					<tr>
 						<th><label for="email"> メール </label></th>
 						<td><input type="text" th:field="*{email}"
 							class="form-control" /> <span
-							th:if="${#fields.hasErrors('email')}"
-							th:errors="*{email}">ErrorMessage</span></td>
+							th:if="${#fields.hasErrors('email')}" th:errors="*{email}">ErrorMessage</span></td>
 					</tr>
 
 					<tr>
 						<th><label for="tell"> 電話番号 </label></th>
 						<td><input type="text" th:field="*{tell}"
 							class="form-control" /> <span
-							th:if="${#fields.hasErrors('tell')}"
-							th:errors="*{tell}">ErrorMessage</span></td>
+							th:if="${#fields.hasErrors('tell')}" th:errors="*{tell}">ErrorMessage</span></td>
 					</tr>
 
 				</table>
@@ -270,6 +269,7 @@
 						<th>個数</th>
 						<th>小計</th>
 						<th>発送状況</th>
+						<th>発送日</th>
 						<th>詳細</th>
 						<th>返金</th>
 						<th>返金日</th>
@@ -286,7 +286,14 @@
 						<td scope="row" th:text="*{salesProductName}">商品名</td>
 						<td scope="row" th:text="*{salesProductQuantity}">個数</td>
 						<td scope="row" th:text="*{salesProductPrice} + 円">小計</td>
-						<td scope="row" th:text="*{shippingStatus}">配送状況</td>
+						<td scope="row" th:text="*{shippingStatus}">配送ステータス</td>
+						<td scope="row">
+							<p th:if="*{productShippingDate != null}" th:text="*{getFormatProductShippingDate()}">発送日</p>
+							<p th:if="*{productShippingDate == null && 'キャンセル'.equals(getShippingStatus())}"> - </p>
+							<button
+								th:if="*{productShippingDate == null && !'キャンセル'.equals(getShippingStatus())}"
+								th:onclick="|location.href='@{'/admin/history/product/' + *{salesProductHistoryId} + '/change/shipping'}'|">発送完了</button>
+						</td>
 						<td>
 							<button
 								th:onclick="|location.href='@{'/admin/management/details/' + *{salesProductId} }'|">詳細</button>

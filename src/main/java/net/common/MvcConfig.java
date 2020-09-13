@@ -9,7 +9,7 @@ public class MvcConfig implements WebMvcConfigurer {
 
 	/**
 	 *「spring-boot-starter-security」が自動的に管理者画面へ遷移させてくれるため、
-	 * 遷移先がどの画面なのかを「spring-boot-starter-security」に認識させる役割のクラス
+	 * 遷移b先がどの画面なのかを「spring-oot-starter-security」に認識させる役割のクラス
 	 *
 	 * @author SatoYusuke0228
 	 * @param ViewControllerRegistry registry

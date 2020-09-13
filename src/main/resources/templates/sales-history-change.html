@@ -93,5 +93,28 @@
 
 	</div>
 
+	<div th:if="${changeShippingStatus}" th:object="${trSalesProductHistoryEntity}">
+
+		<h3>配送ステータスを変更しますか？</h3>
+
+		<table>
+
+			<tr>
+				<th scope="row">販売商品履歴ID</th>
+				<td th:text="*{salesProductHistoryId}">商品ID</td>
+			</tr>
+
+		</table>
+
+		<div>
+			<span>
+				<button
+					th:onclick="|location.href='@{'/admin/history/product/' + *{salesProductHistoryId} + '/change/shipping/result'}'|">変更</button>
+				<button th:onclick="|location.href='@{'/admin'}'|">管理者画面に戻る</button>
+			</span>
+		</div>
+
+	</div>
+
 </body>
 </html>

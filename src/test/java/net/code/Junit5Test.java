@@ -37,6 +37,5 @@ class JUnit5Test {
 		void success() {
 			Assertions.assertEquals(10, 10);
 		}
-
 	}
 }
